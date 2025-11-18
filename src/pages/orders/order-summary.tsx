@@ -11,16 +11,8 @@ function OrderSummary(props: { order: Order; full?: boolean }) {
     <Section
       title={
         <div className="w-full flex justify-between items-center space-x-2 font-normal">
-          <span className="text-xs truncate">
-            Thời gian nhận: Từ 16h, 20/1/2025
-          </span>
-          <span
-            className={`text-xs ${
-              props.order.paymentStatus === "failed"
-                ? "text-danger"
-                : "text-primary"
-            }`}
-          >
+          <span className="text-xs truncate">Thời gian nhận: Từ 16h, 20/1/2025</span>
+          <span className={`text-xs ${props.order.paymentStatus === "failed" ? "text-danger" : "text-main"}`}>
             {
               {
                 pending: "Chờ xác nhận",
@@ -42,17 +34,12 @@ function OrderSummary(props: { order: Order; full?: boolean }) {
       }}
     >
       <div className="w-full">
-        <CollapsibleOrderItems
-          items={props.order.items}
-          defaultExpanded={props.full}
-        />
+        <CollapsibleOrderItems items={props.order.items} defaultExpanded={props.full} />
       </div>
       <HorizontalDivider />
       <div className="flex justify-between items-center px-4 py-2 space-x-4">
         <div className="text-xs">Tổng tiền hàng</div>
-        <div className="text-sm font-medium">
-          {formatPrice(props.order.total)}
-        </div>
+        <div className="text-sm font-medium">{formatPrice(props.order.total)}</div>
       </div>
     </Section>
   );

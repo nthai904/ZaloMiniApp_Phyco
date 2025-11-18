@@ -9,14 +9,14 @@
       {
         "product": {
           "id": 1,
-          "name": "Táo giòn nhập khẩu - 1kg",
+          "name": "Thực phẩm bổ sung PHYCO SANTÉ",
           "price": 67900,
           "originalPrice": 69900,
-          "image": "https://zalo-miniapp.github.io/zaui-market/dummy/product/apples.png",
+          "image": "https://product.hstatic.net/200000436051/product/sante_c359f90e8caa481bb413daa7b01cee18_master.jpg",
           "category": {
             "id": 1,
-            "name": "Fruits",
-            "image": "https://zalo-miniapp.github.io/zaui-market/dummy/category/fruits.png"
+            "name": "Sản phẩm Doppelherz",
+            "image": "https://product.hstatic.net/200000436051/product/sante_c359f90e8caa481bb413daa7b01cee18_master.jpg"
           },
           "detail": "- Xuất xứ: Mỹ\n- Quy cách đóng túi: 400 - 500g(+/-100g), 2-3 trái\n- Lưu ý: Trong quá trình vận chuyển có thể xảy ra tình trạng trái bị va chạm cấn trái nhẹ\n- Hướng dẫn bảo quản: Bảo quản ngăn mát tủ lạnh để đảm bảo độ tươi ngon."
         },
@@ -24,35 +24,35 @@
       },
       {
         "product": {
-          "id": 2,
-          "name": "Cải ngọt thủy canh 300g",
-          "price": 27900,
-          "originalPrice": 30000,
-          "image": "https://zalo-miniapp.github.io/zaui-market/dummy/product/cabbage.png",
+          "id": 1,
+          "name": "Thực phẩm bổ sung PHYCO SANTÉ",
+          "price": 67900,
+          "originalPrice": 69900,
+          "image": "https://product.hstatic.net/200000436051/product/sante_c359f90e8caa481bb413daa7b01cee18_master.jpg",
           "category": {
             "id": 1,
-            "name": "Vegetables",
-            "image": "https://zalo-miniapp.github.io/zaui-market/dummy/category/vegetables.png"
+            "name": "Sản phẩm Doppelherz",
+            "image": "https://product.hstatic.net/200000436051/product/sante_c359f90e8caa481bb413daa7b01cee18_master.jpg"
           },
-          "detail": "Cải ngọt thủy canh, tươi ngon và giàu dinh dưỡng."
+          "detail": "- Xuất xứ: Mỹ\n- Quy cách đóng túi: 400 - 500g(+/-100g), 2-3 trái\n- Lưu ý: Trong quá trình vận chuyển có thể xảy ra tình trạng trái bị va chạm cấn trái nhẹ\n- Hướng dẫn bảo quản: Bảo quản ngăn mát tủ lạnh để đảm bảo độ tươi ngon."
         },
-        "quantity": 2
+        "quantity": 3
       },
       {
         "product": {
-          "id": 3,
-          "name": "Kem hộp Socola",
-          "price": 313000,
-          "originalPrice": 500000,
-          "image": "https://zalo-miniapp.github.io/zaui-market/dummy/product/creamy.png",
+          "id": 1,
+          "name": "Thực phẩm bổ sung PHYCO SANTÉ",
+          "price": 67900,
+          "originalPrice": 69900,
+          "image": "https://product.hstatic.net/200000436051/product/sante_c359f90e8caa481bb413daa7b01cee18_master.jpg",
           "category": {
             "id": 1,
-            "name": "Desserts",
-            "image": "https://zalo-miniapp.github.io/zaui-market/dummy/category/desserts.png"
+            "name": "Sản phẩm Doppelherz",
+            "image": "https://product.hstatic.net/200000436051/product/sante_c359f90e8caa481bb413daa7b01cee18_master.jpg"
           },
-          "detail": "Kem hộp Socola, thơm ngon và mát lạnh."
+          "detail": "- Xuất xứ: Mỹ\n- Quy cách đóng túi: 400 - 500g(+/-100g), 2-3 trái\n- Lưu ý: Trong quá trình vận chuyển có thể xảy ra tình trạng trái bị va chạm cấn trái nhẹ\n- Hướng dẫn bảo quản: Bảo quản ngăn mát tủ lạnh để đảm bảo độ tươi ngon."
         },
-        "quantity": 1
+        "quantity": 3
       }
     ],
     "delivery": {

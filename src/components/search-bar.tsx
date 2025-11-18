@@ -24,7 +24,7 @@ const SearchBar = (props: InputProps) => {
     <Input.Search
       size="small"
       placeholder="Tìm kiếm..."
-      className="border-none outline-none m-0"
+      className="border-none outline-none m-0 rounded-xl"
       style={{
         viewTransitionName: "search-bar",
       }}

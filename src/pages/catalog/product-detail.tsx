@@ -30,20 +30,11 @@ export default function ProductDetailPage() {
             }}
           />
           <div>
-            <div className="text-xl font-bold text-primary">
-              {formatPrice(product.price)}
-            </div>
+            <div className="text-xl font-bold text-dark">{formatPrice(product.price)}</div>
             {product.originalPrice && (
               <div className="text-2xs space-x-0.5">
-                <span className="text-subtitle line-through">
-                  {formatPrice(product.originalPrice)}
-                </span>
-                <span className="text-danger">
-                  -
-                  {100 -
-                    Math.round((product.price * 100) / product.originalPrice)}
-                  %
-                </span>
+                <span className="text-subtitle line-through">{formatPrice(product.originalPrice)}</span>
+                <span className="text-danger">-{100 - Math.round((product.price * 100) / product.originalPrice)}%</span>
               </div>
             )}
             <div className="text-sm mt-1">{product.name}</div>
@@ -54,9 +45,7 @@ export default function ProductDetailPage() {
           <>
             <div className="bg-background h-2 w-full"></div>
             <Section title="Mô tả sản phẩm">
-              <div className="text-sm whitespace-pre-wrap text-subtitle p-4 pt-2">
-                {product.detail}
-              </div>
+              <div className="text-sm whitespace-pre-wrap text-subtitle p-4 pt-2">{product.detail}</div>
             </Section>
           </>
         )}
@@ -79,6 +68,7 @@ export default function ProductDetailPage() {
           Thêm vào giỏ
         </Button>
         <Button
+          className="bg-main text-white"
           onClick={() => {
             addToCart(1);
             navigate("/cart", {

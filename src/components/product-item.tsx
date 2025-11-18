@@ -20,15 +20,8 @@ export default function ProductItem(props: ProductItemProps) {
   const { addToCart, cartQuantity } = useAddToCart(props.product);
 
   return (
-    <div
-      className="flex flex-col cursor-pointer group bg-section rounded-xl shadow-[0_10px_24px_#0D0D0D17]"
-      onClick={() => setSelected(true)}
-    >
-      <TransitionLink
-        to={`/product/${props.product.id}`}
-        replace={props.replace}
-        className="p-2 pb-0"
-      >
+    <div className="flex flex-col cursor-pointer group bg-section rounded-xl shadow-[0_10px_24px_#0D0D0D17]" onClick={() => setSelected(true)}>
+      <TransitionLink to={`/product/${props.product.id}`} replace={props.replace} className="p-2 pb-0">
         {({ isTransitioning }) => (
           <>
             <img
@@ -44,27 +37,13 @@ export default function ProductItem(props: ProductItemProps) {
             />
             <div className="pt-2 pb-1.5">
               <div className="pt-1 pb-0.5">
-                <div className="text-xs h-9 line-clamp-2">
-                  {props.product.name}
-                </div>
+                <div className="text-xs h-9 line-clamp-2">{props.product.name}</div>
               </div>
-              <div className="mt-0.5 text-sm font-bold text-primary truncate">
-                {formatPrice(props.product.price)}
-              </div>
+              <div className="mt-0.5 text-sm font-bold text-dark truncate">{formatPrice(props.product.price)}</div>
               {props.product.originalPrice && (
                 <div className="text-3xs space-x-0.5 truncate">
-                  <span className="text-subtitle line-through">
-                    {formatPrice(props.product.originalPrice)}
-                  </span>
-                  <span className="text-danger">
-                    -
-                    {100 -
-                      Math.round(
-                        (props.product.price * 100) /
-                          props.product.originalPrice
-                      )}
-                    %
-                  </span>
+                  <span className="text-subtitle line-through">{formatPrice(props.product.originalPrice)}</span>
+                  <span className="text-danger">-{100 - Math.round((props.product.price * 100) / props.product.originalPrice)}%</span>
                 </div>
               )}
             </div>
@@ -77,6 +56,7 @@ export default function ProductItem(props: ProductItemProps) {
             variant="secondary"
             size="small"
             fullWidth
+            className="bg-main text-white"
             onClick={(e) => {
               e.stopPropagation();
               addToCart(1, {

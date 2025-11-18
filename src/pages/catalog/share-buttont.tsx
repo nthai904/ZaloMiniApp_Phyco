@@ -16,13 +16,10 @@ export default function ShareButton(props: { product: Product }) {
   };
 
   return (
-    <button
-      className="relative w-full h-10 rounded-lg cursor-pointer overflow-hidden"
-      onClick={share}
-    >
-      <div className="absolute inset-0 bg-[var(--zaui-light-button-secondary-background)] opacity-50" />
+    <button className="relative w-full h-10 rounded-lg cursor-pointer overflow-hidden" onClick={share}>
+      <div className="absolute inset-0 bg-[var(--zaui-light-button-dark-background)] opacity-50" />
       <ShareDecor className="absolute inset-0" />
-      <div className="relative flex space-x-1 text-primary text-sm font-medium p-2">
+      <div className="relative flex space-x-1 text-dark text-sm font-medium p-2">
         <div>Chia sẻ ngay cho bạn bè</div>
         <Icon icon="zi-chevron-right" />
       </div>
