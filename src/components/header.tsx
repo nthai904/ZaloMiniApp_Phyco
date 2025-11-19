@@ -1,10 +1,6 @@
 import { useAtomValue } from "jotai";
 import { useLocation, useNavigate } from "react-router-dom";
-import {
-  categoriesStateUpwrapped,
-  loadableUserInfoState,
-  userInfoState,
-} from "@/state";
+import { categoriesStateUpwrapped, loadableUserInfoState, userInfoState } from "@/state";
 import { useMemo } from "react";
 import { useRouteHandle } from "@/hooks";
 import { getConfig } from "@/utils/template";
@@ -13,6 +9,10 @@ import SearchBar from "./search-bar";
 import TransitionLink from "./transition-link";
 import { Icon } from "zmp-ui";
 import { DefaultUserAvatar } from "./vectors";
+import { ShoppingCartOutlined } from "@ant-design/icons";
+import { Badge } from "antd";
+import HeaderOverlay from "@/components/header-overlay";
+import { cartState } from "@/state";
 
 export default function Header() {
   const categories = useAtomValue(categoriesStateUpwrapped);
@@ -33,103 +33,49 @@ export default function Header() {
 
   const showBack = location.key !== "default" && !handle?.noBack;
 
+  const cart = useAtomValue(cartState);
+
   return (
-    <div className="bg-gradient-to-r w-full flex flex-col px-4 pt-st overflow-hidden bg-no-repeat bg-right-top bg-main text-white">
-      <div className="pt-1">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div 
-              className="w-8 h-8 rounded-full flex items-center justify-center cursor-pointer"
-              onClick={() => navigate("/")}
-            >
-              <img
-                src={getConfig((c) => c.template.logoUrl)}
-                alt="Logo"
-                className="w-full h-full object-cover rounded-full"
-              />
-            </div>
-            <div>
+    <div className="w-full flex flex-col bg-white">
+      {/* Dải header màu xanh ở phía trên */}
+      <div className="bg-gradient-to-r px-4 pb-9 pt-st bg-no-repeat bg-right-top bg-main rounded-bl-lg rounded-br-lg">
+        <div className="pt-1">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              {/* Logo thương hiệu  */}
+              <div className="w-8 h-8 rounded-full flex items-center justify-center cursor-pointer" onClick={() => navigate("/")}>
+                <img src={getConfig((c) => c.template.logoUrl)} alt="Logo" className="w-full h-full object-cover rounded-full" />
+              </div>
+
+              {/* Thanh tìm kiếm  */}
+              <div>
+                {handle?.search && (
+                  <div className="w-[75%] py-3 flex space-x-2">
+                    <SearchBar
+                      onFocus={() => {
+                        if (location.pathname !== "/search") {
+                          navigate("/search", { viewTransition: true });
+                        }
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Giỏ hàng chỉ hiển thị giống logic thanh search (chỉ ở các trang có handle.search) */}
               {handle?.search && (
-                <div className="w-[80%] py-2 flex space-x-2">
-                  <SearchBar
-                    onFocus={() => {
-                      if (location.pathname !== "/search") {
-                        navigate("/search", { viewTransition: true });
-                      }
-                    }}
-                  />
+                <div className="w-8 h-8 relative flex items-center justify-center cursor-pointer" onClick={() => navigate("/cart")} aria-label="Giỏ hàng">
+                  <ShoppingCartOutlined style={{ fontSize: 24, color: "#fff", transform: "translateX(-70px)" }} />
+                  <span className="absolute -top-0 -left-12 bg-danger text-white text-[8px] rounded-full w-4 h-4 flex items-center justify-center">{cart.length}</span>
                 </div>
               )}
             </div>
           </div>
         </div>
       </div>
-    </div>
 
-    // <div
-    //   className="w-full flex flex-col px-4 bg-primary text-primaryForeground pt-st overflow-hidden bg-no-repeat bg-right-top"
-    //   style={{
-    //     backgroundImage: `url(${headerIllus})`,
-    //   }}
-    // >
-    //   <div className="w-full min-h-12 pr-[90px] flex py-2 space-x-2 items-center">
-    //     {handle?.logo ? (
-    //       <>
-    //         <img
-    //           src={getConfig((c) => c.template.logoUrl)}
-    //           className="flex-none w-8 h-8 rounded-full"
-    //         />
-    //         <TransitionLink to="/stations" className="flex-1 overflow-hidden">
-    //           <div className="flex items-center space-x-1">
-    //             <h1 className="text-lg font-bold">
-    //               {getConfig((c) => c.template.shopName)}
-    //             </h1>
-    //             <Icon icon="zi-chevron-right" />
-    //           </div>
-    //           <p className="overflow-x-auto whitespace-nowrap text-2xs">
-    //             {getConfig((c) => c.template.shopAddress)}
-    //           </p>
-    //         </TransitionLink>
-    //       </>
-    //     ) : (
-    //       <>
-    //         {showBack && (
-    //           <div
-    //             className="py-1 px-2 cursor-pointer"
-    //             onClick={() => navigate(-1)}
-    //           >
-    //             <Icon icon="zi-arrow-left" />
-    //           </div>
-    //         )}
-    //         <div className="text-xl font-medium truncate">{title}</div>
-    //       </>
-    //     )}
-    //   </div>
-    //   {handle?.search && (
-    //     <div className="w-full py-2 flex space-x-2">
-    //       <SearchBar
-    //         onFocus={() => {
-    //           if (location.pathname !== "/search") {
-    //             navigate("/search", { viewTransition: true });
-    //           }
-    //         }}
-    //       />
-    //       <TransitionLink to="/profile">
-    //         {userInfo.state === "hasData" && userInfo.data ? (
-    //           <img
-    //             className="w-8 h-8 rounded-full"
-    //             src={userInfo.data.avatar}
-    //           />
-    //         ) : (
-    //           <DefaultUserAvatar
-    //             width={32}
-    //             height={32}
-    //             className={userInfo.state === "loading" ? "animate-pulse" : ""}
-    //           />
-    //         )}
-    //       </TransitionLink>
-    //     </div>
-    //   )}
-    // </div>
+      {/* HeaderOverlay dính với mép dưới của header, không cần lớp phủ trắng */}
+      <div className="px-4 -mt-6">{handle?.search && <HeaderOverlay pointsCount={0} voucherCount={0} />}</div>
+    </div>
   );
 }
