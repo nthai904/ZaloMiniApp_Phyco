@@ -5,9 +5,11 @@ import FlashSales from "./flash-sales";
 const HomePage: React.FunctionComponent = () => {
   return (
     <div className="min-h-full space-y-2 py-2">
-      <Category />
-      <div className="bg-section">
+      <div className="bg-sction mt-1">
         <Banners />
+      </div>
+      <div className="bg-section">
+        <Category />
       </div>
       <FlashSales />
     </div>

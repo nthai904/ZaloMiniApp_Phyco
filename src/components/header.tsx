@@ -14,7 +14,12 @@ import { Badge } from "antd";
 import HeaderOverlay from "@/components/header-overlay";
 import { cartState } from "@/state";
 
-export default function Header() {
+type HeaderProps = {
+  showHeaderOverlay?: boolean;
+  isScrolled?: boolean;
+};
+
+export default function Header({ showHeaderOverlay = true, isScrolled = false }: HeaderProps) {
   const categories = useAtomValue(categoriesStateUpwrapped);
   const navigate = useNavigate();
   const location = useLocation();
@@ -36,9 +41,13 @@ export default function Header() {
   const cart = useAtomValue(cartState);
 
   return (
-    <div className="w-full flex flex-col bg-white">
+    <div className="w-full flex flex-col bg-white z-10">
       {/* Dải header màu xanh ở phía trên */}
-      <div className="bg-gradient-to-r px-4 pb-9 pt-st bg-no-repeat bg-right-top bg-main rounded-bl-lg rounded-br-lg">
+      <div
+        className={`bg-gradient-to-r px-4 pt-st bg-no-repeat bg-right-top bg-main rounded-bl-lg rounded-br-lg transition-all duration-300 ease-in-out ${
+          isScrolled ? "pb-2" : "pb-8"
+        }`}
+      >
         <div className="pt-1">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -62,7 +71,6 @@ export default function Header() {
                 )}
               </div>
 
-              {/* Giỏ hàng chỉ hiển thị giống logic thanh search (chỉ ở các trang có handle.search) */}
               {handle?.search && (
                 <div className="w-8 h-8 relative flex items-center justify-center cursor-pointer" onClick={() => navigate("/cart")} aria-label="Giỏ hàng">
                   <ShoppingCartOutlined style={{ fontSize: 24, color: "#fff", transform: "translateX(-70px)" }} />
@@ -74,8 +82,18 @@ export default function Header() {
         </div>
       </div>
 
-      {/* HeaderOverlay dính với mép dưới của header, không cần lớp phủ trắng */}
-      <div className="px-4 -mt-6">{handle?.search && <HeaderOverlay pointsCount={0} voucherCount={0} />}</div>
+      {handle?.search && (
+        <div className={`-mt-6 px-4 overflow-hidden transition-all duration- ease-out ${showHeaderOverlay ? "max-h-96 opacity-100" : "max-h-0 opacity-0 pointer-events-none"}`}>
+          <div
+            className={`transition-all duration-100 ease-out ${showHeaderOverlay ? "translate-y-0" : "-translate-y-full"}`}
+            style={{
+              willChange: "transform, opacity",
+            }}
+          >
+            <HeaderOverlay pointsCount={0} voucherCount={0} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

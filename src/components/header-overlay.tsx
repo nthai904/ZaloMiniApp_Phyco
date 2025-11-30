@@ -18,7 +18,7 @@ export default function HeaderOverlay({ pointsCount = 0, voucherCount = 0, class
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <img
-            src="https://scontent.fsgn5-12.fna.fbcdn.net/v/t39.30808-1/298030286_610132504162632_3563065853572641621_n.jpg?stp=c0.10.889.889a_dst-jpg_s200x200_tt6&_nc_cat=103&ccb=1-7&_nc_sid=e99d92&_nc_eui2=AeGgxwkNEQIDH2E7N9iu2of2GKIgA9GN1q4YoiAD0Y3WrjDhJTMTLZISYS7cmE4nI7Mk2UmsXvIxOO1BI0_-RvG1&_nc_ohc=SgN-rpGUYKcQ7kNvwEHRtX_&_nc_oc=Adl_G7afeEm1OOwes9y0iJHS7Mk_K2k5o6c5w0KKXuPRzUjjDl0cT15yLNP2YU7HIwb_Ghv-Te9IkUUzMa9g9OmK&_nc_zt=24&_nc_ht=scontent.fsgn5-12.fna&_nc_gid=tDhWP30IFm01W_i5uAhRqw&oh=00_AfhpxB_WmjPfMUrMVETIZK_Dbi9eZfeH9wZTvTjZfpq3NQ&oe=69221C0B"
+            src="https://scontent.fsgn5-12.fna.fbcdn.net/v/t39.30808-1/298030286_610132504162632_3563065853572641621_n.jpg?stp=c0.10.889.889a_dst-jpg_s200x200_tt6&_nc_cat=103&ccb=1-7&_nc_sid=e99d92&_nc_ohc=w83NOa4JTnwQ7kNvwHDZWpY&_nc_oc=AdlMw2e-oCCO0563piUOkS0N5ntMXetiZ-j_hONE0NpgEbbJCv2f5TrGm6DlTGgQeQ51G5ZWc1nOXYvCZ51c4h-U&_nc_zt=24&_nc_ht=scontent.fsgn5-12.fna&_nc_gid=bhEcV05uSPM9HTvNYqM-3Q&oh=00_AfiVltgsbG3jUA7zc7MyMG0zEbU1q-9YvelTZg4emXpWUQ&oe=6930D4CB"
             alt="User Avatar"
             className="w-10 h-10 rounded-full object-cover"
           />
