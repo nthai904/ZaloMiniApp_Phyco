@@ -40,13 +40,24 @@ export default function Header({ showHeaderOverlay = true, isScrolled = false }:
 
   const cart = useAtomValue(cartState);
 
+  const isHomePage = location.pathname === "/";
+  const shouldRoundBottomCorners = isHomePage && !isScrolled;
+  const shouldShrink = isHomePage && isScrolled;
+
+  const getHeaderPadding = () => {
+    if (isHomePage) {
+      return shouldShrink ? "pb-1" : "pb-8";
+    }
+    return "pb-4";
+  };
+
   return (
-    <div className="w-full flex flex-col bg-white z-10">
+    <div className="w-full flex flex-col bg-transparent z-10">
       {/* Dải header màu xanh ở phía trên */}
       <div
-        className={`bg-gradient-to-r px-4 pt-st bg-no-repeat bg-right-top bg-main rounded-bl-lg rounded-br-lg transition-all duration-300 ease-in-out ${
-          isScrolled ? "pb-2" : "pb-8"
-        }`}
+        className={`bg-gradient-to-r px-4 pt-st bg-no-repeat bg-right-top bg-main transition-all duration-300 ease-in-out ${
+          shouldRoundBottomCorners ? "rounded-bl-lg rounded-br-lg" : ""
+        } ${getHeaderPadding()}`}
       >
         <div className="pt-1">
           <div className="flex items-center justify-between">
@@ -83,9 +94,14 @@ export default function Header({ showHeaderOverlay = true, isScrolled = false }:
       </div>
 
       {handle?.search && (
-        <div className={`-mt-6 px-4 overflow-hidden transition-all duration- ease-out ${showHeaderOverlay ? "max-h-96 opacity-100" : "max-h-0 opacity-0 pointer-events-none"}`}>
+        <div
+          className={`-mt-6 px-4 overflow-hidden transition-all duration-300 ease-in-out ${showHeaderOverlay ? "max-h-96 opacity-100" : "max-h-0 opacity-0 pointer-events-none"}`}
+          style={{
+            willChange: "max-height, opacity",
+          }}
+        >
           <div
-            className={`transition-all duration-100 ease-out ${showHeaderOverlay ? "translate-y-0" : "-translate-y-full"}`}
+            className={`transition-transform duration-300 ease-in-out ${showHeaderOverlay ? "translate-y-0 opacity-100" : "-translate-y-4 opacity-0"}`}
             style={{
               willChange: "transform, opacity",
             }}

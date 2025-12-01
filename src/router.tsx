@@ -96,16 +96,14 @@ const router = createBrowserRouter(
           path: "/category/:id",
           element: <CategoryDetailPage />,
           handle: {
-            search: true,
-            title: ({ categories, params }) =>
-              categories.find((c) => String(c.id) === params.id)?.name,
+            title: ({ categories, params }) => categories.find((c) => String(c.id) === params.id)?.name,
           },
         },
         {
           path: "/product/:id",
           element: <ProductDetailPage />,
           handle: {
-            scrollRestoration: 0, // when user selects another product in related products, scroll to the top of the page
+            scrollRestoration: 0, 
             noFloatingCart: true,
           },
         },

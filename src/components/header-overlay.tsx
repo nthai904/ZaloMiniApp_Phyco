@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router";
 import { WalletIcon, VoucherIcon } from "@/components/vectors";
+import { Avatar } from "zmp-ui";
 
 type Props = {
   pointsCount?: number;
@@ -17,10 +18,9 @@ export default function HeaderOverlay({ pointsCount = 0, voucherCount = 0, class
       {/* ------- PHẦN TRÊN ------- */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <img
+          <Avatar
+            size={41}
             src="https://scontent.fsgn5-12.fna.fbcdn.net/v/t39.30808-1/298030286_610132504162632_3563065853572641621_n.jpg?stp=c0.10.889.889a_dst-jpg_s200x200_tt6&_nc_cat=103&ccb=1-7&_nc_sid=e99d92&_nc_ohc=w83NOa4JTnwQ7kNvwHDZWpY&_nc_oc=AdlMw2e-oCCO0563piUOkS0N5ntMXetiZ-j_hONE0NpgEbbJCv2f5TrGm6DlTGgQeQ51G5ZWc1nOXYvCZ51c4h-U&_nc_zt=24&_nc_ht=scontent.fsgn5-12.fna&_nc_gid=bhEcV05uSPM9HTvNYqM-3Q&oh=00_AfiVltgsbG3jUA7zc7MyMG0zEbU1q-9YvelTZg4emXpWUQ&oe=6930D4CB"
-            alt="User Avatar"
-            className="w-10 h-10 rounded-full object-cover"
           />
 
           <div className="flex flex-col">

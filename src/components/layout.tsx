@@ -1,4 +1,4 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import Header from "./header";
 import Footer from "./footer";
 import { Suspense, useEffect, useRef, useState } from "react";
@@ -8,10 +8,14 @@ import { ScrollRestoration } from "./scroll-restoration";
 import FloatingCartPreview from "./floating-cart-preview";
 
 export default function Layout() {
+  const location = useLocation();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [showHeaderOverlay, setShowHeaderOverlay] = useState(true);
   const [isScrolled, setIsScrolled] = useState(false);
   const lastScrollTop = useRef(0);
+
+  // Chỉ áp dụng hiệu ứng thu nhỏ header ở trang home
+  const isHomePage = location.pathname === "/";
 
   useEffect(() => {
     const scrollContainer = scrollContainerRef.current;
@@ -24,24 +28,32 @@ export default function Layout() {
         window.requestAnimationFrame(() => {
           const currentScrollTop = scrollContainer.scrollTop;
           const scrollDifference = Math.abs(currentScrollTop - lastScrollTop.current);
-          const threshold = 5; // Ngưỡng tối thiểu để tránh giật khi scroll nhỏ
-          const showDistance = 22; // Khoảng cách từ đầu trang để hiện HeaderOverlay khi cuộn lên
-          const hideDistance = 60; // Khoảng cách tối thiểu cần cuộn xuống trước khi ẩn HeaderOverlay
+          const threshold = 5; 
+          const showDistance = 5; 
+          const hideDistance = 100;
 
-          setIsScrolled(currentScrollTop > 50);
+          if (isHomePage) {
+            setIsScrolled(currentScrollTop > 50);
+          } else {
+            setIsScrolled(false);
+          }
 
-          if (currentScrollTop === 0) {
-            setShowHeaderOverlay(true);
-          } else if (scrollDifference >= threshold) {
-            if (currentScrollTop > lastScrollTop.current) {
-              if (currentScrollTop > hideDistance) {
-                setShowHeaderOverlay(false);
-              }
-            } else {
-              if (currentScrollTop <= showDistance) {
-                setShowHeaderOverlay(true);
+          if (isHomePage) {
+            if (currentScrollTop === 0) {
+              setShowHeaderOverlay(true);
+            } else if (scrollDifference >= threshold) {
+              if (currentScrollTop > lastScrollTop.current) {
+                if (currentScrollTop > hideDistance) {
+                  setShowHeaderOverlay(false);
+                }
+              } else {
+                if (currentScrollTop <= showDistance) {
+                  setShowHeaderOverlay(true);
+                }
               }
             }
+          } else {
+            setShowHeaderOverlay(true);
           }
 
           lastScrollTop.current = currentScrollTop;
@@ -53,7 +65,7 @@ export default function Layout() {
 
     scrollContainer.addEventListener("scroll", handleScroll, { passive: true });
     return () => scrollContainer.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [isHomePage]);
 
   return (
     <div className="w-screen h-screen flex flex-col bg-section text-foreground">
