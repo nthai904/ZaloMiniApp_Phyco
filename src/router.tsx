@@ -13,6 +13,8 @@ import ShippingAddressPage from "./pages/cart/shipping-address";
 import StationsPage from "./pages/cart/stations";
 import OrderDetailPage from "./pages/orders/detail";
 import ProfileEditorPage from "./pages/profile/editor";
+import ArticleListPage from "./pages/articles";
+import ArticleDetailPage from "./pages/articles/detail";
 
 const router = createBrowserRouter(
   [
@@ -103,7 +105,7 @@ const router = createBrowserRouter(
           path: "/product/:id",
           element: <ProductDetailPage />,
           handle: {
-            scrollRestoration: 0, 
+            scrollRestoration: 0,
             noFloatingCart: true,
           },
         },
@@ -114,6 +116,22 @@ const router = createBrowserRouter(
             search: true,
             title: "Tìm kiếm",
             noFooter: true,
+          },
+        },
+        {
+          path: "/articles",
+          element: <ArticleListPage />,
+          handle: {
+            title: "Bài viết",
+            noBack: true,
+          },
+        },
+        {
+          path: "/article/:id",
+          element: <ArticleDetailPage />,
+          handle: {
+            scrollRestoration: 0,
+            noFloatingCart: true,
           },
         },
       ],

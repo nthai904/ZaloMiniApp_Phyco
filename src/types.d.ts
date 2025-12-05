@@ -75,3 +75,22 @@ export interface Order {
   total: number;
   note: string;
 }
+
+export interface ArticleAuthor {
+  name: string;
+  avatar: string;
+}
+
+export interface Article {
+  id: number;
+  title: string;
+  excerpt: string;
+  content: string;
+  image: string;
+  author: ArticleAuthor;
+  category: string;
+  publishedAt: string;
+  readTime: number;
+  views: number;
+  tags: string[];
+}

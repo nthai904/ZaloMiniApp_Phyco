@@ -1,0 +1,99 @@
+[
+  {
+    "id": 1,
+    "title": "Bí quyết chăm sóc da khỏe đẹp với tảo xoắn Spirulina",
+    "excerpt": "Tảo xoắn Spirulina là một siêu thực phẩm tự nhiên chứa nhiều chất dinh dưỡng quan trọng giúp cải thiện sức khỏe làn da từ bên trong. Bài viết này sẽ giúp bạn hiểu rõ hơn về những lợi ích tuyệt vời của Spirulina.",
+    "content": "Tảo xoắn Spirulina đã được sử dụng từ hàng ngàn năm như một nguồn dinh dưỡng quý giá. Với hàm lượng protein cao, vitamin, khoáng chất và chất chống oxy hóa, Spirulina mang lại nhiều lợi ích cho sức khỏe và làn da.\n\n## Lợi ích của Spirulina cho da\n\n### 1. Chống lão hóa\nSpirulina chứa nhiều chất chống oxy hóa như phycocyanin, beta-carotene và vitamin E, giúp bảo vệ da khỏi tác hại của các gốc tự do, làm chậm quá trình lão hóa và giảm nếp nhăn.\n\n### 2. Cải thiện độ đàn hồi da\nHàm lượng protein cao trong Spirulina giúp tăng cường sản xuất collagen, cải thiện độ đàn hồi và độ săn chắc của da.\n\n### 3. Làm sáng da\nCác vitamin và khoáng chất trong Spirulina giúp làm sáng da tự nhiên, giảm sắc tố và đốm nâu.\n\n### 4. Kháng viêm\nSpirulina có đặc tính kháng viêm, giúp giảm mụn trứng cá và các vấn đề viêm da khác.\n\n## Cách sử dụng Spirulina\n\nĐể đạt được kết quả tốt nhất, bạn nên sử dụng Spirulina đều đặn mỗi ngày. Có thể uống trực tiếp hoặc kết hợp với các sản phẩm chăm sóc da khác.\n\nHãy bắt đầu hành trình chăm sóc da tự nhiên của bạn ngay hôm nay!",
+    "image": "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=800&h=600&fit=crop",
+    "author": {
+      "name": "Dr. Nguyễn Thị Lan",
+      "avatar": "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=100&h=100&fit=crop&crop=face"
+    },
+    "category": "Chăm sóc da",
+    "publishedAt": "2024-01-15T10:00:00Z",
+    "readTime": 5,
+    "views": 1250,
+    "tags": ["Spirulina", "Chăm sóc da", "Làm đẹp", "Thực phẩm bổ sung"]
+  },
+  {
+    "id": 2,
+    "title": "Tầm quan trọng của Collagen trong việc duy trì làn da trẻ trung",
+    "excerpt": "Collagen là protein quan trọng nhất trong cơ thể, chiếm đến 70% cấu trúc da. Khi tuổi tác tăng lên, lượng collagen tự nhiên giảm dần, dẫn đến da chảy xệ và xuất hiện nếp nhăn.",
+    "content": "Collagen là một loại protein dạng sợi, chiếm khoảng 70% cấu trúc da và đóng vai trò quan trọng trong việc duy trì độ đàn hồi, săn chắc của da.\n\n## Vai trò của Collagen\n\nCollagen hoạt động như một khung đỡ cho da, giúp da giữ được hình dạng và độ căng. Khi còn trẻ, cơ thể sản xuất đủ collagen để duy trì làn da mịn màng và đàn hồi.\n\n## Tại sao Collagen giảm theo tuổi tác?\n\nTừ sau tuổi 25, quá trình sản xuất collagen tự nhiên bắt đầu chậm lại. Mỗi năm, cơ thể mất đi khoảng 1-2% collagen. Đến tuổi 40, lượng collagen có thể giảm đến 30-40%.\n\n## Cách bổ sung Collagen\n\n### 1. Thực phẩm giàu Collagen\n- Nước hầm xương\n- Thịt gà, cá\n- Trứng\n- Các loại rau xanh\n\n### 2. Thực phẩm bổ sung\nCác sản phẩm bổ sung collagen peptide được hấp thụ dễ dàng hơn và có hiệu quả nhanh chóng.\n\n### 3. Chăm sóc da từ bên ngoài\nSử dụng các sản phẩm chứa collagen và các thành phần kích thích sản xuất collagen như retinol, vitamin C.\n\n## Kết luận\n\nBổ sung collagen đúng cách và đều đặn sẽ giúp bạn duy trì làn da trẻ trung, khỏe mạnh lâu dài.",
+    "image": "https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?w=800&h=600&fit=crop",
+    "author": {
+      "name": "BS. Trần Văn Minh",
+      "avatar": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=100&h=100&fit=crop&crop=face"
+    },
+    "category": "Làm đẹp",
+    "publishedAt": "2024-01-10T14:30:00Z",
+    "readTime": 7,
+    "views": 2100,
+    "tags": ["Collagen", "Lão hóa", "Chống lão hóa", "Sức khỏe da"]
+  },
+  {
+    "id": 3,
+    "title": "5 thói quen buổi sáng giúp bạn có làn da rạng rỡ",
+    "excerpt": "Bắt đầu ngày mới với những thói quen chăm sóc da đúng cách sẽ giúp bạn có làn da khỏe mạnh và rạng rỡ suốt cả ngày. Hãy cùng khám phá 5 thói quen đơn giản nhưng hiệu quả này.",
+    "content": "Thói quen buổi sáng có ảnh hưởng rất lớn đến sức khỏe làn da của bạn. Dưới đây là 5 thói quen đơn giản nhưng vô cùng hiệu quả:\n\n## 1. Uống nước ngay khi thức dậy\n\nCơ thể mất nước qua đêm, vì vậy việc uống một ly nước ấm ngay khi thức dậy sẽ giúp bù nước và thúc đẩy quá trình trao đổi chất.\n\n## 2. Rửa mặt đúng cách\n\nSử dụng sữa rửa mặt nhẹ nhàng phù hợp với loại da của bạn. Tránh rửa mặt bằng nước quá nóng hoặc quá lạnh.\n\n## 3. Dưỡng ẩm\n\nSau khi rửa mặt, hãy thoa kem dưỡng ẩm và kem chống nắng để bảo vệ da suốt cả ngày.\n\n## 4. Ăn sáng lành mạnh\n\nBữa sáng giàu vitamin và chất chống oxy hóa sẽ cung cấp dinh dưỡng cho da từ bên trong.\n\n## 5. Tập thể dục nhẹ nhàng\n\nVận động buổi sáng giúp tăng cường lưu thông máu, mang lại làn da hồng hào và khỏe mạnh.\n\n## Lời khuyên\n\nHãy kiên trì thực hiện những thói quen này mỗi ngày để thấy được sự thay đổi tích cực của làn da!",
+    "image": "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&h=600&fit=crop",
+    "author": {
+      "name": "Chuyên gia Lê Thị Hương",
+      "avatar": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&h=100&fit=crop&crop=face"
+    },
+    "category": "Chăm sóc da",
+    "publishedAt": "2024-01-08T09:15:00Z",
+    "readTime": 4,
+    "views": 980,
+    "tags": ["Thói quen", "Buổi sáng", "Chăm sóc da", "Làm đẹp"]
+  },
+  {
+    "id": 4,
+    "title": "Hiểu về tác dụng của Vitamin C trong làm đẹp",
+    "excerpt": "Vitamin C không chỉ tốt cho sức khỏe mà còn là thành phần vàng trong làm đẹp. Tìm hiểu cách vitamin C giúp làm sáng da, giảm thâm và chống lão hóa hiệu quả.",
+    "content": "Vitamin C (axit ascorbic) là một trong những thành phần được yêu thích nhất trong ngành làm đẹp nhờ khả năng chống oxy hóa mạnh mẽ và nhiều lợi ích cho da.\n\n## Lợi ích của Vitamin C cho da\n\n### 1. Làm sáng da\nVitamin C ức chế enzyme tyrosinase, giúp giảm sản xuất melanin và làm sáng da tự nhiên.\n\n### 2. Chống oxy hóa\nVitamin C trung hòa các gốc tự do gây hại, bảo vệ da khỏi tác hại của tia UV và ô nhiễm môi trường.\n\n### 3. Tăng cường sản xuất Collagen\nVitamin C là cofactor quan trọng trong quá trình tổng hợp collagen, giúp da săn chắc và đàn hồi hơn.\n\n### 4. Giảm viêm\nVitamin C có đặc tính kháng viêm, giúp giảm mẩn đỏ và kích ứng da.\n\n## Cách sử dụng Vitamin C\n\n### Dạng bôi ngoài\n- Serum vitamin C: Sử dụng vào buổi sáng sau khi rửa mặt\n- Nồng độ: Bắt đầu với 10-15%, sau đó tăng dần\n- Bảo quản: Tránh ánh sáng và không khí\n\n### Dạng uống\n- Thực phẩm bổ sung vitamin C\n- Thực phẩm tự nhiên: cam, chanh, ổi, ớt chuông\n\n## Lưu ý\n\n- Luôn kết hợp với kem chống nắng\n- Tránh sử dụng cùng retinol vào buổi sáng\n- Bắt đầu với nồng độ thấp để da thích ứng\n\nHãy bổ sung vitamin C vào quy trình chăm sóc da của bạn để có làn da khỏe đẹp!",
+    "image": "https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?w=800&h=600&fit=crop",
+    "author": {
+      "name": "Dr. Phạm Thị Mai",
+      "avatar": "https://images.unsplash.com/photo-1551601651-2a8555f1a136?w=100&h=100&fit=crop&crop=face"
+    },
+    "category": "Làm đẹp",
+    "publishedAt": "2024-01-05T11:20:00Z",
+    "readTime": 6,
+    "views": 1750,
+    "tags": ["Vitamin C", "Làm sáng da", "Chống oxy hóa", "Serum"]
+  },
+  {
+    "id": 5,
+    "title": "Chế độ dinh dưỡng cho làn da khỏe đẹp từ bên trong",
+    "excerpt": "Có câu nói 'Bạn là những gì bạn ăn' - điều này đặc biệt đúng với làn da. Chế độ dinh dưỡng hợp lý sẽ giúp bạn có làn da khỏe mạnh, rạng rỡ tự nhiên.",
+    "content": "Làn da phản ánh trực tiếp sức khỏe tổng thể của bạn. Một chế độ dinh dưỡng cân bằng không chỉ tốt cho sức khỏe mà còn là nền tảng cho làn da đẹp.\n\n## Nhóm thực phẩm cần thiết\n\n### 1. Chất chống oxy hóa\n- **Quả mọng**: Dâu tây, việt quất, mâm xôi\n- **Rau xanh**: Cải bó xôi, cải xoăn, bông cải xanh\n- **Trà xanh**: Chứa EGCG chống oxy hóa mạnh\n\n### 2. Omega-3\n- **Cá béo**: Cá hồi, cá thu, cá mòi\n- **Hạt**: Hạt chia, hạt lanh, quả óc chó\n- Giúp giảm viêm và duy trì độ ẩm da\n\n### 3. Vitamin và khoáng chất\n- **Vitamin A**: Cà rốt, khoai lang, rau xanh\n- **Vitamin E**: Hạnh nhân, hạt hướng dương\n- **Kẽm**: Hàu, thịt đỏ, đậu\n\n### 4. Protein\n- Thịt nạc, cá, trứng, đậu\n- Cần thiết cho sản xuất collagen\n\n## Thực phẩm nên tránh\n\n- Đường tinh luyện\n- Thực phẩm chế biến sẵn\n- Đồ uống có cồn\n- Thực phẩm nhiều dầu mỡ\n\n## Lời khuyên\n\n1. Uống đủ nước (2-3 lít/ngày)\n2. Ăn nhiều rau củ quả tươi\n3. Chọn thực phẩm nguyên chất\n4. Hạn chế đường và muối\n5. Bổ sung thực phẩm chức năng nếu cần\n\nHãy xây dựng thói quen ăn uống lành mạnh để có làn da đẹp tự nhiên!",
+    "image": "https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=800&h=600&fit=crop",
+    "author": {
+      "name": "Chuyên gia Hoàng Thị Linh",
+      "avatar": "https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=100&h=100&fit=crop&crop=face"
+    },
+    "category": "Dinh dưỡng",
+    "publishedAt": "2024-01-03T16:45:00Z",
+    "readTime": 8,
+    "views": 1450,
+    "tags": ["Dinh dưỡng", "Sức khỏe", "Làm đẹp", "Thực phẩm"]
+  },
+  {
+    "id": 6,
+    "title": "Tác dụng của Retinol trong điều trị mụn và chống lão hóa",
+    "excerpt": "Retinol là một trong những thành phần hiệu quả nhất trong làm đẹp, được chứng minh có khả năng điều trị mụn, giảm nếp nhăn và cải thiện kết cấu da.",
+    "content": "Retinol (vitamin A) là một trong những thành phần được nghiên cứu kỹ lưỡng nhất trong ngành làm đẹp, với nhiều lợi ích đã được chứng minh khoa học.\n\n## Retinol là gì?\n\nRetinol là một dạng của vitamin A, được chuyển đổi thành retinoic acid trong da, giúp tăng tốc độ tế bào và cải thiện sức khỏe da.\n\n## Lợi ích của Retinol\n\n### 1. Điều trị mụn\n- Làm thông thoáng lỗ chân lông\n- Giảm viêm và sưng\n- Ngăn ngừa mụn mới hình thành\n\n### 2. Chống lão hóa\n- Kích thích sản xuất collagen\n- Giảm nếp nhăn và đường nhăn\n- Cải thiện độ đàn hồi da\n\n### 3. Làm đều màu da\n- Giảm đốm nâu và tăng sắc tố\n- Làm mịn kết cấu da\n- Làm sáng da\n\n## Cách sử dụng Retinol\n\n### Bắt đầu từ từ\n1. Bắt đầu với nồng độ thấp (0.25-0.5%)\n2. Sử dụng 2-3 lần/tuần\n3. Tăng dần tần suất khi da đã quen\n\n### Quy trình\n1. Rửa mặt sạch\n2. Đợi da khô hoàn toàn (15-20 phút)\n3. Thoa một lượng nhỏ retinol\n4. Dưỡng ẩm sau 20-30 phút\n\n### Lưu ý quan trọng\n- **Chỉ dùng ban đêm**: Retinol nhạy cảm với ánh sáng\n- **Luôn dùng kem chống nắng**: Bắt buộc vào ban ngày\n- **Tránh kết hợp**: Không dùng cùng AHA/BHA hoặc vitamin C\n- **Kiên nhẫn**: Kết quả thấy rõ sau 8-12 tuần\n\n## Tác dụng phụ\n\n- Khô da, bong tróc\n- Đỏ, kích ứng nhẹ\n- Nhạy cảm với ánh nắng\n\nNhững tác dụng phụ này thường giảm dần khi da thích ứng.\n\n## Kết luận\n\nRetinol là một thành phần mạnh mẽ và hiệu quả, nhưng cần sử dụng đúng cách. Hãy bắt đầu từ từ và kiên nhẫn để đạt được kết quả tốt nhất!",
+    "image": "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=800&h=600&fit=crop",
+    "author": {
+      "name": "BS. Nguyễn Văn An",
+      "avatar": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=100&h=100&fit=crop&crop=face"
+    },
+    "category": "Làm đẹp",
+    "publishedAt": "2024-01-01T10:00:00Z",
+    "readTime": 9,
+    "views": 3200,
+    "tags": ["Retinol", "Mụn", "Chống lão hóa", "Vitamin A"]
+  }
+]
+

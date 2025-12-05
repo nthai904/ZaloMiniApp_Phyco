@@ -7,6 +7,7 @@ import {
   unwrap,
 } from "jotai/utils";
 import {
+  Article,
   Cart,
   Category,
   Delivery,
@@ -239,4 +240,33 @@ export const ordersState = atomFamily((status: OrderStatus) =>
 export const deliveryModeState = atomWithStorage<Delivery["type"]>(
   CONFIG.STORAGE_KEYS.DELIVERY,
   "shipping"
+);
+
+export const articlesState = atom(() =>
+  requestWithFallback<Article[]>("/articles", [])
+);
+
+export const articleState = atomFamily((id: number) =>
+  atom(async (get) => {
+    const articles = await get(articlesState);
+    return articles.find((article) => article.id === id);
+  })
+);
+
+export const relatedArticlesState = atomFamily((currentArticleId: number) =>
+  atom(async (get) => {
+    const articles = await get(articlesState);
+    const currentArticle = articles.find((a) => a.id === currentArticleId);
+    if (!currentArticle) return [];
+    
+    // Lấy các bài viết cùng category hoặc có tag chung, loại trừ bài hiện tại
+    return articles
+      .filter(
+        (article) =>
+          article.id !== currentArticleId &&
+          (article.category === currentArticle.category ||
+            article.tags.some((tag) => currentArticle.tags.includes(tag)))
+      )
+      .slice(0, 3);
+  })
 );
