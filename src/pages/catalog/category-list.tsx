@@ -9,8 +9,21 @@ export default function CategoryListPage() {
     <div className="min-h-full bg-background pb-8">
       {/* Header */}
       <div className="bg-white px-4 py-6 border-b border-black/5">
-        <h1 className="text-2xl font-bold text-foreground">Danh mục sản phẩm</h1>
-        <p className="text-sm text-subtitle mt-1">Khám phá các danh mục của chúng tôi</p>
+        <div className="flex items-center justify-between mb-2">
+          <div>
+            <h1 className="text-2xl font-bold text-foreground">Danh mục sản phẩm</h1>
+            <p className="text-sm text-subtitle mt-1">Khám phá các danh mục của chúng tôi</p>
+          </div>
+        </div>
+        <TransitionLink
+          to="/products"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primaryForeground rounded-lg text-sm font-medium hover:bg-primary/90 transition-all duration-200 shadow-md hover:shadow-lg"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+          </svg>
+          Xem tất cả sản phẩm
+        </TransitionLink>
       </div>
 
       {/* Categories Grid */}

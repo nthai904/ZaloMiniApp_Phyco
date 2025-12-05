@@ -3,6 +3,7 @@ import CartPage from "@/pages/cart";
 import CategoryDetailPage from "@/pages/catalog/category-detail";
 import CategoryListPage from "@/pages/catalog/category-list";
 import ProductDetailPage from "@/pages/catalog/product-detail";
+import ProductsPage from "@/pages/catalog/products";
 import HomePage from "@/pages/home";
 import ProfilePage from "@/pages/profile";
 import SearchPage from "@/pages/search";
@@ -35,6 +36,14 @@ const router = createBrowserRouter(
           element: <CategoryListPage />,
           handle: {
             title: "Danh mục",
+            noBack: true,
+          },
+        },
+        {
+          path: "/products",
+          element: <ProductsPage />,
+          handle: {
+            title: "Tất cả sản phẩm",
             noBack: true,
           },
         },
