@@ -1,7 +1,7 @@
 import Banners from "./banners";
 import Category from "./category";
-import FlashSales from "./flash-sales";
 import Articles from "./articles";
+import ProductList from "./product-list";
 
 const HomePage: React.FunctionComponent = () => {
   return (
@@ -12,7 +12,7 @@ const HomePage: React.FunctionComponent = () => {
       <div className="bg-section">
         <Category />
       </div>
-      <FlashSales />
+      <ProductList />
       <Articles />
     </div>
   );
