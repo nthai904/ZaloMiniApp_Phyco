@@ -7,9 +7,7 @@ import OrderSummary from "./order-summary";
 import { OrderSummarySkeleton } from "@/components/skeleton";
 
 function OrderList(props: { ordersState: Atom<Promise<Order[]>> }) {
-  const orderList = useAtomValue(
-    useMemo(() => loadable(props.ordersState), [props.ordersState])
-  );
+  const orderList = useAtomValue(useMemo(() => loadable(props.ordersState), [props.ordersState]));
 
   if (orderList.state === "hasData" && orderList.data.length === 0) {
     return <EmptyOrder />;
@@ -24,9 +22,7 @@ function OrderList(props: { ordersState: Atom<Promise<Order[]>> }) {
           <OrderSummarySkeleton />
         </>
       ) : (
-        orderList.data.map((order) => (
-          <OrderSummary key={order.id} order={order} />
-        ))
+        orderList.data.map((order) => <OrderSummary key={order.id} order={order} />)
       )}
     </div>
   );
