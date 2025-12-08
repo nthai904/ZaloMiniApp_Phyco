@@ -21,9 +21,8 @@ export default function ProductSortBar({ selectedCategory, categories, sortOptio
   const [showSortMenu, setShowSortMenu] = useState(false);
 
   return (
-    <div className="bg-white border-b border-black/5 px-4 py-3 flex items-center justify-between sticky top-0 z-20">
-      <div className="text-sm text-subtitle">{selectedCategory ? `Danh mục: ${categories.find((c) => c.id === selectedCategory)?.name}` : "Tất cả danh mục"}</div>
-      <div className="relative">
+    <div className="bg-white border-b border-black/5 px-4 py-3 flex items-center justify-start sticky top-0 z-20">
+      <div className="relative ">
         <button
           onClick={() => setShowSortMenu(!showSortMenu)}
           className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-black/10 hover:border-primary/30 transition-colors text-sm font-medium"
@@ -40,7 +39,7 @@ export default function ProductSortBar({ selectedCategory, categories, sortOptio
         {showSortMenu && (
           <>
             <div className="fixed inset-0 z-30" onClick={() => setShowSortMenu(false)} />
-            <div className="absolute right-0 top-full mt-2 bg-white rounded-lg shadow-lg border border-black/10 min-w-[160px] z-40 overflow-hidden">
+            <div className="absolute left-0 top-full mt-2 bg-white rounded-lg shadow-lg border border-black/10 min-w-[160px] z-40 overflow-hidden">
               {sortOptions.map((option) => (
                 <button
                   key={option.value}
