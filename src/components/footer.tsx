@@ -1,4 +1,4 @@
-import { CartIcon, CategoryIcon, HomeIcon, PackageIcon } from "./vectors";
+import { ArticleIcon, CartIcon, CategoryIcon, HomeIcon, PackageIcon } from "./vectors";
 import HorizontalDivider from "./horizontal-divider";
 import { useAtomValue } from "jotai";
 import { cartState } from "@/state";
@@ -16,6 +16,11 @@ const NAV_ITEMS = [
     name: "Danh mục",
     path: "/categories",
     icon: CategoryIcon,
+  },
+  {
+    name: "Bài viết",
+    path: "/articles",
+    icon: ArticleIcon,
   },
   {
     name: "Đơn hàng",

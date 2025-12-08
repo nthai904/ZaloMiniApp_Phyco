@@ -1,0 +1,344 @@
+{
+    "products": [
+        {
+            "body_html": "<h2>Công Dụng</h2><h3>Thực phẩm bảo vệ sức khoẻ Doppelherz Aktiv Vitamin E cung cấp Vitamin E nguồn gốc tự nhiên cho cơ thể giúp hỗ trợ bảo vệ da, hỗ trợ làm chậm quá trình lão hóa và giúp làn da khỏe mạnh</h3><h2>Đối tượng sử dụng</h2><h3>-Người muốn cải thiện làn da.<br>-Người cần bổ sung Vitamin E.</h3><h2>Cách dùng</h2><h3>Uống 1 viên mỗi ngày trong bữa ăn với lượng nước vừa đủ. Không được nhai.</h3><h2>Lưu ý khi sử dụng</h2><h3>-Không sử dụng vượt quá liều lượng đã được khuyến cáo<br>-Thực phẩm này không được sử dụng thay cho bữa ăn chính<br>-Không phù hợp cho trẻ em và thanh thiếu niên<br>-Nếu bạn đang dùng thuốc chống đông máu, cần hỏi ý kiến bác sĩ trước khi dùng<br>-Không sử dụng cho người mẫn cảm với bất kỳ thành phần nào của sản phẩm<br>-Việc bổ sung nên được thực hiện theo liệu trình kéo dài khoảng 2-3 tháng liên tục. Trong một năm, có thể lặp lại từ 2-3 đợt như vậy, đồng thời nên có các khoảng nghỉ giữa các đợt bổ sung. Những khoảng nghỉ này đóng vai trò quan trọng, giúp cơ thể có thời gian “đánh giá” hiệu quả của việc bổ sung, quan sát phản ứng khi ngừng sử dụng, từ đó điều chỉnh kịp thời nếu cần thiết.&nbsp;<br>-Đặc biệt, với các vitamin tan trong dầu như vitamin E, việc bổ sung liên tục trong thời gian dài có thể dẫn đến nguy cơ tích tụ trong cơ thể nếu hấp thụ không hết. Do đó, quãng nghỉ sẽ tạo điều kiện để vitamin E được chuyển hóa và đào thải, góp phần hạn chế nguy cơ dư thừa và đảm bảo an toàn khi sử dụng lâu dài.&nbsp;</h3><h2>Thời hạn sử dụng</h2><h3>36 tháng kể từ ngày sản xuất. NSX, HSD tốt nhất xem \"Manuf.-date\", \"Best before\" dưới đáy hộp.</h3><h2>Bảo quản</h2><h3>-Bảo quản nơi khô ráo, thoáng mát, nhiệt độ dưới 25°C<br>-Để xa tầm tay trẻ em</h3>",
+            "body_plain": null,
+            "created_at": "2025-09-24T02:32:29.408Z",
+            "handle": "tpbvsk-doppelherz-aktiv-vitamin-e-ho-tro-lam-cham-qua-trinh-lao-hoa",
+            "id": 1070170014,
+            "images": [
+                {
+                    "created_at": "2025-09-24T02:32:32.983Z",
+                    "id": 1619376375,
+                    "position": 1,
+                    "product_id": 1070170014,
+                    "src": "https://cdn.hstatic.net/products/200000436051/d08efc7e-9b9e-4e4a-9c4d-3621eff39a5f-20250910064511-yyr14_3fb572a3b6f949809b5079635475723e.png",
+                    "updated_at": "2025-09-24T02:32:32.983Z",
+                    "attachment": null,
+                    "filename": "d08efc7e-9b9e-4e4a-9c4d-3621eff39a5f-20250910064511-yyr14_3fb572a3b6f949809b5079635475723e.png",
+                    "variant_ids": []
+                },
+                {
+                    "created_at": "2025-09-24T02:32:33.57Z",
+                    "id": 1619376383,
+                    "position": 2,
+                    "product_id": 1070170014,
+                    "src": "https://cdn.hstatic.net/products/200000436051/f6ffc99a-8ea9-425c-a206-f0db5c07ddd0-20250910065355-gax3q_60cb0a94741644d68285051c565f1a46.png",
+                    "updated_at": "2025-09-24T02:32:33.57Z",
+                    "attachment": null,
+                    "filename": "f6ffc99a-8ea9-425c-a206-f0db5c07ddd0-20250910065355-gax3q_60cb0a94741644d68285051c565f1a46.png",
+                    "variant_ids": []
+                }
+            ],
+            "product_type": "Thực phẩm cho sức khỏe",
+            "published_at": "2025-09-24T02:22:26.635Z",
+            "published_scope": "global",
+            "tags": "",
+            "template_suffix": "product",
+            "title": "TPBVSK Doppelherz Aktiv Vitamin E hỗ trợ làm chậm quá trình lão hóa",
+            "updated_at": "2025-09-24T02:32:29.421Z",
+            "variants": [
+                {
+                    "barcode": null,
+                    "compare_at_price": 0.0000,
+                    "created_at": "2025-09-24T02:32:29.408Z",
+                    "fulfillment_service": null,
+                    "grams": 0.0000,
+                    "id": 1159466304,
+                    "inventory_management": "haravan",
+                    "inventory_policy": "deny",
+                    "inventory_quantity": 50,
+                    "old_inventory_quantity": 50,
+                    "inventory_quantity_adjustment": null,
+                    "position": 1,
+                    "price": 329000.0000,
+                    "product_id": 1070170014,
+                    "requires_shipping": true,
+                    "sku": null,
+                    "taxable": false,
+                    "title": "Dạng viên",
+                    "updated_at": "2025-09-24T02:32:29.421Z",
+                    "image_id": null,
+                    "option1": "Dạng viên",
+                    "option2": null,
+                    "option3": null,
+                    "inventory_advance": {
+                        "qty_available": 50,
+                        "qty_onhand": 50,
+                        "qty_commited": 0,
+                        "qty_incoming": 0
+                    }
+                }
+            ],
+            "vendor": "Nanoco",
+            "options": [
+                {
+                    "name": "Style",
+                    "id": 0,
+                    "position": 1,
+                    "product_id": 1070170014
+                }
+            ],
+            "only_hide_from_list": false,
+            "not_allow_promotion": false
+        },
+        {
+          "body_html": "<h2>Công Dụng</h2><h3>- Thực phẩm bảo vệ sức khỏe Vitamin D3 + K2 bổ sung vitamin D3 và K2 giúp hỗ trợ tăng cường hấp thu canxi và hỗ trợ xương khỏe mạnh</h3><h2>Đối tượng sử dụng</h2><h3>Người trưởng thành:<br>Người có nhu cầu cần bổ sung vitamin D3 và vitamin K2 do chế độ dinh dưỡng không đủ.<br>Người hấp thu canxi kém</h3><h2>Cách dùng</h2><h3>Uống 1 viên mỗi ngày trong bữa ăn với lượng nước vừa đủ. Không được nhai.</h3><h2>Lưu ý khi sử dụng</h2><h3>-Không sử dụng vượt quá liều lượng đã được khuyến cáo;<br>-Thực phẩm này không được sử dụng thay cho bữa ăn chính;<br>-Không dùng cho người mẫn cảm với bất kỳ thành phần nào của thực phẩm;<br>-Để xa tầm tay trẻ em;<br>-Trong trường hợp dùng thuốc chống đông máu nên tham khảo ý kiến bác sĩ trước khi sử dụng sản phẩm;<br>-Không phù hợp trẻ em và thanh thiếu niên;<br>-Không sử dụng cho người mẫn cảm với bất kỳ thành phần nào của sản phẩm.<br>-Thực phẩm này không phải là thuốc và không có tác dụng thay thế thuốc chữa bệnh.</h3><h2>Thời hạn sử dụng</h2><h3>36 tháng kể từ ngày sản xuất. NSX, HSD tốt nhất xem \"Manuf.-date\" \"Best before\" dưới đáy hộp.</h3><h2>Bảo quản</h2><h3>-Bảo quản nơi khô ráo, thoáng mát, nhiệt độ dưới 25°C<br>-Để xa tầm tay trẻ em</h3>",
+          "body_plain": null,
+          "created_at": "2025-09-24T02:34:52.353Z",
+          "handle": "tpbvsk-vitamin-d3-k2-ho-tro-tang-cuong-hap-thu-canxi-giam-nguy-co-loang-xuong",
+          "id": 1070170066,
+          "images": [
+            {
+                "created_at": "2025-09-24T02:32:32.983Z",
+                "id": 1619376375,
+                "position": 1,
+                "product_id": 1070170014,
+                "src": "https://cdn.hstatic.net/products/200000436051/d08efc7e-9b9e-4e4a-9c4d-3621eff39a5f-20250910064511-yyr14_3fb572a3b6f949809b5079635475723e.png",
+                "updated_at": "2025-09-24T02:32:32.983Z",
+                "attachment": null,
+                "filename": "d08efc7e-9b9e-4e4a-9c4d-3621eff39a5f-20250910064511-yyr14_3fb572a3b6f949809b5079635475723e.png",
+                "variant_ids": []
+            },
+            {
+                "created_at": "2025-09-24T02:32:33.57Z",
+                "id": 1619376383,
+                "position": 2,
+                "product_id": 1070170014,
+                "src": "https://cdn.hstatic.net/products/200000436051/f6ffc99a-8ea9-425c-a206-f0db5c07ddd0-20250910065355-gax3q_60cb0a94741644d68285051c565f1a46.png",
+                "updated_at": "2025-09-24T02:32:33.57Z",
+                "attachment": null,
+                "filename": "f6ffc99a-8ea9-425c-a206-f0db5c07ddd0-20250910065355-gax3q_60cb0a94741644d68285051c565f1a46.png",
+                "variant_ids": []
+            }
+        ],
+          "product_type": "Thực phẩm cho sức khỏe",
+          "published_at": "2025-09-24T02:33:26.636Z",
+          "published_scope": "global",
+          "tags": "",
+          "template_suffix": "product",
+          "title": "TPBVSK Vitamin D3 + K2 hỗ trợ tăng cường hấp thu canxi, giảm nguy cơ loãng xương",
+          "updated_at": "2025-09-24T03:17:04.172Z",
+          "variants": [
+              {
+                  "barcode": null,
+                  "compare_at_price": 0.0000,
+                  "created_at": "2025-09-24T02:34:52.353Z",
+                  "fulfillment_service": null,
+                  "grams": 0.0000,
+                  "id": 1159466449,
+                  "inventory_management": "haravan",
+                  "inventory_policy": "deny",
+                  "inventory_quantity": 50,
+                  "old_inventory_quantity": 50,
+                  "inventory_quantity_adjustment": null,
+                  "position": 1,
+                  "price": 369000.0000,
+                  "product_id": 1070170066,
+                  "requires_shipping": true,
+                  "sku": null,
+                  "taxable": false,
+                  "title": "Dạng viên",
+                  "updated_at": "2025-09-24T03:17:04.173Z",
+                  "image_id": null,
+                  "option1": "Dạng viên",
+                  "option2": null,
+                  "option3": null,
+                  "inventory_advance": {
+                      "qty_available": 50,
+                      "qty_onhand": 50,
+                      "qty_commited": 0,
+                      "qty_incoming": 0
+                  }
+              }
+          ],
+          "vendor": "Nanoco",
+          "options": [
+              {
+                  "name": "Style",
+                  "id": 0,
+                  "position": 1,
+                  "product_id": 1070170066
+              }
+          ],
+          "only_hide_from_list": false,
+          "not_allow_promotion": false
+      },
+      {
+          "body_html": "<h2>Công Dụng</h2><h3>Thực phẩm bảo vệ sức khoẻ Doppelherz Aktiv Vitamin E cung cấp Vitamin E nguồn gốc tự nhiên cho cơ thể giúp hỗ trợ bảo vệ da, hỗ trợ làm chậm quá trình lão hóa và giúp làn da khỏe mạnh</h3><h2>Đối tượng sử dụng</h2><h3>-Người muốn cải thiện làn da.<br>-Người cần bổ sung Vitamin E.</h3><h2>Cách dùng</h2><h3>Uống 1 viên mỗi ngày trong bữa ăn với lượng nước vừa đủ. Không được nhai.</h3><h2>Lưu ý khi sử dụng</h2><h3>-Không sử dụng vượt quá liều lượng đã được khuyến cáo<br>-Thực phẩm này không được sử dụng thay cho bữa ăn chính<br>-Không phù hợp cho trẻ em và thanh thiếu niên<br>-Nếu bạn đang dùng thuốc chống đông máu, cần hỏi ý kiến bác sĩ trước khi dùng<br>-Không sử dụng cho người mẫn cảm với bất kỳ thành phần nào của sản phẩm<br>-Việc bổ sung nên được thực hiện theo liệu trình kéo dài khoảng 2-3 tháng liên tục. Trong một năm, có thể lặp lại từ 2-3 đợt như vậy, đồng thời nên có các khoảng nghỉ giữa các đợt bổ sung. Những khoảng nghỉ này đóng vai trò quan trọng, giúp cơ thể có thời gian “đánh giá” hiệu quả của việc bổ sung, quan sát phản ứng khi ngừng sử dụng, từ đó điều chỉnh kịp thời nếu cần thiết.&nbsp;<br>-Đặc biệt, với các vitamin tan trong dầu như vitamin E, việc bổ sung liên tục trong thời gian dài có thể dẫn đến nguy cơ tích tụ trong cơ thể nếu hấp thụ không hết. Do đó, quãng nghỉ sẽ tạo điều kiện để vitamin E được chuyển hóa và đào thải, góp phần hạn chế nguy cơ dư thừa và đảm bảo an toàn khi sử dụng lâu dài.&nbsp;</h3><h2>Thời hạn sử dụng</h2><h3>36 tháng kể từ ngày sản xuất. NSX, HSD tốt nhất xem \"Manuf.-date\", \"Best before\" dưới đáy hộp.</h3><h2>Bảo quản</h2><h3>-Bảo quản nơi khô ráo, thoáng mát, nhiệt độ dưới 25°C<br>-Để xa tầm tay trẻ em</h3>",
+          "body_plain": null,
+          "created_at": "2025-09-24T02:32:29.408Z",
+          "handle": "tpbvsk-doppelherz-aktiv-vitamin-e-ho-tro-lam-cham-qua-trinh-lao-hoa",
+          "id": 1070170014,
+          "images": [
+              {
+                  "created_at": "2025-09-24T02:32:32.983Z",
+                  "id": 1619376375,
+                  "position": 1,
+                  "product_id": 1070170014,
+                  "src": "https://cdn.hstatic.net/products/200000436051/d08efc7e-9b9e-4e4a-9c4d-3621eff39a5f-20250910064511-yyr14_3fb572a3b6f949809b5079635475723e.png",
+                  "updated_at": "2025-09-24T02:32:32.983Z",
+                  "attachment": null,
+                  "filename": "d08efc7e-9b9e-4e4a-9c4d-3621eff39a5f-20250910064511-yyr14_3fb572a3b6f949809b5079635475723e.png",
+                  "variant_ids": []
+              },
+              {
+                  "created_at": "2025-09-24T02:32:33.57Z",
+                  "id": 1619376383,
+                  "position": 2,
+                  "product_id": 1070170014,
+                  "src": "https://cdn.hstatic.net/products/200000436051/f6ffc99a-8ea9-425c-a206-f0db5c07ddd0-20250910065355-gax3q_60cb0a94741644d68285051c565f1a46.png",
+                  "updated_at": "2025-09-24T02:32:33.57Z",
+                  "attachment": null,
+                  "filename": "f6ffc99a-8ea9-425c-a206-f0db5c07ddd0-20250910065355-gax3q_60cb0a94741644d68285051c565f1a46.png",
+                  "variant_ids": []
+              }
+          ],
+          "product_type": "Thực phẩm cho sức khỏe",
+          "published_at": "2025-09-24T02:22:26.635Z",
+          "published_scope": "global",
+          "tags": "",
+          "template_suffix": "product",
+          "title": "TPBVSK Doppelherz Aktiv Vitamin E hỗ trợ làm chậm quá trình lão hóa",
+          "updated_at": "2025-09-24T02:32:29.421Z",
+          "variants": [
+              {
+                  "barcode": null,
+                  "compare_at_price": 0.0000,
+                  "created_at": "2025-09-24T02:32:29.408Z",
+                  "fulfillment_service": null,
+                  "grams": 0.0000,
+                  "id": 1159466304,
+                  "inventory_management": "haravan",
+                  "inventory_policy": "deny",
+                  "inventory_quantity": 50,
+                  "old_inventory_quantity": 50,
+                  "inventory_quantity_adjustment": null,
+                  "position": 1,
+                  "price": 329000.0000,
+                  "product_id": 1070170014,
+                  "requires_shipping": true,
+                  "sku": null,
+                  "taxable": false,
+                  "title": "Dạng viên",
+                  "updated_at": "2025-09-24T02:32:29.421Z",
+                  "image_id": null,
+                  "option1": "Dạng viên",
+                  "option2": null,
+                  "option3": null,
+                  "inventory_advance": {
+                      "qty_available": 50,
+                      "qty_onhand": 50,
+                      "qty_commited": 0,
+                      "qty_incoming": 0
+                  }
+              }
+          ],
+          "vendor": "Nanoco",
+          "options": [
+              {
+                  "name": "Style",
+                  "id": 0,
+                  "position": 1,
+                  "product_id": 1070170014
+              }
+          ],
+          "only_hide_from_list": false,
+          "not_allow_promotion": false
+      },
+      {
+          "body_html": "<h2>Công Dụng</h2><h3>Bổ sung Omega-3 (EPA và DHA) cùng 11 vitamin (A, D, C, E và các vitamin nhóm B):<br>- Hỗ trợ phát triển não bộ, có tác dụng tích cực ở trẻ rối loạn tăng động giảm chú ý (ADHD).<br>- Hỗ trợ tăng cường thị lực.<br>- Hỗ trợ phòng ngừa thiếu hụt vi chất dinh dưỡng và hỗ trợ tăng cường miễn dịch.</h3><h2>Đối tượng sử dụng</h2><h3>- Trẻ đang trong giai đoạn phát triển não bộ.<br>- Trẻ hiếu động, thiếu tập trung, gặp vấn đề trong học tập.<br>- Trẻ gặp các vấn đề về mắt như khô mắt, suy giảm thị lực.</h3><h2>Cách dùng</h2><h3>- Trẻ 1-3 tuổi: 7,5 ml/ngày<br>- Trẻ 4-7 tuổi: 15 ml/ngày<br>- Trẻ trên 7 tuổi: 30 ml/ngày<br>- Trẻ dưới 1 tuổi: Tham khảo ý kiến nhân viên y tế.<br>*Lắc kỹ trước khi sử dụng.</h3><h2>Lưu ý khi sử dụng</h2><h3>- Không sử dụng vượt quá liều lượng đã được khuyến cáo.<br>- Thực phẩm này không được sử dụng thay cho bữa ăn chính.<br>- Không dùng cho người mẫn cảm với bất kỳ thành phần nào của thực phẩm.</h3><h2>Quy cách đóng gói</h2><h3>Chai 250ml.</h3><h2>Thời hạn sử dụng</h2><h3>- 3 năm kể từ ngày sản xuất;<br>- Lô sản xuất, ngày sản xuất và hạn sử dụng ghi trên nhãn chính của sản phẩm.</h3><h2>Bảo quản</h2><h3>- Nơi khô ráo, thoáng mát, tránh ánh nắng trực tiếp, nhiệt độ không quá 25oC;<br>- Để xa tầm tay trẻ em.</h3>",
+          "body_plain": null,
+          "created_at": "2025-07-10T08:14:09.585Z",
+          "handle": "tpbvsk-doppelherz-aktiv-kinder-omega-3-syrup-ho-tro-phat-trien-nao-bo-thi-luc-nhat",
+          "id": 1068849767,
+          "images": [
+              {
+                  "created_at": "2025-07-10T08:14:10.875Z",
+                  "id": 1584336474,
+                  "position": 1,
+                  "product_id": 1068849767,
+                  "src": "https://cdn.hstatic.net/products/200000436051/sy2_369935ae723c40f8bd0c31a982c9a4f3.png",
+                  "updated_at": "2025-07-10T08:14:10.875Z",
+                  "attachment": null,
+                  "filename": "sy2_369935ae723c40f8bd0c31a982c9a4f3.png",
+                  "variant_ids": []
+              },
+              {
+                  "created_at": "2025-07-10T08:14:10.886Z",
+                  "id": 1584336476,
+                  "position": 2,
+                  "product_id": 1068849767,
+                  "src": "https://cdn.hstatic.net/products/200000436051/sy_0105537cc42340f9a93147619e8b1d84.jpg",
+                  "updated_at": "2025-07-10T08:14:10.886Z",
+                  "attachment": null,
+                  "filename": "sy_0105537cc42340f9a93147619e8b1d84.jpg",
+                  "variant_ids": []
+              },
+              {
+                  "created_at": "2025-07-10T08:14:11.08Z",
+                  "id": 1584336478,
+                  "position": 3,
+                  "product_id": 1068849767,
+                  "src": "https://cdn.hstatic.net/products/200000436051/sy1_eb20cdbca44540eb992efa953dfa3005.png",
+                  "updated_at": "2025-07-10T08:14:11.08Z",
+                  "attachment": null,
+                  "filename": "sy1_eb20cdbca44540eb992efa953dfa3005.png",
+                  "variant_ids": []
+              }
+          ],
+          "product_type": "Thực phẩm cho sức khỏe",
+          "published_at": "2025-07-10T08:12:27.831Z",
+          "published_scope": "global",
+          "tags": "",
+          "template_suffix": "product",
+          "title": "TPBVSK Doppelherz Aktiv Kinder Omega-3 Syrup hỗ trợ phát triển não bộ, thị lực nhất",
+          "updated_at": "2025-09-24T02:03:19.889Z",
+          "variants": [
+              {
+                  "barcode": null,
+                  "compare_at_price": 0.0000,
+                  "created_at": "2025-07-10T08:14:09.585Z",
+                  "fulfillment_service": null,
+                  "grams": 100.0000,
+                  "id": 1156285282,
+                  "inventory_management": "haravan",
+                  "inventory_policy": "continue",
+                  "inventory_quantity": 50,
+                  "old_inventory_quantity": 50,
+                  "inventory_quantity_adjustment": null,
+                  "position": 1,
+                  "price": 478000.0000,
+                  "product_id": 1068849767,
+                  "requires_shipping": true,
+                  "sku": null,
+                  "taxable": false,
+                  "title": "Dạng Chai",
+                  "updated_at": "2025-09-24T02:03:19.89Z",
+                  "image_id": null,
+                  "option1": "Dạng Chai",
+                  "option2": null,
+                  "option3": null,
+                  "inventory_advance": {
+                      "qty_available": 50,
+                      "qty_onhand": 50,
+                      "qty_commited": 0,
+                      "qty_incoming": 0
+                  }
+              }
+          ],
+          "vendor": "Nanoco",
+          "options": [
+              {
+                  "name": "Style",
+                  "id": 0,
+                  "position": 1,
+                  "product_id": 1068849767
+              }
+          ],
+          "only_hide_from_list": false,
+          "not_allow_promotion": false
+      }
+    ]
+  }
+  

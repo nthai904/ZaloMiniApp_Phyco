@@ -3,6 +3,7 @@ import CartPage from "@/pages/cart";
 import CategoryDetailPage from "@/pages/catalog/category-detail";
 import CategoryListPage from "@/pages/catalog/category-list";
 import ProductDetailPage from "@/pages/catalog/product-detail";
+import ProductsPage from "@/pages/catalog/products";
 import HomePage from "@/pages/home";
 import ProfilePage from "@/pages/profile";
 import SearchPage from "@/pages/search";
@@ -13,6 +14,8 @@ import ShippingAddressPage from "./pages/cart/shipping-address";
 import StationsPage from "./pages/cart/stations";
 import OrderDetailPage from "./pages/orders/detail";
 import ProfileEditorPage from "./pages/profile/editor";
+import ArticleListPage from "./pages/articles";
+import ArticleDetailPage from "./pages/articles/detail";
 
 const router = createBrowserRouter(
   [
@@ -33,6 +36,14 @@ const router = createBrowserRouter(
           element: <CategoryListPage />,
           handle: {
             title: "Danh mục",
+            noBack: true,
+          },
+        },
+        {
+          path: "/products",
+          element: <ProductsPage />,
+          handle: {
+            title: "Tất cả sản phẩm",
             noBack: true,
           },
         },
@@ -96,16 +107,14 @@ const router = createBrowserRouter(
           path: "/category/:id",
           element: <CategoryDetailPage />,
           handle: {
-            search: true,
-            title: ({ categories, params }) =>
-              categories.find((c) => String(c.id) === params.id)?.name,
+            title: ({ categories, params }) => categories.find((c) => String(c.id) === params.id)?.name,
           },
         },
         {
           path: "/product/:id",
           element: <ProductDetailPage />,
           handle: {
-            scrollRestoration: 0, // when user selects another product in related products, scroll to the top of the page
+            scrollRestoration: 0,
             noFloatingCart: true,
           },
         },
@@ -116,6 +125,22 @@ const router = createBrowserRouter(
             search: true,
             title: "Tìm kiếm",
             noFooter: true,
+          },
+        },
+        {
+          path: "/articles",
+          element: <ArticleListPage />,
+          handle: {
+            title: "Bài viết",
+            noBack: true,
+          },
+        },
+        {
+          path: "/article/:id",
+          element: <ArticleDetailPage />,
+          handle: {
+            scrollRestoration: 0,
+            noFloatingCart: true,
           },
         },
       ],

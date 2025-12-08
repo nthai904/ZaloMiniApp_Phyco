@@ -3,54 +3,54 @@
     "id": 1,
     "categoryId": 1,
     "name": "Combo 90 ngày giảm nám - Bật tông da cùng Phyco BeauTé",
-    "price": 10720000,
-    "originalPrice": 10720000,
+    "price": 2890000,
+    "originalPrice": 3200000,
     "image": "https://product.hstatic.net/200000436051/product/combo_90_ngay_phyco_beaute_0c4017678a2d4df7a48f5b9018ec1324_master.jpg",
-    "detail": "Táo Fuji tươi ngon, giòn và ngọt tự nhiên. Được tuyển chọn kỹ càng từ những vườn cây chất lượng cao."
+    "detail": "Combo 90 ngày giảm nám và bật tông da với Phyco BeauTé. Sản phẩm cao cấp giúp cải thiện làn da từ bên trong."
   },
   {
     "id": 2,
     "categoryId": 1,
     "name": "Kit Mini Thực phẩm bổ sung PHYCO BEAUTÉ",
-    "price": 10720000,
-    "originalPrice": 10720000,
+    "price": 890000,
+    "originalPrice": 1200000,
     "image": "https://product.hstatic.net/200000436051/product/kit-beaute_beb392fcff3b4845885b9a10fec4b18a_master.jpg",
-    "detail": "Bắp cải xanh tươi ngon, giàu vitamin và chất xơ, lý tưởng cho các món salad và canh rau."
+    "detail": "Kit Mini thực phẩm bổ sung PHYCO BEAUTÉ giúp làm đẹp da, chống lão hóa và tăng cường sức khỏe làn da."
   },
   {
     "id": 3,
     "categoryId": 8,
     "name": "Kit Mini Thực phẩm bổ sung PHYCO SANTÉ",
-    "price": 10720000,
-    "originalPrice": 10720000,
+    "price": 950000,
+    "originalPrice": 1300000,
     "image": "https://product.hstatic.net/200000436051/product/kit-sante_c759003545e34de9aaf4ffba8f61ad3f_master.jpg",
-    "detail": "Kem sô cô la mịn màng với vị sô cô la đậm đà, mang lại cảm giác sảng khoái mỗi khi thưởng thức."
+    "detail": "Kit Mini PHYCO SANTÉ hỗ trợ tăng cường sức khỏe tổng thể, tăng cường miễn dịch và năng lượng."
   },
   {
     "id": 4,
     "categoryId": 6,
     "name": "Kit Mini Thực phẩm bổ sung Phyco Spirulysat & Cuivre",
-    "price": 10720000,
-    "originalPrice": 10720000,
+    "price": 1250000,
+    "originalPrice": 1500000,
     "image": "https://product.hstatic.net/200000436051/product/kit-cuivre_02ce5b101e464c10aec83aa9dfc111d0_master.jpg",
-    "detail": "Bánh quy bơ giòn tan, thơm lừng hương bơ tự nhiên, hoàn hảo cho bữa trà chiều."
+    "detail": "Kit Mini Phyco Spirulysat & Cuivre bổ sung vi chất cần thiết, hỗ trợ sức khỏe và tăng cường đề kháng."
   },
   {
     "id": 5,
     "categoryId": 7,
     "name": "Thực phẩm bổ sung PHYCO BEAUTÉ",
-    "price": 10720000,
-    "originalPrice": 10720000,
+    "price": 1950000,
+    "originalPrice": 2400000,
     "image": "https://product.hstatic.net/200000436051/product/beaute_1fa620be99534446a889f4c3528a1b81_master.jpg",
-    "detail": "Chảo chống dính với lớp phủ cao cấp, giúp nấu ăn dễ dàng, tiết kiệm dầu mỡ và dễ dàng vệ sinh."
+    "detail": "Thực phẩm bổ sung PHYCO BEAUTÉ chứa các thành phần tự nhiên giúp làm đẹp da, chống oxy hóa và làm chậm quá trình lão hóa."
   },
   {
     "id": 6,
     "categoryId": 7,
     "name": "Thực phẩm bổ sung PHYCO SANTÉ",
-    "price": 10720000,
-    "originalPrice": 10720000,
+    "price": 2100000,
+    "originalPrice": 2600000,
     "image": "https://product.hstatic.net/200000436051/product/sante_c359f90e8caa481bb413daa7b01cee18_master.jpg",
-    "detail": "Bột giặt Tide với công nghệ mạnh mẽ, loại bỏ vết bẩn ngay cả trong điều kiện khó khăn, mang lại sự tươi mới cho quần áo."
+    "detail": "Thực phẩm bổ sung PHYCO SANTÉ giúp tăng cường sức khỏe, hỗ trợ hệ miễn dịch và cải thiện sức đề kháng tự nhiên."
   }
 ]

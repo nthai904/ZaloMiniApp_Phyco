@@ -17,7 +17,7 @@ module.exports = {
         subtitle: "var(--subtitle)",
         danger: "var(--danger)",
         skeleton: "var(--skeleton)",
-        main: "#182864"
+        main: "#182864",
       },
       spacing: {
         st: "var(--safe-top)",
