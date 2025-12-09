@@ -27,7 +27,7 @@ export default function ProductDetailPage() {
 
   const variant = product.variants?.[0];
   const price = variant?.price;
-  const image = product.images?.[0]?.src ?? "/placeholder.png";
+  const image = product.images?.[0]?.src ?? "https://theme.hstatic.net/200000436051/1000801313/14/no_image.jpg?v=721";
   // const inventory = variant?.inventory_quantity ?? 0;
 
   return (
