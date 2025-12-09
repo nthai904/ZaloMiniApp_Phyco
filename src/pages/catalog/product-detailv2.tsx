@@ -1,34 +1,20 @@
-import { useEffect } from "react";
 import HorizontalDivider from "@/components/horizontal-divider";
-import { useAtomValue, useSetAtom } from "jotai";
+import { useAtomValue } from "jotai";
 import { useNavigate, useParams } from "react-router-dom";
+import { productState } from "@/state";
 import { formatPrice } from "@/utils/format";
 import ShareButton from "./share-buttont";
 import RelatedProducts from "./related-products";
-import { useAddToCartV2 } from "@/hooksv2";
+import { useAddToCart } from "@/hooks";
 import { Button } from "zmp-ui";
 import Section from "@/components/section";
-import { productDetailState, fetchProductDetailState } from "@/api/state";
 
 export default function ProductDetailPage() {
+  const { id } = useParams();
+  const product = useAtomValue(productState(Number(id)))!;
+
   const navigate = useNavigate();
-
-  const { id } = useParams<{ id: string }>();
-  const fetchDetail = useSetAtom(fetchProductDetailState);
-  const product = useAtomValue(productDetailState(Number(id)));
-
-  const { addToCart } = useAddToCartV2(product ?? (null as any));
-
-  useEffect(() => {
-    if (id) fetchDetail(Number(id));
-  }, [id, fetchDetail]);
-
-  if (!product) return <div className="p-4">Đang tải sản phẩm...</div>;
-
-  const variant = product.variants?.[0];
-  const price = variant?.price;
-  const image = product.images?.[0]?.src ?? "/placeholder.png";
-  // const inventory = variant?.inventory_quantity ?? 0;
+  const { addToCart } = useAddToCart(product);
 
   return (
     <div className="w-full h-full flex flex-col">
@@ -36,35 +22,33 @@ export default function ProductDetailPage() {
         <div className="w-full p-4 pb-2 space-y-4 bg-section">
           <img
             key={product.id}
-            src={image ?? "/placeholder.png"}
-            alt={product.title}
+            src={product.image}
+            alt={product.name}
             className="w-full h-full object-cover rounded-lg"
             style={{
               viewTransitionName: `product-image-${product.id}`,
             }}
           />
           <div>
-            <div className="text-xl font-bold text-primary">{formatPrice(price)}</div>
-            <div className="text-2xs space-x-0.5">{/* <span className="text-subtitle">Tồn kho: {inventory}</span> */}</div>
-            <div className="text-base mt-1">{product.title}</div>
+            <div className="text-xl font-bold text-primary">{formatPrice(product.price)}</div>
+            {product.originalPrice && (
+              <div className="text-2xs space-x-0.5">
+                <span className="text-subtitle line-through">{formatPrice(product.originalPrice)}</span>
+                <span className="text-danger">-{100 - Math.round((product.price * 100) / product.originalPrice)}%</span>
+              </div>
+            )}
+            <div className="text-sm mt-1">{product.name}</div>
           </div>
           <ShareButton product={product} />
         </div>
-
-        {(product.body_plain || product.body_html) && (
+        {product.detail && (
           <>
             <div className="bg-background h-2 w-full"></div>
             <Section title="Mô tả sản phẩm">
-              <div
-                className="text-sm whitespace-pre-wrap text-subtitle p-4 pt-2"
-                dangerouslySetInnerHTML={{
-                  __html: product.body_html ?? product.body_plain ?? "",
-                }}
-              />
+              <div className="text-sm whitespace-pre-wrap text-subtitle p-4 pt-2">{product.detail}</div>
             </Section>
           </>
         )}
-
         <div className="bg-background h-2 w-full"></div>
         <Section title="Sản phẩm khác">
           <RelatedProducts currentProductId={product.id} />
@@ -76,7 +60,9 @@ export default function ProductDetailPage() {
         <Button
           variant="primary"
           onClick={() => {
-            addToCart(1, { toast: true });
+            addToCart(1, {
+              toast: true,
+            });
           }}
         >
           Thêm vào giỏ
@@ -84,7 +70,9 @@ export default function ProductDetailPage() {
         <Button
           onClick={() => {
             addToCart(1);
-            navigate("/cart", { viewTransition: true });
+            navigate("/cart", {
+              viewTransition: true,
+            });
           }}
         >
           Mua ngay

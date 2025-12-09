@@ -1,16 +1,11 @@
 import { useAtomValue } from "jotai";
 import { useLocation, useNavigate } from "react-router-dom";
-import { categoriesStateUpwrapped, loadableUserInfoState, userInfoState } from "@/state";
+import { categoriesStateUpwrapped, loadableUserInfoState } from "@/state";
 import { useMemo } from "react";
 import { useRouteHandle } from "@/hooks";
 import { getConfig } from "@/utils/template";
-import headerIllus from "@/static/header-illus.svg";
 import SearchBar from "./search-bar";
-import TransitionLink from "./transition-link";
-import { Icon } from "zmp-ui";
-import { DefaultUserAvatar } from "./vectors";
 import { ShoppingCartOutlined } from "@ant-design/icons";
-import { Badge } from "antd";
 import HeaderOverlay from "@/components/header-overlay";
 import { cartState } from "@/state";
 
@@ -35,8 +30,6 @@ export default function Header({ showHeaderOverlay = true, isScrolled = false }:
       }
     }
   }, [handle, categories]);
-
-  const showBack = location.key !== "default" && !handle?.noBack;
 
   const cart = useAtomValue(cartState);
 
