@@ -15,7 +15,7 @@ export default function ProductItemV2({ product, replace }: ProductItemProps) {
   const [selected, setSelected] = useState(false);
 
   // Haravan fields
-  const image = product.images?.[0]?.src ?? "/placeholder.jpg";
+  const image = product.images?.[0]?.src ?? "https://theme.hstatic.net/200000436051/1000801313/14/no_image.jpg?v=721";
   const price = Number(product.variants?.[0]?.price ?? 0);
 
   const { addToCart, cartQuantity } = useAddToCartV2(product);

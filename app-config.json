@@ -1,6 +1,6 @@
 {
   "app": {
-    "title": "TPharmacy",
+    "title": "Phyco Việt Nam",
     "textColor": "white",
     "headerColor": "#ffffff",
     "statusBar": "transparent",
@@ -17,7 +17,7 @@
     "apiUrl": "",
     "oaIDtoOpenChat": "4318657068771012646",
     "logoUrl": "https://theme.hstatic.net/200000436051/1000801313/14/logo.png?v=721",
-    "shopName": "Tiệm Tí Hon",
-    "shopAddress": "Z06 Số 13, Tân Thuận Đông, Quận 7, Hồ Chí Minh"
+    "shopName": "Phyco Việt Nam",
+    "shopAddress": "Số 24, Đường số 6, Khu Dân Cư Xây Dựng, Phường Cái Răng, Thành Phố Cần Thơ"
   }
 }
