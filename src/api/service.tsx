@@ -59,5 +59,29 @@ export async function fetchBlogDetail(id: number | string) {
     throw new Error(`Không kết nối được api - ${err.message}`);
   });
 
-  return data?.product ?? data;
+  const rawArticles = data?.articles ?? data;
+
+  const mapped = Array.isArray(rawArticles)
+    ? rawArticles.map((a: any) => {
+        const content = a.body_html ?? a.content ?? a.excerpt ?? "";
+        const imageSrc = a.image?.src ?? a.image ?? (a.featured_image || "") ?? "";
+        const tags = typeof a.tags === "string" ? a.tags.split(",").map((t: string) => t.trim()) : a.tags ?? [];
+
+        return {
+          id: Number(a.id) || 0,
+          title: a.title ?? "",
+          excerpt: a.excerpt ?? a.summary ?? "",
+          content: content,
+          image: imageSrc,
+          author: { name: a.author ?? a.author_name ?? "", avatar: "" },
+          category: a.blog_id ? String(a.blog_id) : a.category ?? "",
+          publishedAt: a.published_at ?? a.publishedAt ?? new Date().toISOString(),
+          readTime: Math.max(1, Math.round((content || "").length / 200)),
+          views: a.views ?? 0,
+          tags: tags,
+        };
+      })
+    : rawArticles;
+
+  return mapped;
 }

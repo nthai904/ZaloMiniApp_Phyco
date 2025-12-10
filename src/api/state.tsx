@@ -36,6 +36,18 @@ export const blogsState = atom(async () => {
   }
 });
 
+export const blogArticlesState = atomFamily((blogId: number | string) =>
+  atom(async () => {
+    try {
+      const articles = await fetchBlogDetail(blogId);
+      return articles ?? [];
+    } catch (err: any) {
+      console.error("Lỗi lấy bài viết blog:", err.message);
+      return [];
+    }
+  })
+);
+
 export const blogDetailState = atom<any | null>(null);
 
 export const fetchBlogDetailState = atom(null, async (get, set, id: number | string) => {

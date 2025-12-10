@@ -14,8 +14,8 @@ import ShippingAddressPage from "./pages/cart/shipping-address";
 import StationsPage from "./pages/cart/stations";
 import OrderDetailPage from "./pages/orders/detail";
 import ProfileEditorPage from "./pages/profile/editor";
-import ArticleListPage from "./pages/articles";
-import ArticleDetailPage from "./pages/articles/detail";
+import BlogDetailPage from "./pages/blog/blog-detail";
+import BlogList from "./pages/blog";
 
 const router = createBrowserRouter(
   [
@@ -129,7 +129,7 @@ const router = createBrowserRouter(
         },
         {
           path: "/articles",
-          element: <ArticleListPage />,
+          element: <BlogList />,
           handle: {
             title: "Bài viết",
             noBack: true,
@@ -137,7 +137,7 @@ const router = createBrowserRouter(
         },
         {
           path: "/article/:id",
-          element: <ArticleDetailPage />,
+          element: <BlogDetailPage />,
           handle: {
             scrollRestoration: 0,
             noFloatingCart: true,

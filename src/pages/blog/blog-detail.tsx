@@ -1,9 +1,9 @@
 import { useAtomValue } from "jotai";
 import { useParams } from "react-router-dom";
 import { articleState, relatedArticlesState } from "@/state";
-import ArticleCard from "@/components/article-card";
-import Section from "@/components/section";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import BlogItem from "./blog-item";
+import { fetchBlogDetail } from "@/api/service";
 
 function formatDateTime(date: Date): string {
   const hours = date.getHours().toString().padStart(2, "0");
@@ -39,7 +39,6 @@ function formatContent(content: string): JSX.Element {
     if (line.startsWith("## ")) {
       flushList();
       const heading = line.substring(3);
-      // Check if heading ends with ":"
       const isSectionHeading = heading.endsWith(":");
       elements.push(
         <div key={key++} className="mt-6 mb-3">
@@ -62,7 +61,6 @@ function formatContent(content: string): JSX.Element {
       );
     } else if (line.trim() === "") {
       flushList();
-      // Don't add extra breaks
     } else if (line.startsWith("- ")) {
       currentListItems.push(line.substring(2));
     } else if (line.trim() !== "") {
@@ -80,21 +78,77 @@ function formatContent(content: string): JSX.Element {
   return <div>{elements}</div>;
 }
 
-export default function ArticleDetailPage() {
+export default function BlogDetailPage() {
   const { id } = useParams();
   const article = useAtomValue(articleState(Number(id)));
   const relatedArticles = useAtomValue(relatedArticlesState(Number(id)));
   const [imageLoaded, setImageLoaded] = useState(false);
 
-  if (!article) {
+  const [apiArticle, setApiArticle] = useState<any | null>(null);
+  const [apiRelated, setApiRelated] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (article) return;
+    const blogId = "1001000756";
+    (async () => {
+      try {
+        const articles = await fetchBlogDetail(blogId);
+        if (Array.isArray(articles) && articles.length > 0) {
+          const found = articles.find((a: any) => String(a.id) === String(id));
+          if (found) {
+            setApiArticle(found);
+            setApiRelated(articles.filter((a: any) => String(a.id) !== String(id)).slice(0, 6));
+            return;
+          }
+        }
+        setApiArticle(null);
+        setApiRelated([]);
+      } catch (err) {
+        console.error(`Error fetching blog articles for blog ${blogId}:`, err);
+      }
+    })();
+  }, [id, article]);
+
+  const currentArticle = article ?? apiArticle;
+  const currentRelated = article ? relatedArticles : apiRelated;
+
+  const [sanitizedHtml, setSanitizedHtml] = useState<string | null>(null);
+
+  useEffect(() => {
+    const content: string = currentArticle?.content ?? "";
+    if (!content) {
+      setSanitizedHtml(null);
+      return;
+    }
+
+    const hasHtml = /<[^>]+>/.test(content);
+    if (!hasHtml) {
+      setSanitizedHtml(null);
+      return;
+    }
+
+    (async () => {
+      try {
+        const DOMPurifyModule = await import("dompurify");
+        const DOMPurify = (DOMPurifyModule && (DOMPurifyModule as any).default) || DOMPurifyModule;
+        const clean = DOMPurify.sanitize(content);
+        setSanitizedHtml(clean);
+      } catch (e) {
+        console.warn("DOMPurify not available, rendering raw HTML. Install 'dompurify' to sanitize output.", e);
+        setSanitizedHtml(content);
+      }
+    })();
+  }, [currentArticle]);
+
+  if (!currentArticle) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <p className="text-subtitle">Bài viết không tồn tại</p>
+        <p className="text-subtitle"></p>
       </div>
     );
   }
 
-  const publishedDate = new Date(article.publishedAt);
+  const publishedDate = new Date(currentArticle.publishedAt);
   const dateTime = formatDateTime(publishedDate);
 
   return (
@@ -103,14 +157,14 @@ export default function ArticleDetailPage() {
         {/* Hero Image */}
         <div className="relative w-full aspect-[4/3] bg-skeleton">
           {!imageLoaded && <div className="absolute inset-0 bg-skeleton animate-pulse" />}
-          <img src={article.image} alt={article.title} className="w-full h-full object-cover" onLoad={() => setImageLoaded(true)} />
+          <img src={currentArticle.image} alt={currentArticle.title} className="w-full h-full object-cover" onLoad={() => setImageLoaded(true)} />
         </div>
 
-        {/* Article Header */}
+        {/*  Tiêu đề */}
         <div className="bg-section px-4 py-4">
-          <h1 className="font-bold text-foreground text-xl mb-3 leading-tight">{article.title}</h1>
+          <h1 className="font-bold text-foreground text-xl mb-3 leading-tight">{currentArticle.title}</h1>
 
-          {/* Meta Info */}
+          {/* Meta  */}
           <div className="flex items-center justify-between text-xs text-subtitle">
             <span>{dateTime}</span>
             <div className="flex items-center space-x-1">
@@ -124,23 +178,23 @@ export default function ArticleDetailPage() {
                 />
                 <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
-              <span>{article.views}</span>
+              <span>{currentArticle.views}</span>
             </div>
           </div>
         </div>
 
-        {/* Article Content */}
-        <div className="bg-section px-4 py-4">{formatContent(article.content)}</div>
+        {/* Đây là body_html */}
+        <div className="bg-section px-4 py-4">{sanitizedHtml ? <div dangerouslySetInnerHTML={{ __html: sanitizedHtml }} /> : formatContent(currentArticle.content)}</div>
 
-        {/* Related Articles */}
-        {relatedArticles.length > 0 && (
+        {/* Bài viết liên quan  */}
+        {currentRelated.length > 0 && (
           <>
             <div className="bg-background h-2 w-full"></div>
             <div className="bg-section px-4 py-4">
               <h2 className="text-base font-bold text-foreground mb-3">Bài viết liên quan</h2>
               <div className="grid grid-cols-2 gap-3">
-                {relatedArticles.map((relatedArticle) => (
-                  <ArticleCard key={relatedArticle.id} article={relatedArticle} />
+                {currentRelated.map((relatedArticle) => (
+                  <BlogItem key={relatedArticle.id} article={relatedArticle} />
                 ))}
               </div>
             </div>

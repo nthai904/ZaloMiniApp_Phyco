@@ -1,5 +1,5 @@
+import TransitionLink from "@/components/transition-link";
 import { Article } from "@/types";
-import TransitionLink from "./transition-link";
 
 export interface ArticleCardProps {
   article: Article;
@@ -7,15 +7,13 @@ export interface ArticleCardProps {
 }
 
 function formatDateTime(date: Date): string {
-  const hours = date.getHours().toString().padStart(2, "0");
-  const minutes = date.getMinutes().toString().padStart(2, "0");
   const day = date.getDate().toString().padStart(2, "0");
   const month = (date.getMonth() + 1).toString().padStart(2, "0");
   const year = date.getFullYear();
   return `${day}/${month}/${year}`;
 }
 
-export default function ArticleCard({ article }: ArticleCardProps) {
+export default function BlogItem({ article }: ArticleCardProps) {
   const publishedDate = new Date(article.publishedAt);
   const dateTime = formatDateTime(publishedDate);
 
