@@ -45,6 +45,21 @@ export async function fetchBLogList() {
   return data?.blogs ?? data;
 }
 
+// Route lấy số lượng bài viết của blog (count)
+export async function fetchBlogCount(id: number | string) {
+  const url = `/api/blog/${id}/count`;
+  const res = await fetch(url, { method: "GET", headers: { Accept: "application/json" } });
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`Kết nối thất bại ${res.status} ${res.statusText} - ${text.slice(0, 200)}`);
+  }
+  const data = await res.json().catch((err) => {
+    throw new Error(`Không kết nối được api - ${err.message}`);
+  });
+
+  return Number(data?.count ?? data?.total ?? 0);
+}
+
 // Route lấy ra chi tiết bài viết
 export async function fetchBlogDetail(id: number | string) {
   const url = `/api/blog/${id}`;

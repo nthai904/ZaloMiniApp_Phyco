@@ -39,26 +39,36 @@ export default () => {
             });
           },
         },
-
+        
         // Cấu hình API danh sách bài viết và chi tiết bài viết
         "/api/blog": {
           target: `https://apis.haravan.com`,
           changeOrigin: true,
           secure: true,
           rewrite: (path) => {
-            const m = path.match(/^\/api\/blog\/?(\d+)(?:\.json)?$/);
+            // Support: /api/blog -> /web/blogs.json
+            if (/^\/api\/blog(?:\/?$|\.json$)/.test(path)) {
+              return path.replace(/^\/api\/blog/, "/web/blogs.json");
+            }
+
+            // Support: /api/blog/{id}/count -> /web/blogs/{id}/articles/count.json
+            const mCount = path.match(/^\/api\/blog\/(\d+)\/count(?:\.json)?$/);
+            if (mCount && mCount[1]) {
+              return `/web/blogs/${mCount[1]}/articles/count.json`;
+            }
+
+            // Support: /api/blog/{id} -> /web/blogs/{id}/articles.json
+            const m = path.match(/^\/api\/blog\/(\d+)(?:\.json)?$/);
             if (m && m[1]) {
-              // Example: /api/blog/1001000756 -> /web/blogs/1001000756/articles.json
               return `/web/blogs/${m[1]}/articles.json`;
             }
-            // /api/blog -> /web/blogs.json
+
+            // Fallback
             return path.replace(/^\/api\/blog/, "/web/blogs.json");
           },
           configure: (proxy) => {
             proxy.on("proxyReq", (proxyReq: any, req: any, res: any) => {
               try {
-                // Haravan public API doesn't require our local token by default,
-                // keep header setting here in case you use an env token.
                 if (process.env.API_TOKEN) {
                   proxyReq.setHeader("Authorization", `Bearer ${process.env.API_TOKEN}`);
                 }

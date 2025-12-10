@@ -16,6 +16,7 @@ import OrderDetailPage from "./pages/orders/detail";
 import ProfileEditorPage from "./pages/profile/editor";
 import BlogDetailPage from "./pages/blog/blog-detail";
 import BlogList from "./pages/blog";
+import BlogListV2 from "./pages/blog/blog-listv2";
 
 const router = createBrowserRouter(
   [
@@ -130,6 +131,14 @@ const router = createBrowserRouter(
         {
           path: "/articles",
           element: <BlogList />,
+          handle: {
+            title: "Bài viết",
+            noBack: true,
+          },
+        },
+        {
+          path: "/articles-v2",
+          element: <BlogListV2 />,
           handle: {
             title: "Bài viết",
             noBack: true,
