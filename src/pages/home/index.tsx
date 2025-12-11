@@ -5,6 +5,7 @@ import ProductList from "./product-list";
 import ProductListV2 from "./product-list";
 import Section from "@/components/section";
 import TransitionLink from "@/components/transition-link";
+import PaginatedProductGrid from "@/components/paginated-product-grid";
 
 const HomePage: React.FunctionComponent = () => {
   return (
@@ -26,7 +27,7 @@ const HomePage: React.FunctionComponent = () => {
           </div>
         }
       >
-        <ProductListV2 />
+        <PaginatedProductGrid perPage={10} />
       </Section>
 
       <Articles />
