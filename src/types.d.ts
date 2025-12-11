@@ -89,8 +89,23 @@ export interface Article {
   image: string;
   author: ArticleAuthor;
   category: string;
+  blog_id?: number | string;
+  blog_handle?: string;
   publishedAt: string;
   readTime: number;
   views: number;
   tags: string[];
+}
+
+export interface Blog {
+  id: number;
+  handle?: string;
+  title: string;
+  tags?: string;
+  commentable?: string;
+  template_suffix?: string | null;
+  created_at?: string;
+  updated_at?: string;
+  article_count?: number;
+  hasPublished?: boolean;
 }
