@@ -4,130 +4,105 @@ import { articlesState } from "@/state";
 import { useAtomValue } from "jotai";
 import { useMemo, useEffect, useState } from "react";
 
-export default function BlogCategory() {
+type BlogCategoryItem = {
+  id: any;
+  title: string;
+  count: number;
+  hasPublished: boolean;
+  image?: string | undefined;
+};
+
+export default function BlogCategory({
+  onSelect,
+  selectedKey,
+  onCategoryChange,
+}: {
+  onSelect?: (payload: { id?: string; title?: string }) => void;
+  selectedKey?: string | null;
+  onCategoryChange?: (id: string | null) => void;
+}) {
   const blogs = useAtomValue(blogsState) as any[] | undefined;
   const articles = useAtomValue(articlesState) as any[] | undefined;
 
-  const categories = useMemo(() => {
+  const categories = useMemo<BlogCategoryItem[]>(() => {
     if (Array.isArray(blogs) && blogs.length > 0) {
       return blogs.map((b) => ({
         id: b.id ?? b.handle ?? String(b.title ?? Math.random()),
         title: b.title ?? b.name ?? b.handle ?? "",
         count: b.article_count ?? b.count ?? 0,
+        hasPublished: typeof b.hasPublished !== "undefined" ? Boolean(b.hasPublished) : true,
       }));
     }
 
-    const map = new Map<string, { id: string; title: string; count: number }>();
+    const map = new Map<string, { id: string; title: string; count: number; hasPublished: boolean; image?: string }>();
     (articles ?? []).forEach((a) => {
       const key = a.category ?? "Chưa phân loại";
       if (!map.has(key)) {
-        map.set(key, { id: key, title: key, count: 0 });
+        map.set(key, { id: key, title: key, count: 0, hasPublished: false, image: undefined });
       }
       const item = map.get(key)!;
       item.count += 1;
+      if (!item.hasPublished) {
+        if (a.published === true) item.hasPublished = true;
+        else if (a.publishedAt || a.published_at) item.hasPublished = true;
+      }
     });
 
     return Array.from(map.values());
   }, [blogs, articles]);
 
-  const [countsById, setCountsById] = useState<Record<string, number>>({});
+  const visibleCategories = (categories ?? []).filter((c) => c.hasPublished !== false && c.count > 0);
+  if (!visibleCategories || visibleCategories.length === 0) return null;
+  const [activeKey, setActiveKey] = useState<string | null>(selectedKey ?? null);
 
   useEffect(() => {
-    const ids = categories.map((c: any) => String(c.id)).filter((id) => id && /^\d+$/.test(id)) as string[];
-    if (!ids || ids.length === 0) return;
+    setActiveKey(selectedKey ?? null);
+  }, [selectedKey]);
 
-    let mounted = true;
-
-    (async () => {
-      try {
-        const promises = ids.map(async (id) => {
-          try {
-            const res = await fetch(`/api/blog/${encodeURIComponent(id)}/count`, { method: "GET", headers: { Accept: "application/json" } });
-            if (!res.ok) {
-              throw new Error(`${res.status} ${res.statusText}`);
-            }
-            const data = await res.json().catch(() => ({}));
-            // Haravan count response expected { count: N }
-            const count = data?.count ?? data?.total ?? (Array.isArray(data?.articles) ? data.articles.length : undefined) ?? null;
-            return { id, count };
-          } catch (err) {
-            return { id, count: null };
-          }
-        });
-
-        const results = await Promise.all(promises);
-        if (!mounted) return;
-        const next: Record<string, number> = {};
-        results.forEach((r) => {
-          if (r.count != null) next[r.id] = Number(r.count);
-        });
-        setCountsById((prev) => ({ ...prev, ...next }));
-      } catch (e) {}
-    })();
-
-    return () => {
-      mounted = false;
-    };
-  }, [categories]);
-
-  if (!categories || categories.length === 0) return null;
+  function handleClick(cat: { id?: string; title?: string }) {
+    const key = cat.id ? String(cat.id) : cat.title ?? null;
+    setActiveKey(key ?? null);
+    if (onCategoryChange) {
+      onCategoryChange(key ?? null);
+    }
+    if (onSelect) {
+      onSelect({ id: cat.id ? String(cat.id) : undefined, title: cat.title });
+    }
+  }
 
   return (
-    <div className="min-h-full bg-background">
-      <div className="p-4">
-        <h2 className="text-lg font-bold mb-4 tracking-wide" style={{ color: "#182864" }}>
-          Danh mục bài viết
-        </h2>
+    <div className="min-h-full bg-background pb-8">
+      <div>
+        {/* Header */}
+        <div className="bg-white px-4 py-6 border-b border-black/5">
+          <div className="flex items-center justify-between mb-2">
+            <div>
+              <h1 className="text-2xl font-bold text-foreground">Góc kiến thức</h1>
+              <p className="text-sm text-subtitle mt-1">Khám phá các bài viết của chúng tôi</p>
+            </div>
+          </div>
+        </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-          {categories.map((cat) => {
-            const hasId = Boolean((cat as any).id);
-            const href = hasId ? `/articles-v2?blogId=${encodeURIComponent(String((cat as any).id))}` : `/articles?category=${encodeURIComponent(cat.title)}`;
-
+        <div className="flex items-center gap-2 overflow-x-auto pb-2" style={{ scrollbarWidth: "none", msOverflowStyle: "none", WebkitOverflowScrolling: "touch" }}>
+          {visibleCategories.map((category) => {
+            const key = category.id !== undefined && category.id !== null ? String(category.id) : String(category.title ?? "");
+            const isActive = key === (activeKey ?? null);
             return (
-              <TransitionLink
-                to={href}
-                key={(cat as any).id ?? cat.title}
-                className="
-                  group block rounded-lg border border-gray-200
-                  bg-white px-4 py-3
-                  shadow-sm hover:shadow-md
-                  transition-all duration-300
-                "
-                style={{
-                  transition: "all 0.3s ease",
-                }}
+              <button
+                key={key}
+                onClick={() => handleClick({ id: category.id != null ? String(category.id) : undefined, title: category.title })}
+                className={`flex-none px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200 flex items-center gap-2 ${
+                  isActive ? "bg-main text-white shadow-md scale-105" : "bg-white text-foreground border border-black/10 hover:border-main/30"
+                }`}
               >
-                <div
-                  className="
-                    flex flex-col justify-center
-                    transition-all duration-300
-                    group-hover:text-white
-                  "
-                >
-                  <h3
-                    className="
-                      text-sm font-semibold mb-1 
-                      line-clamp-2
-                    "
-                  >
-                    {cat.title}
-                  </h3>
-                  <p className="text-xs opacity-70">{countsById[String((cat as any).id)] ?? cat.count} bài viết</p>
-                </div>
-
-                {/* Hover background */}
-                <style>
-                  {`
-                    .group:hover {
-                      background-color: #182864 !important;
-                      border-color: #182864 !important;
-                    }
-                  `}
-                </style>
-              </TransitionLink>
+                {category.title}
+              </button>
             );
           })}
+
+          <style>{`
+            .overflow-x-auto::-webkit-scrollbar { display: none; }
+          `}</style>
         </div>
       </div>
     </div>

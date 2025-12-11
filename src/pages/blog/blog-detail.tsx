@@ -3,7 +3,23 @@ import { useParams } from "react-router-dom";
 import { articleState, relatedArticlesState } from "@/state";
 import { useState, useEffect } from "react";
 import BlogItem from "./blog-item";
-import { fetchBlogDetail } from "@/api/service";
+import { fetchBlogDetail, fetchBLogList } from "@/api/service";
+
+const NO_IMAGE_URL = "https://theme.hstatic.net/200000436051/1000801313/14/no_image.jpg?v=721";
+
+const _reportedImagesDetail = new Set<string>();
+function reportMissingImageDetail(url?: string) {
+  if (!url) return;
+  try {
+    if (_reportedImagesDetail.has(url)) return;
+    _reportedImagesDetail.add(url);
+    fetch("/api/report-missing-image", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ url }),
+    }).catch(() => {});
+  } catch (e) {}
+}
 
 function formatDateTime(date: Date): string {
   const hours = date.getHours().toString().padStart(2, "0");
@@ -89,24 +105,57 @@ export default function BlogDetailPage() {
 
   useEffect(() => {
     if (article) return;
-    const blogId = "1001000756";
+    let mounted = true;
+
+    setApiArticle(null);
+    setApiRelated([]);
+    setImageLoaded(false);
+
     (async () => {
       try {
-        const articles = await fetchBlogDetail(blogId);
-        if (Array.isArray(articles) && articles.length > 0) {
-          const found = articles.find((a: any) => String(a.id) === String(id));
-          if (found) {
-            setApiArticle(found);
-            setApiRelated(articles.filter((a: any) => String(a.id) !== String(id)).slice(0, 6));
-            return;
+        const blogs = await fetchBLogList();
+        if (!Array.isArray(blogs) || blogs.length === 0) {
+          if (mounted) {
+            setApiArticle(null);
+            setApiRelated([]);
           }
+          return;
         }
-        setApiArticle(null);
-        setApiRelated([]);
+
+        for (const b of blogs) {
+          const blogId = b?.id ?? b?.handle ?? null;
+          if (!blogId) continue;
+
+          try {
+            const articles = await fetchBlogDetail(blogId);
+            if (!mounted) return;
+            if (Array.isArray(articles) && articles.length > 0) {
+              const found = articles.find((a: any) => String(a.id) === String(id));
+              if (found) {
+                setApiArticle(found);
+                setApiRelated(articles.filter((a: any) => String(a.id) !== String(id)).slice(0, 6));
+                return;
+              }
+            }
+          } catch (err) {}
+        }
+
+        if (mounted) {
+          setApiArticle(null);
+          setApiRelated([]);
+        }
       } catch (err) {
-        console.error(`Error fetching blog articles for blog ${blogId}:`, err);
+        console.error("Error fetching blog list:", err);
+        if (mounted) {
+          setApiArticle(null);
+          setApiRelated([]);
+        }
       }
     })();
+
+    return () => {
+      mounted = false;
+    };
   }, [id, article]);
 
   const currentArticle = article ?? apiArticle;
@@ -154,10 +203,23 @@ export default function BlogDetailPage() {
   return (
     <div className="w-full h-full flex flex-col bg-background">
       <div className="flex-1 overflow-y-auto">
-        {/* Hero Image */}
         <div className="relative w-full aspect-[4/3] bg-skeleton">
           {!imageLoaded && <div className="absolute inset-0 bg-skeleton animate-pulse" />}
-          <img src={currentArticle.image} alt={currentArticle.title} className="w-full h-full object-cover" onLoad={() => setImageLoaded(true)} />
+          <img
+            src={currentArticle.image || NO_IMAGE_URL}
+            alt={currentArticle.title}
+            className="w-full h-full object-cover"
+            loading="lazy"
+            onLoad={() => setImageLoaded(true)}
+            onError={(e) => {
+              const t = e.currentTarget as HTMLImageElement;
+              const badUrl = t.src;
+              if (badUrl && badUrl !== NO_IMAGE_URL) {
+                reportMissingImageDetail(badUrl);
+                t.src = NO_IMAGE_URL;
+              }
+            }}
+          />
         </div>
 
         {/*  Tiêu đề */}
@@ -168,23 +230,27 @@ export default function BlogDetailPage() {
           <div className="flex items-center justify-between text-xs text-subtitle">
             <span>{dateTime}</span>
             <div className="flex items-center space-x-1">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path
-                  d="M1 12C1 12 5 4 12 4C19 4 23 12 23 12C23 12 19 20 12 20C5 20 1 12 1 12Z"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-              <span>{currentArticle.views}</span>
+              <span>Người viết: {currentArticle?.author?.name ?? "Phyco"}</span>
             </div>
           </div>
         </div>
 
         {/* Đây là body_html */}
         <div className="bg-section px-4 py-4">{sanitizedHtml ? <div dangerouslySetInnerHTML={{ __html: sanitizedHtml }} /> : formatContent(currentArticle.content)}</div>
+
+        {/* Tags */}
+        {currentArticle.tags && Array.isArray(currentArticle.tags) && currentArticle.tags.length > 0 && (
+          <div className="bg-section px-4 py-4">
+            <div className="text-sm text-subtitle mb-2">Tags:</div>
+            <div className="flex flex-wrap gap-2">
+              {currentArticle.tags.map((tag: string, idx: number) => (
+                <span key={idx} className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-md">
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Bài viết liên quan  */}
         {currentRelated.length > 0 && (
