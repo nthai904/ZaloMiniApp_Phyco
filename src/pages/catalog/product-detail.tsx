@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import HorizontalDivider from "@/components/horizontal-divider";
 import { useAtomValue, useSetAtom } from "jotai";
 import { useNavigate, useParams } from "react-router-dom";
@@ -18,17 +18,37 @@ export default function ProductDetailPage() {
   const product = useAtomValue(productDetailState(Number(id)));
 
   const { addToCart } = useAddToCartV2(product ?? (null as any));
+  const [sanitizedHtml, setSanitizedHtml] = useState<string | null>(null);
+
+  useEffect(() => {
+    const content: string = product?.body_html ?? product?.body_plain ?? "";
+    if (!content) {
+      setSanitizedHtml(null);
+      return;
+    }
+
+    (async () => {
+      try {
+        const DOMPurifyModule = await import("dompurify");
+        const DOMPurify = (DOMPurifyModule && (DOMPurifyModule as any).default) || DOMPurifyModule;
+        const clean = DOMPurify.sanitize(content);
+        setSanitizedHtml(clean);
+      } catch (e) {
+        // fallback to raw content if DOMPurify unavailable
+        setSanitizedHtml(content);
+      }
+    })();
+  }, [product?.body_html, product?.body_plain]);
 
   useEffect(() => {
     if (id) fetchDetail(Number(id));
   }, [id, fetchDetail]);
 
-  if (!product) return <div className="p-4">Đang tải sản phẩm...</div>;
+  if (!product) return <div className="p-4"></div>;
 
   const variant = product.variants?.[0];
   const price = variant?.price;
   const image = product.images?.[0]?.src ?? "https://theme.hstatic.net/200000436051/1000801313/14/no_image.jpg?v=721";
-  // const inventory = variant?.inventory_quantity ?? 0;
 
   return (
     <div className="w-full h-full flex flex-col">
@@ -55,20 +75,17 @@ export default function ProductDetailPage() {
           <>
             <div className="bg-background h-2 w-full"></div>
             <Section title="Mô tả sản phẩm">
-              <div
-                className="text-sm whitespace-pre-wrap text-subtitle p-4 pt-2"
-                dangerouslySetInnerHTML={{
-                  __html: product.body_html ?? product.body_plain ?? "",
-                }}
-              />
+              <div className="text-sm text-subtitle p-4 pt-2">
+                {sanitizedHtml ? <div dangerouslySetInnerHTML={{ __html: sanitizedHtml }} /> : <div className="whitespace-pre-wrap">{product.body_plain ?? ""}</div>}
+              </div>
             </Section>
           </>
         )}
 
         <div className="bg-background h-2 w-full"></div>
-        <Section title="Sản phẩm khác">
+        {/* <Section title="Sản phẩm khác">
           <RelatedProducts currentProductId={product.id} />
-        </Section>
+        </Section> */}
       </div>
 
       <HorizontalDivider />

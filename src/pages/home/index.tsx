@@ -2,7 +2,9 @@ import Banners from "./banners";
 import Category from "./category";
 import Articles from "./articles";
 import ProductList from "./product-list";
-import ProductListV2 from "./product-listv2";
+import ProductListV2 from "./product-list";
+import Section from "@/components/section";
+import TransitionLink from "@/components/transition-link";
 
 const HomePage: React.FunctionComponent = () => {
   return (
@@ -13,7 +15,20 @@ const HomePage: React.FunctionComponent = () => {
       <div className="bg-section">
         <Category />
       </div>
-      <ProductListV2 />
+
+      <Section
+        title={
+          <div className="flex items-center justify-between w-full">
+            <span>Danh sách sản phẩm</span>
+            <TransitionLink to="/products" className="text-xs text-primary font-medium hover:underline">
+              Xem tất cả →
+            </TransitionLink>
+          </div>
+        }
+      >
+        <ProductListV2 />
+      </Section>
+
       <Articles />
     </div>
   );

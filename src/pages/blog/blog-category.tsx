@@ -74,7 +74,7 @@ export default function BlogCategory({
     <div className="min-h-full bg-background pb-8">
       <div>
         {/* Header */}
-        <div className="bg-white px-4 py-6 border-b border-black/5">
+        <div className="">
           <div className="flex items-center justify-between mb-2">
             <div>
               <h1 className="text-2xl font-bold text-foreground">Góc kiến thức</h1>
@@ -83,7 +83,7 @@ export default function BlogCategory({
           </div>
         </div>
 
-        <div className="flex items-center gap-2 overflow-x-auto pb-2" style={{ scrollbarWidth: "none", msOverflowStyle: "none", WebkitOverflowScrolling: "touch" }}>
+        <div className="flex items-center gap-2 overflow-x-auto" style={{ scrollbarWidth: "none", msOverflowStyle: "none", WebkitOverflowScrolling: "touch" }}>
           {visibleCategories.map((category) => {
             const key = category.id !== undefined && category.id !== null ? String(category.id) : String(category.title ?? "");
             const isActive = key === (activeKey ?? null);
