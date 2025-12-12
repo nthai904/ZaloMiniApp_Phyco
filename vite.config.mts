@@ -42,7 +42,7 @@ export default () => {
         
         // Cấu hình API danh sách bài viết và chi tiết bài viết
         "/api/blog": {
-          target: `https://apis.haravan.com`,
+          target: `${process.env.API_URL}`,
           changeOrigin: true,
           secure: true,
           rewrite: (path) => {

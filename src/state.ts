@@ -30,7 +30,7 @@ import toast from "react-hot-toast";
 import { calculateDistance } from "./utils/location";
 import { formatDistant } from "./utils/format";
 import CONFIG from "./config";
-import { searchProductsByTitle } from "@/api/haravan";
+import { searchProductsByTitle, fetchProductsPage } from "@/api/haravan";
 
 export const userInfoKeyState = atom(0);
 
@@ -128,7 +128,30 @@ export const productsState = atom(async (get) => {
 
 export const flashSaleProductsState = atom((get) => get(productsState));
 
-export const recommendedProductsState = atom((get) => get(productsState));
+export const recommendedProductsState = atom(async (get) => {
+  try {
+    const { products } = await fetchProductsPage(1, 10);
+    const mapped = (products || []).map((p) => {
+      const price = p.variants && p.variants.length ? p.variants[0].price : 0;
+      const compareAt = p.variants && p.variants.length ? p.variants[0].compare_at_price : undefined;
+      return {
+        id: p.id,
+        name: p.title,
+        price: price,
+        originalPrice: compareAt && compareAt > 0 ? compareAt : undefined,
+        image: (p.images && p.images[0] && p.images[0].src) || "https://theme.hstatic.net/200000436051/1000801313/14/no_image.jpg?v=721",
+        category: { id: 0, name: p.product_type || "", image: "" },
+        detail: p.body_plain || p.body_html || "",
+      } as Product;
+    });
+
+    return mapped.slice(0, 6);
+  } catch (err) {
+    console.error("recommendedProductsState error:", err);
+    const products = await get(productsState);
+    return products.slice(0, 6);
+  }
+});
 
 export const productState = atomFamily((id: number) =>
   atom(async (get) => {
