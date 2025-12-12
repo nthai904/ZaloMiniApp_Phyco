@@ -30,6 +30,7 @@ import toast from "react-hot-toast";
 import { calculateDistance } from "./utils/location";
 import { formatDistant } from "./utils/format";
 import CONFIG from "./config";
+import { searchProductsByTitle } from "@/api/haravan";
 
 export const userInfoKeyState = atom(0);
 
@@ -153,13 +154,29 @@ export const cartTotalState = atom((get) => {
 
 export const keywordState = atom("");
 
-export const searchResultState = atom(async (get) => {
-  const keyword = get(keywordState);
-  const products = await get(productsState);
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-  return products.filter((product) =>
-    product.name.toLowerCase().includes(keyword.toLowerCase())
-  );
+export const searchResultStateV2 = atom(async (get) => {
+  const keyword = get(keywordState) || "";
+  const q = keyword.trim();
+  if (!q) return [];
+
+  // Call Haravan search helper and map ProductV2 -> Product (app shape)
+  const haravanProducts = await searchProductsByTitle(q);
+
+  const mapped = (haravanProducts || []).map((p) => {
+    const price = p.variants && p.variants.length ? p.variants[0].price : 0;
+    const compareAt = p.variants && p.variants.length ? p.variants[0].compare_at_price : undefined;
+    return {
+      id: p.id,
+      name: p.title,
+      price: price,
+      originalPrice: compareAt && compareAt > 0 ? compareAt : undefined,
+      image: (p.images && p.images[0] && p.images[0].src) || "/placeholder.jpg",
+      category: { id: 0, name: p.product_type || "", image: "" },
+      detail: p.body_plain || p.body_html || "",
+    } as Product;
+  });
+
+  return mapped;
 });
 
 export const productsByCategoryState = atomFamily((id: String) =>

@@ -3,28 +3,17 @@ import Section from "@/components/section";
 import { ProductItemSkeleton } from "@/components/skeleton";
 import { useAtomValue } from "jotai";
 import { HTMLAttributes, Suspense } from "react";
-import {
-  keywordState,
-  recommendedProductsState,
-  searchResultState,
-} from "@/state";
+import { keywordState, recommendedProductsState, searchResultStateV2 } from "@/state";
 import ProductGrid from "@/components/product-grid";
 import { EmptySearchResult } from "@/components/empty";
 
 export function SearchResult() {
-  const searchResult = useAtomValue(searchResultState);
+  const searchResult = useAtomValue(searchResultStateV2);
 
   return (
     <div className="w-full h-full space-y-2 bg-background">
-      <Section
-        title={`Kết quả (${searchResult.length})`}
-        className="h-full flex flex-col overflow-y-auto pb-16"
-      >
-        {searchResult.length ? (
-          <ProductGrid products={searchResult} />
-        ) : (
-          <EmptySearchResult />
-        )}
+      <Section title={`Kết quả (${searchResult.length})`} className="h-full flex flex-col overflow-y-auto pb-16">
+        {searchResult.length ? <ProductGrid products={searchResult} /> : <EmptySearchResult />}
       </Section>
     </div>
   );
@@ -38,17 +27,9 @@ export function SearchResultSkeleton() {
   );
 }
 
-export function ProductGridSkeleton({
-  className,
-  ...props
-}: HTMLAttributes<HTMLDivElement>) {
+export function ProductGridSkeleton({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   return (
-    <div
-      className={"grid grid-cols-2 px-4 pt-2 pb-8 gap-4 ".concat(
-        className ?? ""
-      )}
-      {...props}
-    >
+    <div className={"grid grid-cols-2 px-4 pt-2 pb-8 gap-4 ".concat(className ?? "")} {...props}>
       <ProductItemSkeleton />
       <ProductItemSkeleton />
       <ProductItemSkeleton />
@@ -64,11 +45,7 @@ export function RecommendedProducts() {
     <Section title="Gợi ý sản phẩm">
       <div className="py-2 px-4 pb-6 flex space-x-2 overflow-x-auto">
         {recommendedProducts.map((product) => (
-          <div
-            key={product.id}
-            className="flex-none"
-            style={{ flexBasis: "calc((100vw - 48px) / 2)" }}
-          >
+          <div key={product.id} className="flex-none" style={{ flexBasis: "calc((100vw - 48px) / 2)" }}>
             <ProductItem key={product.id} product={product} />
           </div>
         ))}

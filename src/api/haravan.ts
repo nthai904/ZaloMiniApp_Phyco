@@ -46,3 +46,38 @@ export async function fetchProductsPage(
     total_pages: typeof body.total_pages === "number" ? body.total_pages : undefined,
   };
 }
+
+function normalizeForSearch(s: string) {
+  return s
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .toLowerCase();
+}
+
+/**
+ * Search products by title (case-insensitive, diacritics-insensitive substring match).
+ * This fetches a large page and filters client-side. Adjust strategy for larger catalogs.
+ */
+export async function searchProductsByTitle(query: string): Promise<ProductV2[]> {
+  const q = (query || "").trim();
+  if (!q) return [];
+
+  try {
+    const { products } = await fetchProductsPage(1, 1000);
+
+    console.debug("[haravan] searchProductsByTitle: query=", q, "fetchedCount=", products?.length ?? 0);
+
+    const qNorm = normalizeForSearch(q);
+
+    const matched = (products || []).filter((p) => {
+      const title = (p.title || "").toString();
+      return normalizeForSearch(title).includes(qNorm);
+    });
+
+    console.debug("[haravan] matchedCount=", matched.length);
+    return matched;
+  } catch (err) {
+    console.error("[haravan] searchProductsByTitle error:", err);
+    throw err;
+  }
+}
