@@ -26,7 +26,7 @@ export async function fetchProductsPage(
   });
 
   if (!res.ok) {
-    throw new Error(`Failed to fetch products page ${page}: ${res.status} ${res.statusText}`);
+    throw new Error(`Không lấy sản phẩm ra được ${page}: ${res.status} ${res.statusText}`);
   }
 
   const body = await res.json();
@@ -54,19 +54,13 @@ function normalizeForSearch(s: string) {
     .toLowerCase();
 }
 
-/**
- * Search products by title (case-insensitive, diacritics-insensitive substring match).
- * This fetches a large page and filters client-side. Adjust strategy for larger catalogs.
- */
+
 export async function searchProductsByTitle(query: string): Promise<ProductV2[]> {
   const q = (query || "").trim();
   if (!q) return [];
 
   try {
     const { products } = await fetchProductsPage(1, 1000);
-
-    console.debug("[haravan] searchProductsByTitle: query=", q, "fetchedCount=", products?.length ?? 0);
-
     const qNorm = normalizeForSearch(q);
 
     const matched = (products || []).filter((p) => {
@@ -74,10 +68,8 @@ export async function searchProductsByTitle(query: string): Promise<ProductV2[]>
       return normalizeForSearch(title).includes(qNorm);
     });
 
-    console.debug("[haravan] matchedCount=", matched.length);
     return matched;
   } catch (err) {
-    console.error("[haravan] searchProductsByTitle error:", err);
     throw err;
   }
 }

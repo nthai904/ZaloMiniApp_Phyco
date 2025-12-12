@@ -92,6 +92,7 @@ export interface Article {
   blog_id?: number | string;
   blog_handle?: string;
   publishedAt: string;
+  published?: boolean;
   readTime: number;
   views: number;
   tags: string[];

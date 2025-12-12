@@ -1,10 +1,10 @@
-import ProductItem from "@/components/product-item";
+import ProductItem from "@/components/product-itemv2";
 import Section from "@/components/section";
 import { ProductItemSkeleton } from "@/components/skeleton";
 import { useAtomValue } from "jotai";
 import { HTMLAttributes, Suspense } from "react";
 import { keywordState, recommendedProductsState, searchResultStateV2 } from "@/state";
-import ProductGrid from "@/components/product-grid";
+import ProductGrid from "@/components/product-gridv2";
 import { EmptySearchResult } from "@/components/empty";
 
 export function SearchResult() {

@@ -115,14 +115,11 @@ export const categoriesStateUpwrapped = unwrap(
 
 export const productsState = atom(async (get) => {
   const categories = await get(categoriesState);
-  const products = await requestWithFallback<
-    (Product & { categoryId: number })[]
-  >("/products", []);
-  return products.map((product) => ({
+  const products = await requestWithFallback<(Product & { categoryId: number })[]>('/products', []);
+  const filtered = Array.isArray(products) ? products.filter((p: any) => (p?.published_scope ?? p?.publishedScope ?? '') === 'global') : [];
+  return filtered.map((product) => ({
     ...product,
-    category: categories.find(
-      (category) => category.id === product.categoryId
-    )!,
+    category: categories.find((category) => category.id === product.categoryId)!,
   }));
 });
 
@@ -131,25 +128,36 @@ export const flashSaleProductsState = atom((get) => get(productsState));
 export const recommendedProductsState = atom(async (get) => {
   try {
     const { products } = await fetchProductsPage(1, 10);
-    const mapped = (products || []).map((p) => {
-      const price = p.variants && p.variants.length ? p.variants[0].price : 0;
-      const compareAt = p.variants && p.variants.length ? p.variants[0].compare_at_price : undefined;
-      return {
-        id: p.id,
-        name: p.title,
-        price: price,
-        originalPrice: compareAt && compareAt > 0 ? compareAt : undefined,
-        image: (p.images && p.images[0] && p.images[0].src) || "https://theme.hstatic.net/200000436051/1000801313/14/no_image.jpg?v=721",
-        category: { id: 0, name: p.product_type || "", image: "" },
-        detail: p.body_plain || p.body_html || "",
-      } as Product;
-    });
-
-    return mapped.slice(0, 6);
+    if (products && products.length > 0) {
+      return products.slice(0, 6);
+    }
+    // fallback to local productsState (map local Product -> ProductV2-like shape)
+    const local = await get(productsState);
+    return (local || []).slice(0, 6).map((p: any) => ({
+      id: p.id,
+      title: p.name ?? p.title ?? "",
+      body_html: p.detail ?? "",
+      body_plain: p.detail ?? "",
+      created_at: p.createdAt ?? new Date().toISOString(),
+      handle: p.handle ?? String(p.id),
+      images: [{ src: p.image ?? "" }],
+      variants: [{ price: p.price ?? 0 }],
+      product_type: p.category?.name ?? "",
+    } as any));
   } catch (err) {
     console.error("recommendedProductsState error:", err);
     const products = await get(productsState);
-    return products.slice(0, 6);
+    return (products || []).slice(0, 6).map((p: any) => ({
+      id: p.id,
+      title: p.name ?? p.title ?? "",
+      body_html: p.detail ?? "",
+      body_plain: p.detail ?? "",
+      created_at: p.createdAt ?? new Date().toISOString(),
+      handle: p.handle ?? String(p.id),
+      images: [{ src: p.image ?? "" }],
+      variants: [{ price: p.price ?? 0 }],
+      product_type: p.category?.name ?? "",
+    } as any));
   }
 });
 
@@ -181,25 +189,9 @@ export const searchResultStateV2 = atom(async (get) => {
   const keyword = get(keywordState) || "";
   const q = keyword.trim();
   if (!q) return [];
-
-  // Call Haravan search helper and map ProductV2 -> Product (app shape)
+  // Call Haravan search helper and return ProductV2[] so components expecting ProductV2 work
   const haravanProducts = await searchProductsByTitle(q);
-
-  const mapped = (haravanProducts || []).map((p) => {
-    const price = p.variants && p.variants.length ? p.variants[0].price : 0;
-    const compareAt = p.variants && p.variants.length ? p.variants[0].compare_at_price : undefined;
-    return {
-      id: p.id,
-      name: p.title,
-      price: price,
-      originalPrice: compareAt && compareAt > 0 ? compareAt : undefined,
-      image: (p.images && p.images[0] && p.images[0].src) || "/placeholder.jpg",
-      category: { id: 0, name: p.product_type || "", image: "" },
-      detail: p.body_plain || p.body_html || "",
-    } as Product;
-  });
-
-  return mapped;
+  return haravanProducts || [];
 });
 
 export const productsByCategoryState = atomFamily((id: String) =>
@@ -282,9 +274,15 @@ export const deliveryModeState = atomWithStorage<Delivery["type"]>(
   "shipping"
 );
 
-export const articlesState = atom(() =>
-  requestWithFallback<Article[]>("/articles", [])
-);
+export const articlesState = atom(async () => {
+  const list = await requestWithFallback<any[]>('/articles', []);
+  if (!Array.isArray(list)) return [];
+  return list.filter((a: any) => {
+    if (typeof a.published === 'boolean') return a.published === true;
+    if (a.publishedAt || a.published_at) return Boolean(a.publishedAt ?? a.published_at);
+    return true; // keep if unknown shape
+  });
+});
 
 export const articleState = atomFamily((id: number) =>
   atom(async (get) => {

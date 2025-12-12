@@ -7,20 +7,6 @@ import { fetchBlogDetail, fetchBLogList } from "@/api/service";
 
 const NO_IMAGE_URL = "https://theme.hstatic.net/200000436051/1000801313/14/no_image.jpg?v=721";
 
-const _reportedImagesDetail = new Set<string>();
-function reportMissingImageDetail(url?: string) {
-  if (!url) return;
-  try {
-    if (_reportedImagesDetail.has(url)) return;
-    _reportedImagesDetail.add(url);
-    fetch("/api/report-missing-image", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ url }),
-    }).catch(() => {});
-  } catch (e) {}
-}
-
 function formatDateTime(date: Date): string {
   const hours = date.getHours().toString().padStart(2, "0");
   const minutes = date.getMinutes().toString().padStart(2, "0");
@@ -215,7 +201,6 @@ export default function BlogDetailPage() {
               const t = e.currentTarget as HTMLImageElement;
               const badUrl = t.src;
               if (badUrl && badUrl !== NO_IMAGE_URL) {
-                reportMissingImageDetail(badUrl);
                 t.src = NO_IMAGE_URL;
               }
             }}

@@ -232,9 +232,15 @@ export const deliveryModeState = atomWithStorage<Delivery["type"]>(
   "shipping"
 );
 
-export const articlesState = atom(() =>
-  requestWithFallback<Article[]>("/articles", [])
-);
+export const articlesState = atom(async () => {
+  const list = await requestWithFallback<any[]>('/articles', []);
+  if (!Array.isArray(list)) return [];
+  return list.filter((a: any) => {
+    if (typeof a.published === 'boolean') return a.published === true;
+    if (a.publishedAt || a.published_at) return Boolean(a.publishedAt ?? a.published_at);
+    return true;
+  });
+});
 
 export const articleState = atomFamily((id: number) =>
   atom(async (get) => {
