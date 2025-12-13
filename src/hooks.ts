@@ -116,38 +116,36 @@ export function useCheckout() {
   const [cart, setCart] = useAtom(cartState);
   const requestInfo = useRequestInformation();
   const navigate = useNavigate();
-  const refreshNewOrders = useSetAtom(ordersState("pending"));
+  const refreshOrders = useSetAtom(ordersState("pending"));
 
   return async () => {
     try {
       await requestInfo();
-      await createOrder({
-        amount: totalAmount,
-        desc: "Thanh toán đơn hàng",
-        item: cart.map((item) => ({
-          id: item.product.id,
-          name: item.product.name,
-          price: item.product.price,
-          quantity: item.quantity,
-        })),
-      });
+
+      // await createOrder({
+      //   amount: totalAmount,
+      //   desc: "Thanh toán đơn hàng",
+      //   item: cart.map((item) => ({
+      //     id: item.product.id,
+      //     name: item.product.title,
+      //     price: Number(item.product.variants[0].price),
+      //     quantity: item.quantity,
+      //   })),
+      // });
+
       setCart([]);
-      refreshNewOrders();
-      navigate("/orders", {
-        viewTransition: true,
-      });
-      toast.success("Thanh toán thành công. Cảm ơn bạn đã mua hàng!", {
-        icon: "🎉",
-        duration: 5000,
-      });
-    } catch (error) {
-      console.warn(error);
-      toast.error(
-        "Thanh toán thất bại. Vui lòng kiểm tra nội dung lỗi bên trong Console."
-      );
+      refreshOrders();
+
+      navigate("/orders", { viewTransition: true });
+
+      toast.success("Thanh toán thành công! 🎉");
+    } catch (err) {
+      console.error(err);
+      toast.error("Thanh toán thất bại");
     }
   };
 }
+
 
 export function useRouteHandle() {
   const matches = useMatches() as UIMatch<

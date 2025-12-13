@@ -142,41 +142,6 @@ export function useToBeImplemented() {
     });
 }
 
-export function useCheckoutV2() {
-  const { totalAmount } = useAtomValue(cartTotalState);
-  const [cart, setCart] = useAtom(cartState);
-  const requestInfo = useRequestInformation();
-  const navigate = useNavigate();
-  const refreshOrders = useSetAtom(ordersState("pending"));
-
-  return async () => {
-    try {
-      await requestInfo();
-
-      // await createOrder({
-      //   amount: totalAmount,
-      //   desc: "Thanh toán đơn hàng",
-      //   item: cart.map((item) => ({
-      //     id: item.product.id,
-      //     name: item.product.title,
-      //     price: Number(item.product.variants[0].price),
-      //     quantity: item.quantity,
-      //   })),
-      // });
-
-      setCart([]);
-      refreshOrders();
-
-      navigate("/orders", { viewTransition: true });
-
-      toast.success("Thanh toán thành công! 🎉");
-    } catch (err) {
-      console.error(err);
-      toast.error("Thanh toán thất bại");
-    }
-  };
-}
-
 export function useRouteHandle() {
   const matches = useMatches() as UIMatch<
     undefined,
