@@ -63,7 +63,6 @@ export interface Article {
 }
 
 
-// ============ PRODUCT V2 (HARAVAN) ============
 
 export interface Variant {
   barcode: string | null;
@@ -120,7 +119,6 @@ export interface ProductV2 {
   not_allow_promotion: boolean;
 }
 
-// ============ CART V2 ============
 
 export interface CartItemV2 {
   product: ProductV2;
@@ -129,7 +127,6 @@ export interface CartItemV2 {
 
 export type CartV2 = CartItemV2[];
 
-// ============ ORDER V2 ============
 
 export interface OrderItemV2 {
   id: number;

@@ -131,7 +131,6 @@ export const recommendedProductsState = atom(async (get) => {
     if (products && products.length > 0) {
       return products.slice(0, 6);
     }
-    // fallback to local productsState (map local Product -> ProductV2-like shape)
     const local = await get(productsState);
     return (local || []).slice(0, 6).map((p: any) => ({
       id: p.id,
@@ -189,7 +188,6 @@ export const searchResultStateV2 = atom(async (get) => {
   const keyword = get(keywordState) || "";
   const q = keyword.trim();
   if (!q) return [];
-  // Call Haravan search helper and return ProductV2[] so components expecting ProductV2 work
   const haravanProducts = await searchProductsByTitle(q);
   return haravanProducts || [];
 });
@@ -259,8 +257,6 @@ export const shippingAddressState = atomWithStorage<
 
 export const ordersState = atomFamily((status: OrderStatus) =>
   atomWithRefresh(async () => {
-    // Phía tích hợp thay đổi logic filter server-side nếu cần:
-    // const serverSideFilteredData = await requestWithFallback<Order[]>(`/orders?status=${status}`, []);
     const allMockOrders = await requestWithFallback<Order[]>("/orders", []);
     const clientSideFilteredData = allMockOrders.filter(
       (order) => order.status === status
@@ -280,7 +276,7 @@ export const articlesState = atom(async () => {
   return list.filter((a: any) => {
     if (typeof a.published === 'boolean') return a.published === true;
     if (a.publishedAt || a.published_at) return Boolean(a.publishedAt ?? a.published_at);
-    return true; // keep if unknown shape
+    return true;
   });
 });
 
