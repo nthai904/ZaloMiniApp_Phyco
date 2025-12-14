@@ -3,7 +3,7 @@ import { ProductV2 } from "@/types";
 
 export default function ProductGridV2({ products, className, replace, ...props }: { products: ProductV2[]; className?: string; replace?: boolean; [key: string]: any }) {
   return (
-    <div className={"grid grid-cols-2 px-4 pt-2 pb-8 gap-4 ".concat(className ?? "")} {...props}>
+    <div className={"grid grid-cols-2 px-4 pt-2 pb-5 gap-4 ".concat(className ?? "")} {...props}>
       {products.map((p) => (
         <ProductItemV2 key={p.id} product={p} replace={replace} />
       ))}
