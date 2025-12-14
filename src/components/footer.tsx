@@ -1,4 +1,5 @@
-import { ArticleIcon, CartIcon, CategoryIcon, HomeIcon, PackageIcon } from "./vectors";
+import { ArticleIcon, CategoryIcon, HomeIcon, PackageIcon } from "./vectors";
+import { ShoppingCartOutlined } from "@ant-design/icons";
 import HorizontalDivider from "./horizontal-divider";
 import { useAtomValue } from "jotai";
 import { cartStateV2 } from "@/state";
@@ -32,12 +33,13 @@ const NAV_ITEMS = [
   {
     name: "Giỏ hàng",
     path: "/cart",
-    icon: (props) => {
+    icon: (props: { active?: boolean }) => {
       const cart = useAtomValue(cartStateV2);
+      const color = props.active ? "var(--primary)" : "#6F7071";
 
       return (
         <Badge value={cart.length}>
-          <CartIcon {...props} />
+          <ShoppingCartOutlined style={{ fontSize: 24, color }} />
         </Badge>
       );
     },

@@ -59,7 +59,6 @@ export function useRequestInformation() {
 }
 
 function mapProductToV2(p: any): ProductV2 {
-  // accept either old `Product` shape or already `ProductV2`
   if (!p) {
     return {
       body_html: "",
@@ -83,10 +82,8 @@ function mapProductToV2(p: any): ProductV2 {
     } as ProductV2;
   }
 
-  // If already ProductV2-like, return as-is
   if (p.variants || p.images || p.title) return p as ProductV2;
 
-  // Map legacy product fields to v2
   const price = Number(p.price ?? (p.variants?.[0]?.price ?? 0));
   return {
     body_html: p.detail ?? p.body_html ?? "",
@@ -227,7 +224,7 @@ export function useCheckout() {
       //     name: item.product.title,
       //     price: Number(item.product.variants[0].price),
       //     quantity: item.quantity,
-      //   })),
+      //   })), 
       // });
 
       setCart([]);
