@@ -1,17 +1,11 @@
-import { Product } from "@/types";
-import ProductItem from "./product-itemv2";
-import { HTMLAttributes } from "react";
+import ProductItemV2 from "./product-item";
+import { ProductV2 } from "@/types";
 
-export interface ProductGridProps extends HTMLAttributes<HTMLDivElement> {
-  products: Product[];
-  replace?: boolean;
-}
-
-export default function ProductGrid({ products, className, replace, ...props }: ProductGridProps) {
+export default function ProductGridV2({ products, className, replace, ...props }: { products: ProductV2[]; className?: string; replace?: boolean; [key: string]: any }) {
   return (
     <div className={"grid grid-cols-2 px-4 pt-2 pb-8 gap-4 ".concat(className ?? "")} {...props}>
-      {products.map((product) => (
-        <ProductItem key={product.id} product={product} replace={replace} />
+      {products.map((p) => (
+        <ProductItemV2 key={p.id} product={p} replace={replace} />
       ))}
     </div>
   );

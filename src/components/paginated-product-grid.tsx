@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import ProductGridV2 from "@/components/product-gridv2";
+import ProductGridV2 from "@/components/product-grid";
 import { fetchProductsPage } from "@/api/haravan";
 import { ProductV2 } from "@/types";
 

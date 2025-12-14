@@ -16,7 +16,7 @@ import OrderDetailPage from "./pages/orders/detail";
 import ProfileEditorPage from "./pages/profile/editor";
 import BlogDetailPage from "./pages/blog/blog-detail";
 import BlogList from "./pages/blog";
-import BlogListV2 from "./pages/blog/blog-listv2";
+import BlogListV2 from "./pages/blog/blog-list";
 
 const router = createBrowserRouter(
   [
