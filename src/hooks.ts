@@ -3,6 +3,7 @@ import { MutableRefObject, useLayoutEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { UIMatch, useMatches, useNavigate } from "react-router-dom";
 import {
+  cartState,
   cartStateV2,
   cartTotalState,
   ordersState,
@@ -10,6 +11,8 @@ import {
   userInfoState,
 } from "@/state";
 import { Product } from "@/types";
+// import { useAddToCartV2 } from "@/hooksv2";
+import { ProductV2 } from "./types";
 import { getConfig } from "@/utils/template";
 import { authorize, createOrder, openChat } from "zmp-sdk/apis";
 import { useAtomCallback } from "jotai/utils";
@@ -57,44 +60,124 @@ export function useRequestInformation() {
   };
 }
 
-// này là hàm thêm sản phẩm vào giỏ hàng cũ
-export function useAddToCart(product: Product) {
-  const [cart, setCart] = useAtom(cartStateV2);
+function mapProductToV2(p: Product): ProductV2 {
+  return {
+    body_html: p.detail ?? "",
+    body_plain: p.detail ?? "",
+    created_at: new Date().toISOString(),
+    handle: String(p.id),
+    id: p.id,
+    images: [{ src: p.image ?? "" }],
+    product_type: p.category?.name ?? "",
+    published_at: new Date().toISOString(),
+    published_scope: "global",
+    tags: "",
+    template_suffix: "",
+    title: p.name,
+    updated_at: new Date().toISOString(),
+    variants: [
+      {
+        barcode: null,
+        compare_at_price: 0,
+        created_at: new Date().toISOString(),
+        fulfillment_service: null,
+        grams: 0,
+        id: p.id,
+        inventory_management: null,
+        inventory_policy: "deny",
+        inventory_quantity: 0,
+        old_inventory_quantity: 0,
+        inventory_quantity_adjustment: 0,
+        position: 0,
+        price: p.price,
+        product_id: p.id,
+        requires_shipping: true,
+        sku: null,
+        taxable: false,
+        title: "Default",
+        updated_at: new Date().toISOString(),
+        image_id: null,
+        option1: null,
+        option2: null,
+        option3: null,
+        inventory_advance: null,
+      },
+    ],
+    vendor: "",
+    options: [],
+    only_hide_from_list: false,
+    not_allow_promotion: false,
+  } as ProductV2;
+}
+
+export function useAddToCartV2(product?: ProductV2 | null) {
+  const [cart, setCart] = useAtom(cartState);
+  const setLegacyCart = useSetAtom(cartStateV2);
 
   const currentCartItem = useMemo(
-    () => cart.find((item) => item.product.id === product.id),
-    [cart, product.id]
+    () => cart.find((item) => item.product.id === product?.id),
+    [cart, product?.id]
   );
 
   const addToCart = (
     quantity: number | ((oldQuantity: number) => number),
     options?: { toast: boolean }
   ) => {
+    if (!product) return;
     setCart((cart) => {
       const newQuantity =
         typeof quantity === "function"
           ? quantity(currentCartItem?.quantity ?? 0)
           : quantity;
+
       if (newQuantity <= 0) {
-        cart.splice(cart.indexOf(currentCartItem!), 1);
-      } else {
-        if (currentCartItem) {
-          currentCartItem.quantity = newQuantity;
-        } else {
-          cart.push({
-            product,
-            quantity: newQuantity,
-          });
-        }
+        return cart.filter((i) => i.product.id !== product.id);
       }
-      return [...cart];
+
+      if (currentCartItem) {
+        currentCartItem.quantity = newQuantity;
+        return [...cart];
+      }
+
+      return [...cart, { product, quantity: newQuantity }];
     });
-    if (options?.toast) {
-      toast.success("Đã thêm vào giỏ hàngssssssssss");
-    }
+
+    setLegacyCart((legacy) => {
+      const legacyItemIndex = legacy.findIndex((i) => i.product.id === product.id);
+      const newQuantity =
+        typeof quantity === "function"
+          ? quantity(legacyItemIndex >= 0 ? legacy[legacyItemIndex].quantity : 0)
+          : quantity;
+
+      const legacyProduct = {
+        id: product.id,
+        name: product.title,
+        price: Number(product.variants?.[0]?.price ?? 0),
+        image: product.images?.[0]?.src ?? "/placeholder.jpg",
+        category: (product as any).category ?? { id: 0, name: product.product_type ?? "", image: "" },
+      } as any;
+
+      if (newQuantity <= 0) {
+        return legacy.filter((i) => i.product.id !== product.id);
+      }
+
+      if (legacyItemIndex >= 0) {
+        legacy[legacyItemIndex].quantity = newQuantity;
+        return [...legacy];
+      }
+
+      return [...legacy, { product: legacyProduct, quantity: newQuantity }];
+    });
+
+    if (options?.toast) toast.success("Đã thêm vào giỏ hàng");
   };
 
   return { addToCart, cartQuantity: currentCartItem?.quantity ?? 0 };
+}
+
+export function useAddToCartCompat(product?: Product | null) {
+  const mapped = product ? mapProductToV2(product) : null;
+  return useAddToCartV2(mapped as any);
 }
 
 

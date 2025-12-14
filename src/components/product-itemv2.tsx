@@ -1,10 +1,10 @@
-import { ProductV2 } from "@/typesv2";
+import { ProductV2 } from "@/types";
 import { formatPrice } from "@/utils/format";
 import { Button } from "zmp-ui";
 import QuantityInput from "./quantity-input";
 import TransitionLink from "./transition-link";
 import { useState } from "react";
-import { useAddToCartV2 } from "@/hooksv2";
+import { useAddToCartV2 } from "@/hooks";
 
 export interface ProductItemProps {
   product: ProductV2;

@@ -30,6 +30,7 @@ import { calculateDistance } from "./utils/location";
 import { formatDistant } from "./utils/format";
 import CONFIG from "./config";
 import { searchProductsByTitle, fetchProductsPage } from "@/api/haravan";
+import { CartV2 } from "./types";
 
 export const userInfoKeyState = atom(0);
 
@@ -112,94 +113,6 @@ export const categoriesStateUpwrapped = unwrap(
   (prev) => prev ?? []
 );
 
-// Checked
-export const productsState = atom(async (get) => {
-  const categories = await get(categoriesState);
-  const products = await requestWithFallback<(Product & { categoryId: number })[]>('/products', []);
-  const filtered = Array.isArray(products) ? products.filter((p: any) => (p?.published_scope ?? p?.publishedScope ?? '') === 'global') : [];
-  return filtered.map((product) => ({
-    ...product,
-    category: categories.find((category) => category.id === product.categoryId)!,
-  }));
-});
-
-export const flashSaleProductsState = atom((get) => get(productsState));
-
-export const recommendedProductsState = atom(async (get) => {
-  try {
-    const { products } = await fetchProductsPage(1, 10);
-    if (products && products.length > 0) {
-      return products.slice(0, 6);
-    }
-    const local = await get(productsState);
-    return (local || []).slice(0, 6).map((p: any) => ({
-      id: p.id,
-      title: p.name ?? p.title ?? "",
-      body_html: p.detail ?? "",
-      body_plain: p.detail ?? "",
-      created_at: p.createdAt ?? new Date().toISOString(),
-      handle: p.handle ?? String(p.id),
-      images: [{ src: p.image ?? "" }],
-      variants: [{ price: p.price ?? 0 }],
-      product_type: p.category?.name ?? "",
-    } as any));
-  } catch (err) {
-    console.error("recommendedProductsState error:", err);
-    const products = await get(productsState);
-    return (products || []).slice(0, 6).map((p: any) => ({
-      id: p.id,
-      title: p.name ?? p.title ?? "",
-      body_html: p.detail ?? "",
-      body_plain: p.detail ?? "",
-      created_at: p.createdAt ?? new Date().toISOString(),
-      handle: p.handle ?? String(p.id),
-      images: [{ src: p.image ?? "" }],
-      variants: [{ price: p.price ?? 0 }],
-      product_type: p.category?.name ?? "",
-    } as any));
-  }
-});
-
-export const productState = atomFamily((id: number) =>
-  atom(async (get) => {
-    const products = await get(productsState);
-    return products.find((product) => product.id === id);
-  })
-);
-
-export const cartStateV2 = atom<Cart>([]);
-
-export const selectedCartItemIdsState = atom<number[]>([]);
-
-export const cartTotalState = atom((get) => {
-  const items = get(cartStateV2);
-  return {
-    totalItems: items.length,
-    totalAmount: items.reduce(
-      (total, item) => total + item.product.price * item.quantity,
-      0
-    ),
-  };
-});
-
-export const keywordState = atom("");
-
-export const searchResultStateV2 = atom(async (get) => {
-  const keyword = get(keywordState) || "";
-  const q = keyword.trim();
-  if (!q) return [];
-  const haravanProducts = await searchProductsByTitle(q);
-  return haravanProducts || [];
-});
-
-export const productsByCategoryState = atomFamily((id: String) =>
-  atom(async (get) => {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    const products = await get(productsState);
-    return products.filter((product) => String(product.categoryId) === id);
-  })
-);
-
 export const stationsState = atom(async () => {
   let location: Location | undefined;
   try {
@@ -268,6 +181,96 @@ export const ordersState = atomFamily((status: OrderStatus) =>
 export const deliveryModeState = atomWithStorage<Delivery["type"]>(
   CONFIG.STORAGE_KEYS.DELIVERY,
   "shipping"
+);
+
+export const productsState = atom(async (get) => {
+  const categories = await get(categoriesState);
+  const products = await requestWithFallback<(Product & { categoryId: number })[]>('/products', []);
+  const filtered = Array.isArray(products) ? products.filter((p: any) => (p?.published_scope ?? p?.publishedScope ?? '') === 'global') : [];
+  return filtered.map((product) => ({
+    ...product,
+    category: categories.find((category) => category.id === product.categoryId)!,
+  }));
+});
+
+export const flashSaleProductsState = atom((get) => get(productsState));
+
+export const recommendedProductsState = atom(async (get) => {
+  try {
+    const { products } = await fetchProductsPage(1, 10);
+    if (products && products.length > 0) {
+      return products.slice(0, 6);
+    }
+    const local = await get(productsState);
+    return (local || []).slice(0, 6).map((p: any) => ({
+      id: p.id,
+      title: p.name ?? p.title ?? "",
+      body_html: p.detail ?? "",
+      body_plain: p.detail ?? "",
+      created_at: p.createdAt ?? new Date().toISOString(),
+      handle: p.handle ?? String(p.id),
+      images: [{ src: p.image ?? "" }],
+      variants: [{ price: p.price ?? 0 }],
+      product_type: p.category?.name ?? "",
+    } as any));
+  } catch (err) {
+    console.error("recommendedProductsState error:", err);
+    const products = await get(productsState);
+    return (products || []).slice(0, 6).map((p: any) => ({
+      id: p.id,
+      title: p.name ?? p.title ?? "",
+      body_html: p.detail ?? "",
+      body_plain: p.detail ?? "",
+      created_at: p.createdAt ?? new Date().toISOString(),
+      handle: p.handle ?? String(p.id),
+      images: [{ src: p.image ?? "" }],
+      variants: [{ price: p.price ?? 0 }],
+      product_type: p.category?.name ?? "",
+    } as any));
+  }
+});
+
+export const productState = atomFamily((id: number) =>
+  atom(async (get) => {
+    const products = await get(productsState);
+    return products.find((product) => product.id === id);
+  })
+);
+
+export const cartStateV2 = atom<Cart>([]);
+
+export const cartState = atom<CartV2>([]);
+
+
+export const selectedCartItemIdsState = atom<number[]>([]);
+
+export const cartTotalState = atom((get) => {
+  const items = get(cartStateV2);
+  return {
+    totalItems: items.length,
+    totalAmount: items.reduce(
+      (total, item) => total + item.product.price * item.quantity,
+      0
+    ),
+  };
+});
+
+export const keywordState = atom("");
+
+export const searchResultStateV2 = atom(async (get) => {
+  const keyword = get(keywordState) || "";
+  const q = keyword.trim();
+  if (!q) return [];
+  const haravanProducts = await searchProductsByTitle(q);
+  return haravanProducts || [];
+});
+
+export const productsByCategoryState = atomFamily((id: String) =>
+  atom(async (get) => {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    const products = await get(productsState);
+    return products.filter((product) => String(product.categoryId) === id);
+  })
 );
 
 export const articlesState = atom(async () => {
