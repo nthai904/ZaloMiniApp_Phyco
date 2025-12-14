@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ProductGridV2 from "@/components/product-gridv2";
 import { fetchProductsPage } from "@/api/haravan";
-import { ProductV2 } from "@/typesv2";
+import { ProductV2 } from "@/types";
 
 interface Props {
   initialPage?: number;

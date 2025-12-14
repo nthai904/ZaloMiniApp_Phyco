@@ -7,18 +7,6 @@ export interface UserInfo {
   address: string;
 }
 
-export interface Product {
-  id: number;
-  name: string;
-  price: number;
-  originalPrice?: number;
-  image: string;
-  category: Category;
-  detail?: string;
-  sizes?: Size[];
-  colors?: Color[];
-}
-
 export interface Category {
   id: number;
   name: string;
@@ -131,6 +119,8 @@ export interface ProductV2 {
   only_hide_from_list: boolean;
   not_allow_promotion: boolean;
 }
+
+export type Product = ProductV2;
 
 
 export interface CartItemV2 {

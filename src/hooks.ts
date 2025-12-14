@@ -10,9 +10,7 @@ import {
   userInfoKeyState,
   userInfoState,
 } from "@/state";
-import { Product } from "@/types";
-// import { useAddToCartV2 } from "@/hooksv2";
-import { ProductV2 } from "./types";
+import {Product,  ProductV2 } from "./types";
 import { getConfig } from "@/utils/template";
 import { authorize, createOrder, openChat } from "zmp-sdk/apis";
 import { useAtomCallback } from "jotai/utils";
@@ -60,20 +58,49 @@ export function useRequestInformation() {
   };
 }
 
-function mapProductToV2(p: Product): ProductV2 {
+function mapProductToV2(p: any): ProductV2 {
+  // accept either old `Product` shape or already `ProductV2`
+  if (!p) {
+    return {
+      body_html: "",
+      body_plain: null,
+      created_at: new Date().toISOString(),
+      handle: "",
+      id: 0,
+      images: [{ src: "" }],
+      product_type: "",
+      published_at: new Date().toISOString(),
+      published_scope: "global",
+      tags: "",
+      template_suffix: "",
+      title: "",
+      updated_at: new Date().toISOString(),
+      variants: [],
+      vendor: "",
+      options: [],
+      only_hide_from_list: false,
+      not_allow_promotion: false,
+    } as ProductV2;
+  }
+
+  // If already ProductV2-like, return as-is
+  if (p.variants || p.images || p.title) return p as ProductV2;
+
+  // Map legacy product fields to v2
+  const price = Number(p.price ?? (p.variants?.[0]?.price ?? 0));
   return {
-    body_html: p.detail ?? "",
-    body_plain: p.detail ?? "",
+    body_html: p.detail ?? p.body_html ?? "",
+    body_plain: p.detail ?? p.body_plain ?? null,
     created_at: new Date().toISOString(),
-    handle: String(p.id),
-    id: p.id,
-    images: [{ src: p.image ?? "" }],
-    product_type: p.category?.name ?? "",
+    handle: String(p.handle ?? p.id ?? ""),
+    id: Number(p.id ?? 0),
+    images: [{ src: p.image ?? (p.images?.[0]?.src ?? "") }],
+    product_type: p.category?.name ?? p.product_type ?? "",
     published_at: new Date().toISOString(),
     published_scope: "global",
-    tags: "",
-    template_suffix: "",
-    title: p.name,
+    tags: p.tags ?? "",
+    template_suffix: p.template_suffix ?? "",
+    title: p.name ?? p.title ?? "",
     updated_at: new Date().toISOString(),
     variants: [
       {
@@ -82,15 +109,15 @@ function mapProductToV2(p: Product): ProductV2 {
         created_at: new Date().toISOString(),
         fulfillment_service: null,
         grams: 0,
-        id: p.id,
+        id: Number(p.id ?? 0),
         inventory_management: null,
         inventory_policy: "deny",
         inventory_quantity: 0,
         old_inventory_quantity: 0,
         inventory_quantity_adjustment: 0,
         position: 0,
-        price: p.price,
-        product_id: p.id,
+        price,
+        product_id: Number(p.id ?? 0),
         requires_shipping: true,
         sku: null,
         taxable: false,
@@ -103,8 +130,8 @@ function mapProductToV2(p: Product): ProductV2 {
         inventory_advance: null,
       },
     ],
-    vendor: "",
-    options: [],
+    vendor: p.vendor ?? "",
+    options: p.options ?? [],
     only_hide_from_list: false,
     not_allow_promotion: false,
   } as ProductV2;

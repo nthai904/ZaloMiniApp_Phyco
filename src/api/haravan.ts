@@ -1,4 +1,4 @@
-import { ProductV2 } from "@/typesv2";
+import { ProductV2 } from "@/types";
 
 export interface PaginatedProductsResponse {
   products: ProductV2[];

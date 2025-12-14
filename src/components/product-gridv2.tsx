@@ -1,6 +1,5 @@
 import ProductItemV2 from "./product-itemv2";
-import { ProductV2 } from "@/typesv2";
-import React from "react";
+import { ProductV2 } from "@/types";
 
 export default function ProductGridV2({ products, className, replace, ...props }: { products: ProductV2[]; className?: string; replace?: boolean; [key: string]: any }) {
   return (

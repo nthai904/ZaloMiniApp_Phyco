@@ -54,12 +54,12 @@ export default function CartItem(props: CartItemProps) {
       </div>
 
       <animated.div {...bind()} style={{ x }} className="bg-white p-4 flex items-center space-x-4 relative">
-        <img src={props.product.image} className="w-14 h-14 rounded-lg" />
+        <img src={(props.product as any).image ?? props.product.images?.[0]?.src ?? "/placeholder.jpg"} className="w-14 h-14 rounded-lg" />
         <div className="flex-1 space-y-1">
-          <div className="text-sm">{props.product.name}</div>
+          <div className="text-sm">{(props.product as any).name ?? props.product.title}</div>
           <div className="flex flex-col">
-            <div className="text-sm font-bold">{formatPrice(props.product.price)}</div>
-            {props.product.originalPrice && <div className="line-through text-subtitle text-4xs">{formatPrice(props.product.originalPrice)}</div>}
+            <div className="text-sm font-bold">{formatPrice((props.product as any).price ?? Number(props.product.variants?.[0]?.price ?? 0))}</div>
+            {((props.product as any).originalPrice ?? null) && <div className="line-through text-subtitle text-4xs">{formatPrice((props.product as any).originalPrice)}</div>}
           </div>
         </div>
         <div className="text-sm font-medium">x{quantity}</div>

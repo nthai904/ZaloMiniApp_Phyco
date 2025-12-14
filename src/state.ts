@@ -17,6 +17,7 @@ import {
   ShippingAddress,
   Station,
   UserInfo,
+  CartV2
 } from "@/types";
 import { requestWithFallback } from "@/utils/request";
 import {
@@ -25,12 +26,12 @@ import {
   getSetting,
   getUserInfo,
 } from "zmp-sdk/apis";
+
 import toast from "react-hot-toast";
 import { calculateDistance } from "./utils/location";
 import { formatDistant } from "./utils/format";
 import CONFIG from "./config";
 import { searchProductsByTitle, fetchProductsPage } from "@/api/haravan";
-import { CartV2 } from "./types";
 
 export const userInfoKeyState = atom(0);
 
@@ -249,8 +250,11 @@ export const cartTotalState = atom((get) => {
   return {
     totalItems: items.length,
     totalAmount: items.reduce(
-      (total, item) => total + item.product.price * item.quantity,
-      0
+      (total, item) => {
+        const price = (item.product as any).price ?? Number(item.product.variants?.[0]?.price ?? 0);
+        return total + price * item.quantity;
+      },
+    0
     ),
   };
 });
