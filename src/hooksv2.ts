@@ -1,66 +1,17 @@
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
-import { MutableRefObject, useLayoutEffect, useMemo, useState } from "react";
+import { useAtom, useSetAtom } from "jotai";
+import { useMemo } from "react";
 import toast from "react-hot-toast";
-import { UIMatch, useMatches, useNavigate } from "react-router-dom";
 import {
   cartState,
-  cartTotalState,
-  ordersState,
-  userInfoKeyState,
-  userInfoState,
 } from "@/statev2";
-// Keep compatibility with legacy UI which still reads from `@/state`
-import { cartState as legacyCartState } from "@/state";
-import { getConfig } from "@/utils/template";
-import { authorize, createOrder, openChat } from "zmp-sdk/apis";
-import { useAtomCallback } from "jotai/utils";
+import { cartStateV2 as legacyCartState } from "@/state";
 import { ProductV2 } from "./typesv2";
 
-export function useRealHeight(
-  element: MutableRefObject<HTMLDivElement | null>,
-  defaultValue?: number
-) {
-  const [height, setHeight] = useState(defaultValue ?? 0);
-  useLayoutEffect(() => {
-    if (element.current && typeof ResizeObserver !== "undefined") {
-      const ro = new ResizeObserver((entries: ResizeObserverEntry[]) => {
-        const [{ contentRect }] = entries;
-        setHeight(contentRect.height);
-      });
-      ro.observe(element.current);
-      return () => ro.disconnect();
-    }
-    return () => {};
-  }, [element.current]);
-
-  if (typeof ResizeObserver === "undefined") {
-    return -1;
-  }
-  return height;
-}
-
-export function useRequestInformation() {
-  const getStoredUserInfo = useAtomCallback(async (get) => {
-    const userInfo = await get(userInfoState);
-    return userInfo;
-  });
-  const setInfoKey = useSetAtom(userInfoKeyState);
-  const refreshPermissions = () => setInfoKey((key) => key + 1);
-
-  return async () => {
-    const userInfo = await getStoredUserInfo();
-    if (!userInfo) {
-      await authorize({
-        scopes: ["scope.userInfo", "scope.userPhonenumber"],
-      }).then(refreshPermissions);
-      return await getStoredUserInfo();
-    }
-    return userInfo;
-  };
-}
-
 export function useAddToCartV2(product?: ProductV2 | null) {
+  // Lấy hàm từ file statev2.ts
   const [cart, setCart] = useAtom(cartState);
+
+  // Lấy hàm từ file state.ts 
   const setLegacyCart = useSetAtom(legacyCartState);
 
   const currentCartItem = useMemo(
@@ -73,7 +24,6 @@ export function useAddToCartV2(product?: ProductV2 | null) {
     options?: { toast: boolean }
   ) => {
     if (!product) return;
-    // Update v2 cart
     setCart((cart) => {
       const newQuantity =
         typeof quantity === "function"
@@ -92,8 +42,6 @@ export function useAddToCartV2(product?: ProductV2 | null) {
       return [...cart, { product, quantity: newQuantity }];
     });
 
-    // Also update legacy v1 cart so existing UI components (header, floating preview, cart page)
-    // that still read from `@/state` reflect changes. We map minimal fields required by v1.
     setLegacyCart((legacy) => {
       const legacyItemIndex = legacy.findIndex((i) => i.product.id === product.id);
       const newQuantity =
@@ -125,38 +73,4 @@ export function useAddToCartV2(product?: ProductV2 | null) {
   };
 
   return { addToCart, cartQuantity: currentCartItem?.quantity ?? 0 };
-}
-
-export function useCustomerSupport() {
-  return () =>
-    openChat({
-      type: "oa",
-      id: getConfig((config) => config.template.oaIDtoOpenChat),
-    });
-}
-
-export function useToBeImplemented() {
-  return () =>
-    toast("Chức năng dành cho các bên tích hợp phát triển...", {
-      icon: "🛠️",
-    });
-}
-
-export function useRouteHandle() {
-  const matches = useMatches() as UIMatch<
-    undefined,
-    | {
-        title?: string | Function;
-        logo?: boolean;
-        search?: boolean;
-        noFooter?: boolean;
-        noBack?: boolean;
-        noFloatingCart?: boolean;
-        scrollRestoration?: number;
-      }
-    | undefined
-  >[];
-  const lastMatch = matches[matches.length - 1];
-
-  return [lastMatch.handle, lastMatch, matches] as const;
 }

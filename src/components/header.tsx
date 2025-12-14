@@ -7,7 +7,7 @@ import { getConfig } from "@/utils/template";
 import SearchBar from "./search-bar";
 import { ShoppingCartOutlined } from "@ant-design/icons";
 import HeaderOverlay from "@/components/header-overlay";
-import { cartState } from "@/state";
+import { cartStateV2 } from "@/state";
 
 type HeaderProps = {
   showHeaderOverlay?: boolean;
@@ -31,7 +31,7 @@ export default function Header({ showHeaderOverlay = true, isScrolled = false }:
     }
   }, [handle, categories]);
 
-  const cart = useAtomValue(cartState);
+  const cart = useAtomValue(cartStateV2);
 
   const isHomePage = location.pathname === "/";
   const shouldRoundBottomCorners = isHomePage && !isScrolled;

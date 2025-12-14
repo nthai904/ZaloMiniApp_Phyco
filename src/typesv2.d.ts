@@ -1,69 +1,3 @@
-export interface UserInfo {
-  id: string;
-  name: string;
-  avatar: string;
-  phone: string;
-  email: string;
-  address: string;
-}
-
-export interface Category {
-  id: number;
-  name: string;
-  image: string;
-}
-
-export interface Location {
-  lat: number;
-  lng: number;
-}
-
-export interface ShippingAddress {
-  alias: string;
-  address: string;
-  name: string;
-  phone: string;
-}
-
-export interface Station {
-  id: number;
-  name: string;
-  image: string;
-  address: string;
-  location: Location;
-}
-
-export type Delivery =
-  | ({
-      type: "shipping";
-    } & ShippingAddress)
-  | {
-      type: "pickup";
-      stationId: number;
-    };
-
-
-export interface ArticleAuthor {
-  name: string;
-  avatar: string;
-}
-
-export interface Article {
-  id: number;
-  title: string;
-  excerpt: string;
-  content: string;
-  image: string;
-  author: ArticleAuthor;
-  category: string;
-  publishedAt: string;
-  readTime: number;
-  views: number;
-  tags: string[];
-}
-
-
-
 export interface Variant {
   barcode: string | null;
   compare_at_price: number;
@@ -135,9 +69,6 @@ export interface OrderItemV2 {
   quantity: number;
 }
 
-export type OrderStatus = "pending" | "shipping" | "completed";
-export type PaymentStatus = "pending" | "success" | "failed";
-
 export interface OrderV2 {
   id: number;
   items: OrderItemV2[];
@@ -146,4 +77,39 @@ export interface OrderV2 {
   total: number;
   note: string;
   createdAt: Date;
+}
+
+export interface ArticleAuthor {
+  name: string;
+  avatar: string;
+}
+
+export interface Article {
+  id: number;
+  title: string;
+  excerpt: string;
+  content: string;
+  image: string;
+  author: ArticleAuthor;
+  category: string;
+  blog_id?: number | string;
+  blog_handle?: string;
+  publishedAt: string;
+  published?: boolean;
+  readTime: number;
+  views: number;
+  tags: string[];
+}
+
+export interface Blog {
+  id: number;
+  handle?: string;
+  title: string;
+  tags?: string;
+  commentable?: string;
+  template_suffix?: string | null;
+  created_at?: string;
+  updated_at?: string;
+  article_count?: number;
+  hasPublished?: boolean;
 }

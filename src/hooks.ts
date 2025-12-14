@@ -3,7 +3,7 @@ import { MutableRefObject, useLayoutEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { UIMatch, useMatches, useNavigate } from "react-router-dom";
 import {
-  cartState,
+  cartStateV2,
   cartTotalState,
   ordersState,
   userInfoKeyState,
@@ -57,8 +57,9 @@ export function useRequestInformation() {
   };
 }
 
+// này là hàm thêm sản phẩm vào giỏ hàng cũ
 export function useAddToCart(product: Product) {
-  const [cart, setCart] = useAtom(cartState);
+  const [cart, setCart] = useAtom(cartStateV2);
 
   const currentCartItem = useMemo(
     () => cart.find((item) => item.product.id === product.id),
@@ -89,31 +90,17 @@ export function useAddToCart(product: Product) {
       return [...cart];
     });
     if (options?.toast) {
-      toast.success("Đã thêm vào giỏ hàng");
+      toast.success("Đã thêm vào giỏ hàngssssssssss");
     }
   };
 
   return { addToCart, cartQuantity: currentCartItem?.quantity ?? 0 };
 }
 
-export function useCustomerSupport() {
-  return () =>
-    openChat({
-      type: "oa",
-      id: getConfig((config) => config.template.oaIDtoOpenChat),
-    });
-}
-
-export function useToBeImplemented() {
-  return () =>
-    toast("Chức năng dành cho các bên tích hợp phát triển...", {
-      icon: "🛠️",
-    });
-}
 
 export function useCheckout() {
   const { totalAmount } = useAtomValue(cartTotalState);
-  const [cart, setCart] = useAtom(cartState);
+  const [cart, setCart] = useAtom(cartStateV2);
   const requestInfo = useRequestInformation();
   const navigate = useNavigate();
   const refreshOrders = useSetAtom(ordersState("pending"));
@@ -146,6 +133,20 @@ export function useCheckout() {
   };
 }
 
+export function useCustomerSupport() {
+  return () =>
+    openChat({
+      type: "oa",
+      id: getConfig((config) => config.template.oaIDtoOpenChat),
+    });
+}
+
+export function useToBeImplemented() {
+  return () =>
+    toast("Chức năng dành cho các bên tích hợp phát triển...", {
+      icon: "🛠️",
+    });
+}
 
 export function useRouteHandle() {
   const matches = useMatches() as UIMatch<

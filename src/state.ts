@@ -7,7 +7,6 @@ import {
   unwrap,
 } from "jotai/utils";
 import {
-  Article,
   Cart,
   Category,
   Delivery,
@@ -113,6 +112,7 @@ export const categoriesStateUpwrapped = unwrap(
   (prev) => prev ?? []
 );
 
+// Checked
 export const productsState = atom(async (get) => {
   const categories = await get(categoriesState);
   const products = await requestWithFallback<(Product & { categoryId: number })[]>('/products', []);
@@ -167,12 +167,12 @@ export const productState = atomFamily((id: number) =>
   })
 );
 
-export const cartState = atom<Cart>([]);
+export const cartStateV2 = atom<Cart>([]);
 
 export const selectedCartItemIdsState = atom<number[]>([]);
 
 export const cartTotalState = atom((get) => {
-  const items = get(cartState);
+  const items = get(cartStateV2);
   return {
     totalItems: items.length,
     totalAmount: items.reduce(

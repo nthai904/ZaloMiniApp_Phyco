@@ -2,14 +2,14 @@ import CartList from "./cart-list";
 import ApplyVoucher from "./apply-voucher";
 import CartSummary from "./cart-summary";
 import { useAtomValue } from "jotai";
-import { cartState } from "@/state";
+import { cartStateV2 } from "@/state";
 import { EmptyCart } from "@/components/empty";
 import Delivery from "./delivery";
 import HorizontalDivider from "@/components/horizontal-divider";
 import Pay from "./pay";
 
 export default function CartPage() {
-  const cart = useAtomValue(cartState);
+  const cart = useAtomValue(cartStateV2);
 
   if (!cart.length) {
     return <EmptyCart />;
