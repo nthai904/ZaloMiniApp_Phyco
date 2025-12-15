@@ -1,6 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
 
-export default function SortDropdown({ value, onChange }: { value: "none" | "price-asc" | "price-desc"; onChange: (v: "none" | "price-asc" | "price-desc") => void }) {
+export default function SortDropdown({
+  value,
+  onChange,
+}: {
+  value: "none" | "price-asc" | "price-desc" | "date-new" | "date-old";
+  onChange: (v: "none" | "price-asc" | "price-desc" | "date-new" | "date-old") => void;
+}) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement | null>(null);
 
@@ -13,7 +19,7 @@ export default function SortDropdown({ value, onChange }: { value: "none" | "pri
     return () => document.removeEventListener("click", onDoc);
   }, []);
 
-  const label = value === "none" ? "Mặc định" : value === "price-asc" ? "Giá tăng dần" : "Giá giảm dần";
+  const label = value === "none" ? "Mặc định" : value === "price-asc" ? "Giá tăng dần" : value === "price-desc" ? "Giá giảm dần" : value === "date-new" ? "Mới nhất" : "Cũ nhất";
 
   return (
     <div ref={ref} className="relative inline-block text-left">
@@ -28,7 +34,7 @@ export default function SortDropdown({ value, onChange }: { value: "none" | "pri
       </button>
 
       {open && (
-        <div className="absolute right-0 mt-2 w-44 bg-white border rounded shadow-lg z-40">
+        <div className="absolute left-0 mt-2 w-44 bg-white border rounded shadow-lg z-40">
           <ul>
             <li>
               <button
@@ -61,6 +67,28 @@ export default function SortDropdown({ value, onChange }: { value: "none" | "pri
                 }}
               >
                 Giá giảm dần
+              </button>
+            </li>
+            <li>
+              <button
+                className={`w-full text-left px-4 py-2 hover:bg-gray-50 ${value === "date-new" ? "font-semibold" : ""}`}
+                onClick={() => {
+                  onChange("date-new");
+                  setOpen(false);
+                }}
+              >
+                Mới nhất
+              </button>
+            </li>
+            <li>
+              <button
+                className={`w-full text-left px-4 py-2 hover:bg-gray-50 ${value === "date-old" ? "font-semibold" : ""}`}
+                onClick={() => {
+                  onChange("date-old");
+                  setOpen(false);
+                }}
+              >
+                Cũ nhất
               </button>
             </li>
           </ul>

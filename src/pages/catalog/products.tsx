@@ -4,7 +4,7 @@ import PaginatedProductGrid from "@/components/paginated-product-grid";
 import SortDropdown from "@/components/sort-dropdown";
 
 export default function ProductsPage() {
-  const [sortOrder, setSortOrder] = useState<"none" | "price-asc" | "price-desc">("none");
+  const [sortOrder, setSortOrder] = useState<"none" | "price-asc" | "price-desc" | "date-new" | "date-old">("none");
 
   return (
     <div className="h-full flex flex-col bg-section">
@@ -19,7 +19,6 @@ export default function ProductsPage() {
 
       <div className="flex items-center gap-3 pl-5">
         <SortDropdown value={sortOrder} onChange={(v) => setSortOrder(v)} />
-        // Thêm bộ lọc theo sản phẩm cũ nhất và mới nhất ở đây
       </div>
 
       <div className="flex-1 overflow-y-auto">
