@@ -154,30 +154,40 @@ export default function PaginatedProductGrid({ initialPage = 1, perPage = 20, so
       )}
 
       {/* Pagination */}
-      <div className="pb-9 flex items-center justify-center gap-2">
-        {/* Prev */}
+      <div className="pb-9 flex items-center justify-center gap-4">
+        {/* Prev (icon) */}
         <button
           onClick={handlePrev}
           disabled={page <= 1 || loading}
-          className={`px-4 py-2 rounded border 
-          ${page <= 1 || loading ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-gray-100 hover:bg-gray-200"}`}
+          aria-label="Trang trước"
+          title="Trang trước"
+          className={`p-2 rounded-full border flex items-center justify-center transition-colors duration-150 ${
+            page <= 1 || loading ? "bg-gray-100 text-gray-400 cursor-not-allowed" : "bg-white hover:bg-gray-50 active:scale-95"
+          }`}
         >
-          Trang trước
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M15 18l-6-6 6-6" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
         </button>
 
         <span className="text-sm px-2 opacity-70">Trang {page}</span>
 
-        {/* Next */}
+        {/* Next (icon) */}
         <button
           onClick={() => {
             setIsAppend(false);
             setPage(page + 1);
           }}
           disabled={!hasMore || loading}
-          className={`px-4 py-2 rounded border 
-          ${!hasMore || loading ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-gray-100 hover:bg-gray-200"}`}
+          aria-label="Trang sau"
+          title="Trang sau"
+          className={`p-2 rounded-full border flex items-center justify-center transition-colors duration-150 ${
+            !hasMore || loading ? "bg-gray-100 text-gray-400 cursor-not-allowed" : "bg-white hover:bg-gray-50 active:scale-95"
+          }`}
         >
-          Trang sau
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 6l6 6-6 6" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
         </button>
       </div>
     </div>

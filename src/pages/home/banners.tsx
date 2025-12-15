@@ -8,7 +8,9 @@ export default function Banners() {
   return (
     <Carousel
       slides={banners.map((banner) => (
-        <img className="w-full rounded" src={banner} />
+        <div className="w-full rounded overflow-hidden relative" style={{ paddingTop: "36%" }}>
+          <img src={banner} className="absolute inset-0 w-full h-full object-cover block" loading="lazy" decoding="async" alt="banner" />
+        </div>
       ))}
     />
   );
