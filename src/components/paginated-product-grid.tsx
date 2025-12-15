@@ -6,9 +6,10 @@ import { ProductV2 } from "@/types";
 interface Props {
   initialPage?: number;
   perPage?: number;
+  sortOrder?: "none" | "price-asc" | "price-desc";
 }
 
-export default function PaginatedProductGrid({ initialPage = 1, perPage = 20 }: Props) {
+export default function PaginatedProductGrid({ initialPage = 1, perPage = 20, sortOrder = "none" }: Props) {
   const [page, setPage] = useState(initialPage);
   const [products, setProducts] = useState<ProductV2[]>([]);
   const [loading, setLoading] = useState(false);
@@ -67,7 +68,26 @@ export default function PaginatedProductGrid({ initialPage = 1, perPage = 20 }: 
     <div className="p-1">
       {error && <div className="mb-4 text-red-600">Có lỗi: {error}</div>}
 
-      <ProductGridV2 products={products} />
+      {/* Apply client-side filtering and sorting */}
+      {(() => {
+        let displayed = products.slice();
+
+        if (sortOrder === "price-asc") {
+          displayed.sort((a, b) => {
+            const pa = Number((a as any).price ?? a.variants?.[0]?.price ?? 0);
+            const pb = Number((b as any).price ?? b.variants?.[0]?.price ?? 0);
+            return pa - pb;
+          });
+        } else if (sortOrder === "price-desc") {
+          displayed.sort((a, b) => {
+            const pa = Number((a as any).price ?? a.variants?.[0]?.price ?? 0);
+            const pb = Number((b as any).price ?? b.variants?.[0]?.price ?? 0);
+            return pb - pa;
+          });
+        }
+
+        return <ProductGridV2 products={displayed} />;
+      })()}
 
       {/* Pagination */}
       <div className="pb-9 flex items-center justify-center gap-2">
