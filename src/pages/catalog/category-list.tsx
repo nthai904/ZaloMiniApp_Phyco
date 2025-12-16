@@ -1,20 +1,27 @@
-import { collectionsState, productsByCollectionState } from "@/api/state";
+import { collectionsWithProductsState, productsByCollectionState } from "@/api/state";
 import { useAtomValue } from "jotai";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import ProductItemV2 from "@/components/product-item";
 
 export default function CategoryListPage() {
-  const collections = useAtomValue(collectionsState) as any[];
+  const collections = useAtomValue(collectionsWithProductsState) as any[];
   const [activeCollection, setActiveCollection] = useState<number | string | null>(null);
+  const [searchParams] = useSearchParams();
   const products = useAtomValue(productsByCollectionState(activeCollection ?? ""));
   const navigate = useNavigate();
 
   useEffect(() => {
+    const param = searchParams.get("active");
+    if (param && !activeCollection) {
+      setActiveCollection(param);
+      return;
+    }
+
     if (!activeCollection && Array.isArray(collections) && collections.length > 0) {
       setActiveCollection(collections[0].id);
     }
-  }, [collections, activeCollection]);
+  }, [collections, searchParams]);
 
   return (
     <div className="p-3">
@@ -24,7 +31,7 @@ export default function CategoryListPage() {
             key={c.id}
             onClick={() => setActiveCollection(c.id)}
             className={`px-4 py-2 rounded-full whitespace-nowrap border ${
-              activeCollection === c.id ? "bg-primary text-white border-primary" : "bg-white text-foreground border-gray-200"
+              String(activeCollection) === String(c.id) ? "bg-primary text-white border-primary" : "bg-white text-foreground border-gray-200"
             }`}
           >
             {c.title}

@@ -8,6 +8,7 @@ import {
   fetchBlogHasPublished,
   fetchCollections,
   fetchProductsByCollection,
+  fetchCollectsByCollection,
 } from "./service";
 import { atomFamily } from "jotai/utils";
 
@@ -89,6 +90,25 @@ export const collectionsState = atom(async () => {
     return await fetchCollections();
   } catch (e: any) {
     console.error("Lỗi load danh mục:", e.message);
+    return [];
+  }
+});
+
+export const collectionsWithProductsState = atom(async () => {
+  try {
+    const collections = (await fetchCollections()) ?? [];
+    if (!Array.isArray(collections) || collections.length === 0) return [];
+
+    const results = await Promise.all(
+      collections.map(async (col: any) => {
+        const collects = (await fetchCollectsByCollection(col.id)) ?? [];
+        return { ...col, _productsCount: Array.isArray(collects) ? collects.length : 0 };
+      })
+    );
+
+    return results.filter((c: any) => c._productsCount > 0);
+  } catch (e: any) {
+    console.error("Lỗi load collectionsWithProducts:", e.message);
     return [];
   }
 });
