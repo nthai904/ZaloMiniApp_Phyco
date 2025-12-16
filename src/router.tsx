@@ -32,14 +32,14 @@ const router = createBrowserRouter(
             search: true,
           },
         },
-        {
-          path: "/categories",
-          element: <CategoryListPage />,
-          handle: {
-            title: "Danh mục",
-            noBack: true,
+          {
+            path: "/categories",
+            element: <CategoryListPage />,
+            handle: {
+              title: "Danh mục",
+              noBack: true,
+            },
           },
-        },
         {
           path: "/products",
           element: <ProductsPage />,

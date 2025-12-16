@@ -79,7 +79,41 @@ export default () => {
             });
           },
         },
+        // vite.config.mts
+        "/api/collection": {
+          target: `${process.env.API_URL}`,
+          changeOrigin: true,
+          secure: true,
+          rewrite: () => "/com/custom_collections.json",
+          configure: (proxy) => {
+            proxy.on("proxyReq", (proxyReq: any) => {
+              proxyReq.setHeader(
+                "Authorization",
+                `Bearer ${process.env.API_TOKEN}`
+              );
+              proxyReq.setHeader("Content-Type", "application/json");
+            });
+          },
+        },
+
+        "/api/collect": {
+          target: `${process.env.API_URL}`,
+          changeOrigin: true,
+          secure: true,
+          rewrite: () => "/com/collects.json",
+          configure: (proxy) => {
+            proxy.on("proxyReq", (proxyReq: any) => {
+              proxyReq.setHeader(
+                "Authorization",
+                `Bearer ${process.env.API_TOKEN}`
+              );
+              proxyReq.setHeader("Content-Type", "application/json");
+            });
+          },
+        },
+
       },
+      
     },
     resolve: {
       alias: {

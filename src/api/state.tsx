@@ -1,5 +1,14 @@
 import { atom } from "jotai";
-import { fetchProductsList, fetchProductDetail, fetchBLogList, fetchBlogDetail, fetchBlogCount, fetchBlogHasPublished } from "./service";
+import {
+  fetchProductsList,
+  fetchProductDetail,
+  fetchBLogList,
+  fetchBlogDetail,
+  fetchBlogCount,
+  fetchBlogHasPublished,
+  fetchCollections,
+  fetchProductsByCollection,
+} from "./service";
 import { atomFamily } from "jotai/utils";
 
 // Danh sách sản phẩm
@@ -74,3 +83,24 @@ export const fetchBlogDetailState = atom(null, async (get, set, id: number | str
     set(blogDetailState, null);
   }
 });
+
+export const collectionsState = atom(async () => {
+  try {
+    return await fetchCollections();
+  } catch (e: any) {
+    console.error("Lỗi load danh mục:", e.message);
+    return [];
+  }
+});
+
+// Sản phẩm theo danh mục
+export const productsByCollectionState = atomFamily((collectionId: number | string) =>
+  atom(async () => {
+    try {
+      return await fetchProductsByCollection(collectionId);
+    } catch (e: any) {
+      console.error("Lỗi load sản phẩm:", e.message);
+      return [];
+    }
+  })
+);
