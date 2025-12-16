@@ -17,7 +17,7 @@ export default function ProductsPage() {
         </div>
       </div>
 
-      <div className="flex items-center gap-3 pl-5">
+      <div className="flex items-center gap-3 pl-5 pb-2">
         <SortDropdown value={sortOrder} onChange={(v) => setSortOrder(v)} />
       </div>
 
