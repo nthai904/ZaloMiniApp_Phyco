@@ -192,17 +192,12 @@ export async function fetchCollectsByCollection(collectionId: number | string) {
 export async function fetchProductsByCollection(collectionId: number | string) {
   const collects = await fetchCollectsByCollection(collectionId);
 
-  // 🔥 FIX 1: FILTER CHÍNH XÁC THEO collection_id
   const filteredCollects = collects.filter((c: any) => String(c.collection_id) === String(collectionId));
-
-  console.log("FILTERED COLLECTS:", filteredCollects);
 
   if (filteredCollects.length === 0) return [];
 
-  // 🔥 FIX 2: REMOVE DUPLICATE product_id
   const productIds = Array.from(new Set(filteredCollects.map((c: any) => c.product_id)));
 
-  // 🔥 FIX 3: FETCH PRODUCTS
   const products = await Promise.all(
     productIds.map((id: number) =>
       fetch(`/api/product/${id}`)
