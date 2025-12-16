@@ -5,7 +5,6 @@ import { useParams } from "react-router-dom";
 export default function CategoryDetailPage() {
   const { id } = useParams();
 
-  // ⚠️ QUAN TRỌNG: id là string
   const products = useAtomValue(productsByCollectionState(id!));
 
   if (!id) return null;

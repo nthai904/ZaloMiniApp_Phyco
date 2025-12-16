@@ -8,7 +8,6 @@ import {
   fetchBlogHasPublished,
   fetchCollections,
   fetchProductsByCollection,
-  fetchCollectsByCollection,
 } from "./service";
 import { atomFamily } from "jotai/utils";
 
@@ -101,8 +100,8 @@ export const collectionsWithProductsState = atom(async () => {
 
     const results = await Promise.all(
       collections.map(async (col: any) => {
-        const collects = (await fetchCollectsByCollection(col.id)) ?? [];
-        return { ...col, _productsCount: Array.isArray(collects) ? collects.length : 0 };
+        const products = (await fetchProductsByCollection(col.id)) ?? [];
+        return { ...col, _productsCount: Array.isArray(products) ? products.length : 0 };
       })
     );
 
