@@ -7,9 +7,11 @@ interface Props {
   initialPage?: number;
   perPage?: number;
   sortOrder?: "none" | "price-asc" | "price-desc" | "date-new" | "date-old";
+  collectionId?: string | number;
 }
 
-export default function PaginatedProductGrid({ initialPage = 1, perPage = 20, sortOrder = "none" }: Props) {
+export default function PaginatedProductGrid({ initialPage = 1, perPage = 20, sortOrder = "none", collectionId }: Props) {
+  const propsCollectionId = collectionId;
   const [page, setPage] = useState(initialPage);
   const [products, setProducts] = useState<ProductV2[]>([]);
   const [allProductsCache, setAllProductsCache] = useState<ProductV2[] | null>(null);
@@ -26,7 +28,7 @@ export default function PaginatedProductGrid({ initialPage = 1, perPage = 20, so
       setLoading(true);
       setError(null);
       try {
-        const { products: pageProducts, total_pages } = await fetchProductsPage(page, perPage);
+        const { products: pageProducts, total_pages } = await fetchProductsPage(page, perPage, (propsCollectionId as any) ?? undefined);
         if (cancelled) return;
         if (isAppend) {
           setProducts((prev) => [...prev, ...pageProducts]);
@@ -52,18 +54,18 @@ export default function PaginatedProductGrid({ initialPage = 1, perPage = 20, so
       setError(null);
       try {
         const perFetch = Math.max(perPage, 50);
-        const first = await fetchProductsPage(1, perFetch);
+        const first = await fetchProductsPage(1, perFetch, (propsCollectionId as any) ?? undefined);
         let all = first.products.slice();
         if (first.total_pages && first.total_pages > 1) {
           for (let p = 2; p <= first.total_pages; p++) {
-            const res = await fetchProductsPage(p, perFetch);
+            const res = await fetchProductsPage(p, perFetch, (propsCollectionId as any) ?? undefined);
             all = all.concat(res.products);
           }
         } else {
           // fallback: keep fetching until a shorter page returned
           let p = 2;
           while (true) {
-            const res = await fetchProductsPage(p, perFetch);
+            const res = await fetchProductsPage(p, perFetch, (propsCollectionId as any) ?? undefined);
             if (!res.products || res.products.length === 0) break;
             all = all.concat(res.products);
             if (res.products.length < perFetch) break;
@@ -104,7 +106,7 @@ export default function PaginatedProductGrid({ initialPage = 1, perPage = 20, so
     return () => {
       cancelled = true;
     };
-  }, [page, perPage, isAppend, sortOrder, allProductsCache]);
+  }, [page, perPage, isAppend, sortOrder, allProductsCache, propsCollectionId]);
 
   function handleLoadMore() {
     setIsAppend(true);

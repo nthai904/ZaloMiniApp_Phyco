@@ -10,11 +10,13 @@ export interface PaginatedProductsResponse {
 
 export async function fetchProductsPage(
   page = 1,
-  perPage = 20
+  perPage = 20,
+  collectionId?: string | number
 ): Promise<PaginatedProductsResponse> {
   const qs = new URLSearchParams();
   qs.set("page", String(page));
   qs.set("limit", String(perPage));
+  if (collectionId != null && collectionId !== "") qs.set("collection_id", String(collectionId));
 
   const path = `/api/product?${qs.toString()}`;
 
