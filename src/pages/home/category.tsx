@@ -18,7 +18,7 @@ export default function Category() {
         <TransitionLink
           key={collection.id}
           className="flex flex-col items-center space-y-1 flex-none overflow-hidden cursor-pointer mx-auto"
-          to={`/categories?active=${collection.id}`}
+          to={`/products?active=${collection.id}`}
         >
           <img src={collection?.image?.src || collection?.image || NO_IMAGE_URL} className="w-12 h-12 object-cover rounded-full bg-skeleton" alt={collection.title} />
           <div className="text-center text-3xs w-full line-clamp-2 text-subtitle">{collection.title}</div>

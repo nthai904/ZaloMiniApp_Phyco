@@ -1,4 +1,5 @@
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { ProductGridSkeleton } from "../search";
 import PaginatedProductGrid from "@/components/paginated-product-grid";
 import SortDropdown from "@/components/sort-dropdown";
@@ -11,6 +12,12 @@ const NO_IMAGE_URL = "https://theme.hstatic.net/200000436051/1000801313/14/no_im
 export default function ProductsPage() {
   const [sortOrder, setSortOrder] = useState<"none" | "price-asc" | "price-desc" | "date-new" | "date-old">("none");
   const [activeCollection, setActiveCollection] = useState<string | number | undefined>(undefined);
+  const [searchParams] = useSearchParams();
+
+  useEffect(() => {
+    const a = searchParams.get("active");
+    if (a && !activeCollection) setActiveCollection(a);
+  }, [searchParams, activeCollection]);
 
   return (
     <div className="h-full flex flex-col bg-section">
@@ -27,7 +34,7 @@ export default function ProductsPage() {
         <div className="flex items-center gap-3 pb-0">{/* <SortDropdown value={sortOrder} onChange={(v) => setSortOrder(v)} /> */}</div>
 
         <Suspense fallback={<div className="h-12" />}>
-          <CategoryFilterBar onSelect={(id) => setActiveCollection(id)} />
+          <CategoryFilterBar active={activeCollection} onSelect={(id) => setActiveCollection(id)} />
         </Suspense>
       </div>
 
@@ -40,12 +47,21 @@ export default function ProductsPage() {
   );
 }
 
-function CategoryFilterBar({ onSelect }: { onSelect?: (id?: string | number) => void }) {
+// initialize from ?active= when page first loads
+function useInitActiveFromQuery(setActive: (id?: string | number) => void) {
+  const [searchParams] = useSearchParams();
+  useEffect(() => {
+    const a = searchParams.get("active");
+    if (a) setActive(a);
+    // only run on mount; ignore deps intentionally
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+}
+
+function CategoryFilterBar({ onSelect, active }: { onSelect?: (id?: string | number) => void; active?: string | number }) {
   const collections = useAtomValue(collectionsWithProductsState) as any[];
-  const [active, setActive] = useState<string | number | undefined>(undefined);
 
   function handleClick(id?: string | number) {
-    setActive(id);
     onSelect?.(id);
   }
 
