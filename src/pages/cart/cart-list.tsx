@@ -14,7 +14,7 @@ export default function CartList() {
         <div className="flex items-center space-x-2">
           <Icon icon="zi-calendar" />
           <div>
-            <span className="font-normal text-sm">Thời gian nhận:</span> <span className="font-medium text-sm">Từ 16h, 20/1/2025</span>
+            <span className="font-normal text-sm">Danh sách sản phẩm</span>
           </div>
         </div>
       }
@@ -26,10 +26,10 @@ export default function CartList() {
         ))}
       </div>
       <HorizontalDivider />
-      <div className="flex items-center px-4 pt-3 pb-2 space-x-4">
+      {/* <div className="flex items-center px-4 pt-3 pb-2 space-x-4">
         <div className="text-sm font-medium">Ghi chú</div>
         <input type="text" placeholder="Lưu ý cho người bán..." className="text-sm text-right flex-1 focus:outline-none" />
-      </div>
+      </div> */}
     </Section>
   );
 }
