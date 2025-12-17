@@ -57,7 +57,7 @@ export default function Header({ showHeaderOverlay = true, isScrolled = false }:
             <div className="flex items-center gap-3">
               {/* Logo thương hiệu  */}
               <div className="w-8 h-8 rounded-full flex items-center justify-center cursor-pointer" onClick={() => navigate("/")}>
-                <img src={getConfig((c) => c.template.logoUrl)} alt="Logo" className="w-full h-full object-cover rounded-full" />
+                <img src={getConfig((c) => c.template.logoUrl)} alt="Logo" className="w-full h-full object-cover rounded-full" loading="lazy" />
               </div>
 
               {/* Thanh tìm kiếm  */}

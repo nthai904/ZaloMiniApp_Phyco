@@ -191,17 +191,19 @@ export default function BlogDetailPage() {
       <div className="flex-1 overflow-y-auto">
         <div className="relative w-full aspect-[4/3] bg-skeleton">
           {!imageLoaded && <div className="absolute inset-0 bg-skeleton animate-pulse" />}
-          <img
+          <LazyImage
             src={currentArticle.image || NO_IMAGE_URL}
+            placeholder={""}
+            className="w-full h-full"
             alt={currentArticle.title}
-            className="w-full h-full object-cover"
-            loading="lazy"
             onLoad={() => setImageLoaded(true)}
-            onError={(e) => {
-              const t = e.currentTarget as HTMLImageElement;
-              const badUrl = t.src;
-              if (badUrl && badUrl !== NO_IMAGE_URL) {
-                t.src = NO_IMAGE_URL;
+            onError={(e: any) => {
+              const t = e?.target as HTMLImageElement | null;
+              if (t) {
+                const badUrl = t.src;
+                if (badUrl && badUrl !== NO_IMAGE_URL) {
+                  t.src = NO_IMAGE_URL;
+                }
               }
             }}
           />

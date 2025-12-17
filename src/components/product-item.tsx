@@ -5,6 +5,7 @@ import QuantityInput from "./quantity-input";
 import TransitionLink from "./transition-link";
 import { useState } from "react";
 import { useAddToCartV2 } from "@/hooks";
+import LazyImage from "./lazy-image";
 
 export interface ProductItemProps {
   product: ProductV2;
@@ -24,9 +25,10 @@ export default function ProductItemV2({ product, replace }: ProductItemProps) {
       <TransitionLink to={`/product/${product.id}`} replace={replace} className="p-2 pb-0">
         {({ isTransitioning }) => (
           <>
-            <img
+            <LazyImage
               src={image}
-              className="w-full aspect-square object-cover rounded-lg"
+              placeholder={""}
+              className="w-full aspect-square rounded-lg"
               style={{
                 viewTransitionName: isTransitioning && selected ? `product-image-${product.id}` : undefined,
               }}

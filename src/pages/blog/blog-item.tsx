@@ -1,4 +1,5 @@
 import TransitionLink from "@/components/transition-link";
+import LazyImage from "@/components/lazy-image";
 import { Article } from "@/types";
 
 const NO_IMAGE_URL = "https://theme.hstatic.net/200000436051/1000801313/14/no_image.jpg?v=721";
@@ -22,14 +23,14 @@ export default function BlogItem({ article }: ArticleCardProps) {
   return (
     <TransitionLink to={`/article/${article.id}`} className="block bg-section rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-200">
       <div className="relative w-full aspect-[4/3] bg-skeleton">
-        <img
+        <LazyImage
           src={article.image || NO_IMAGE_URL}
+          placeholder={""}
+          className="w-full h-full"
           alt={article.title}
-          className="w-full h-full object-cover"
-          loading="lazy"
-          onError={(e) => {
-            const t = e.currentTarget as HTMLImageElement;
-            if (t.src !== NO_IMAGE_URL) t.src = NO_IMAGE_URL;
+          onError={(e: any) => {
+            const t = e?.target as HTMLImageElement | null;
+            if (t && t.src !== NO_IMAGE_URL) t.src = NO_IMAGE_URL;
           }}
         />
       </div>
