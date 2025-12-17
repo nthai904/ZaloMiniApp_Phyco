@@ -27,9 +27,27 @@ export type Cart = CartItem[];
 
 export interface ShippingAddress {
   alias: string;
+  // main address line (kept for backward compatibility)
   address: string;
+  // optional second address line
+  address2?: string | null;
   name: string;
+  first_name?: string;
+  last_name?: string;
   phone: string;
+  company?: string | null;
+  city?: string | null;
+  province?: string | null;
+  province_code?: string | null;
+  district?: string | null;
+  district_code?: string | null;
+  ward?: string | null;
+  ward_code?: string | null;
+  zip?: string | null;
+  country?: string | null;
+  country_code?: string | null;
+  id?: number;
+  default?: boolean;
 }
 
 export interface Station {

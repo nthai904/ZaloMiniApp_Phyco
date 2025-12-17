@@ -1,5 +1,14 @@
 import { atom } from "jotai";
-import { fetchProductsList, fetchProductDetail, fetchBLogList, fetchBlogDetail, fetchBlogCount, fetchBlogHasPublished } from "./service";
+import {
+  fetchProductsList,
+  fetchProductDetail,
+  fetchBLogList,
+  fetchBlogDetail,
+  fetchBlogCount,
+  fetchBlogHasPublished,
+  fetchCollections,
+  fetchProductsByCollection,
+} from "./service";
 import { atomFamily } from "jotai/utils";
 
 // Danh sách sản phẩm
@@ -74,3 +83,43 @@ export const fetchBlogDetailState = atom(null, async (get, set, id: number | str
     set(blogDetailState, null);
   }
 });
+
+export const collectionsState = atom(async () => {
+  try {
+    return await fetchCollections();
+  } catch (e: any) {
+    console.error("Lỗi load danh mục:", e.message);
+    return [];
+  }
+});
+
+export const collectionsWithProductsState = atom(async () => {
+  try {
+    const collections = (await fetchCollections()) ?? [];
+    if (!Array.isArray(collections) || collections.length === 0) return [];
+
+    const results = await Promise.all(
+      collections.map(async (col: any) => {
+        const products = (await fetchProductsByCollection(col.id)) ?? [];
+        return { ...col, _productsCount: Array.isArray(products) ? products.length : 0 };
+      })
+    );
+
+    return results.filter((c: any) => c._productsCount > 0);
+  } catch (e: any) {
+    console.error("Lỗi load collectionsWithProducts:", e.message);
+    return [];
+  }
+});
+
+// Sản phẩm theo danh mục
+export const productsByCollectionState = atomFamily((collectionId: number | string) =>
+  atom(async () => {
+    try {
+      return await fetchProductsByCollection(collectionId);
+    } catch (e: any) {
+      console.error("Lỗi load sản phẩm:", e.message);
+      return [];
+    }
+  })
+);

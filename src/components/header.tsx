@@ -41,7 +41,7 @@ export default function Header({ showHeaderOverlay = true, isScrolled = false }:
     if (isHomePage) {
       return shouldShrink ? "pb-1" : "pb-8";
     }
-    return "pb-4";
+    return "pb-1";
   };
 
   return (
@@ -57,30 +57,26 @@ export default function Header({ showHeaderOverlay = true, isScrolled = false }:
             <div className="flex items-center gap-3">
               {/* Logo thương hiệu  */}
               <div className="w-8 h-8 rounded-full flex items-center justify-center cursor-pointer" onClick={() => navigate("/")}>
-                <img src={getConfig((c) => c.template.logoUrl)} alt="Logo" className="w-full h-full object-cover rounded-full" />
+                <img src={getConfig((c) => c.template.logoUrl)} alt="Logo" className="w-full h-full object-cover rounded-full" loading="lazy" />
               </div>
 
               {/* Thanh tìm kiếm  */}
               <div>
-                {handle?.search && (
-                  <div className="w-[75%] py-3 flex space-x-2">
-                    <SearchBar
-                      onFocus={() => {
-                        if (location.pathname !== "/search") {
-                          navigate("/search", { viewTransition: true });
-                        }
-                      }}
-                    />
-                  </div>
-                )}
+                <div className="w-[75%] py-3 flex space-x-2">
+                  <SearchBar
+                    onFocus={() => {
+                      if (location.pathname !== "/search") {
+                        navigate("/search", { viewTransition: true });
+                      }
+                    }}
+                  />
+                </div>
               </div>
 
-              {handle?.search && (
-                <div className="w-8 h-8 relative flex items-center justify-center cursor-pointer" onClick={() => navigate("/cart")} aria-label="Giỏ hàng">
-                  <ShoppingCartOutlined style={{ fontSize: 24, color: "#fff", transform: "translateX(-70px)" }} />
-                  <span className="absolute -top-0 -left-12 bg-danger text-white text-[8px] rounded-full w-4 h-4 flex items-center justify-center">{cart.length}</span>
-                </div>
-              )}
+              <div className="w-8 h-8 relative flex items-center justify-center cursor-pointer" onClick={() => navigate("/cart")} aria-label="Giỏ hàng">
+                <ShoppingCartOutlined style={{ fontSize: 24, color: "#fff", transform: "translateX(-70px)" }} />
+                <span className="absolute -top-0 -left-12 bg-danger text-white text-[8px] rounded-full w-4 h-4 flex items-center justify-center">{cart.length}</span>
+              </div>
             </div>
           </div>
         </div>

@@ -155,3 +155,57 @@ export async function fetchBlogDetail(id: number | string): Promise<Article[]> {
 
   return mapped;
 }
+
+// Lấy danh sách danh mục
+export async function fetchCollections() {
+  const res = await fetch("/api/collection", {
+    method: "GET",
+    headers: { Accept: "application/json" },
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(text);
+  }
+
+  const data = await res.json();
+  return data?.custom_collections ?? [];
+}
+
+// Lấy collect theo collection_id
+export async function fetchCollectsByCollection(collectionId: number | string) {
+  const res = await fetch(`/api/collect?collection_id=${collectionId}`, {
+    method: "GET",
+    headers: { Accept: "application/json" },
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(text);
+  }
+
+  const data = await res.json();
+  return data?.collects ?? [];
+}
+
+// Lấy sản phẩm theo danh mục
+export async function fetchProductsByCollection(collectionId: number | string) {
+  const collects = await fetchCollectsByCollection(collectionId);
+
+  const filteredCollects = collects.filter((c: any) => String(c.collection_id) === String(collectionId));
+
+  if (filteredCollects.length === 0) return [];
+
+  const productIds = Array.from(new Set(filteredCollects.map((c: any) => c.product_id)));
+
+  const products = await Promise.all(
+    productIds.map((id: number) =>
+      fetch(`/api/product/${id}`)
+        .then((r) => r.json())
+        .then((d) => d.product)
+        .catch(() => null)
+    )
+  );
+
+  return products.filter(Boolean);
+}

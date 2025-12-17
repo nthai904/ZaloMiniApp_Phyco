@@ -58,11 +58,9 @@ export default function CategorySlider() {
                   : "bg-white text-foreground border-black/10 hover:border-primary/30 hover:shadow-sm"
               }`}
             >
-              <img
-                src={category.image}
-                className={`w-6 h-6 rounded-full bg-skeleton object-cover transition-transform duration-200 ${isActive ? "ring-2 ring-primaryForeground/20" : ""}`}
-                alt={category.name}
-              />
+              <div className={`w-6 h-6 rounded-full overflow-hidden ${isActive ? "ring-2 ring-primaryForeground/20" : ""}`}>
+                <img src={category.image} className={`w-full h-full object-cover bg-skeleton`} alt={category.name} loading="lazy" />
+              </div>
               <p
                 className={`text-sm font-medium whitespace-nowrap transition-colors duration-200 ${
                   isActive ? "text-primaryForeground" : "text-foreground group-hover:text-primary"
