@@ -214,7 +214,44 @@ export function useCheckout() {
 
   return async () => {
     try {
-      await requestInfo();
+      const userInfo = await requestInfo();
+
+      const payload: any = {
+        order: {
+          email: userInfo?.email ?? "",
+          currency: "VND",
+          total_price: Number(totalAmount) || 0,
+          line_items: cart.map((item) => {
+            const prod: any = item.product as any;
+            const variantId = Number(prod?.variants?.[0]?.id ?? prod?.id ?? 0);
+            const productId = Number(prod?.id ?? variantId ?? 0);
+            const title = String(prod?.title ?? prod?.name ?? "");
+            const price = Number(prod?.variants?.[0]?.price ?? prod?.price ?? 0) || 0;
+            return {
+              variant_id: variantId,
+              product_id: productId,
+              title,
+              quantity: item.quantity,
+              price,
+            };
+          }),
+          billing_address: {
+            first_name: userInfo?.name ?? "",
+            phone: userInfo?.phone ?? "",
+            address1: userInfo?.address ?? "",
+            country: "Vietnam",
+          },
+          shipping_address: {
+            first_name: userInfo?.name ?? "",
+            phone: userInfo?.phone ?? "",
+            address1: userInfo?.address ?? "",
+            country: "Vietnam",
+          },
+          financial_status: "pending",
+          source: "web",
+        },
+      };
+      console.log("Checkout payload:", payload);
 
       // await createOrder({
       //   amount: totalAmount,
