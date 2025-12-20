@@ -1,11 +1,10 @@
 import Banners from "./banners";
 import Category from "./category";
-import Articles from "./articles";
-import ProductList from "./product-list";
-import ProductListV2 from "./product-list";
 import Section from "@/components/section";
 import TransitionLink from "@/components/transition-link";
 import PaginatedProductGrid from "@/components/paginated-product-grid";
+import BlogList from "../blog";
+import HotBlog from "../blog/hot-blog";
 
 const HomePage: React.FunctionComponent = () => {
   return (
@@ -30,7 +29,15 @@ const HomePage: React.FunctionComponent = () => {
         <PaginatedProductGrid perPage={10} />
       </Section>
 
-      <Articles />
+      <Section
+        title={
+          <div className="flex items-center justify-between w-full">
+            <span>Bài viết nổi bật</span>
+          </div>
+        }
+      >
+        <HotBlog />
+      </Section>
     </div>
   );
 };

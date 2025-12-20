@@ -4,6 +4,7 @@ import { articleState, relatedArticlesState } from "@/state";
 import { useState, useEffect } from "react";
 import BlogItem from "./blog-item";
 import { fetchBlogDetail, fetchBLogList } from "@/api/service";
+import LazyImage from "@/components/lazy-image";
 
 const NO_IMAGE_URL = "https://theme.hstatic.net/200000436051/1000801313/14/no_image.jpg?v=721";
 
