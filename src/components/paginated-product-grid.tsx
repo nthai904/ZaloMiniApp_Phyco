@@ -156,7 +156,7 @@ export default function PaginatedProductGrid({ initialPage = 1, perPage = 20, so
       )}
 
       {/* Pagination */}
-      <div className="pb-9 flex items-center justify-center gap-4">
+      <div className="pb-2 flex items-center justify-center gap-4">
         {/* Prev (icon) */}
         <button
           onClick={handlePrev}
