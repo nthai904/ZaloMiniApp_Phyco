@@ -1,5 +1,20 @@
 import { ReactNode, useState } from "react";
-import { Icon, Picker } from "zmp-ui";
+import * as ZmpUI from "zmp-ui";
+
+const Icon = (ZmpUI as any).Icon;
+const Picker = (ZmpUI as any).Picker;
+
+try {
+  Object.values(ZmpUI as any).forEach((exp: any) => {
+    if (typeof exp === "function" && exp.defaultProps) {
+      try {
+        delete exp.defaultProps;
+      } catch (e) {
+      }
+    }
+  });
+} catch (e) {
+}
 
 export interface SelectProps<T> {
   renderTitle: (selectedItem?: T) => ReactNode;
@@ -13,7 +28,6 @@ export interface SelectProps<T> {
 export default function Select<T>(props: SelectProps<T>) {
   const [localValue, setLocalValue] = useState(props.value ? props.renderItemKey(props.value) : "");
 
-  // If there are no items, render a simple placeholder to avoid mounting Picker
   if (!props.items || props.items.length === 0) {
     return (
       <div className="flex-none h-12 border border-black/15 rounded-lg relative [&>.zaui-picker-input]:absolute [&>.zaui-picker-input]:inset-0 [&>.zaui-picker-input]:opacity-0">
