@@ -4,7 +4,7 @@ import react from "@vitejs/plugin-react";
 import path from "path";
 import dotenv from "dotenv";
 
-dotenv.config();  
+dotenv.config();
 
 export default () => {
   return defineConfig({
@@ -28,10 +28,7 @@ export default () => {
           configure: (proxy) => {
             proxy.on("proxyReq", (proxyReq: any, req: any, res: any) => {
               try {
-                proxyReq.setHeader(
-                  "Authorization",
-                  `Bearer ${process.env.API_TOKEN}`
-                );
+                proxyReq.setHeader("Authorization", `Bearer ${process.env.API_TOKEN}`);
                 proxyReq.setHeader("Content-Type", "application/json");
               } catch (e) {
                 console.error("Lỗi cấu hình proxyy:", e);
@@ -39,7 +36,7 @@ export default () => {
             });
           },
         },
-        
+
         // Cấu hình API danh sách bài viết và chi tiết bài viết
         "/api/blog": {
           target: `${process.env.API_URL}`,
@@ -79,7 +76,6 @@ export default () => {
             });
           },
         },
-        // vite.config.mts
         "/api/collection": {
           target: `${process.env.API_URL}`,
           changeOrigin: true,
@@ -87,10 +83,7 @@ export default () => {
           rewrite: () => "/com/custom_collections.json",
           configure: (proxy) => {
             proxy.on("proxyReq", (proxyReq: any) => {
-              proxyReq.setHeader(
-                "Authorization",
-                `Bearer ${process.env.API_TOKEN}`
-              );
+              proxyReq.setHeader("Authorization", `Bearer ${process.env.API_TOKEN}`);
               proxyReq.setHeader("Content-Type", "application/json");
             });
           },
@@ -103,17 +96,18 @@ export default () => {
           rewrite: () => "/com/collects.json",
           configure: (proxy) => {
             proxy.on("proxyReq", (proxyReq: any) => {
-              proxyReq.setHeader(
-                "Authorization",
-                `Bearer ${process.env.API_TOKEN}`
-              );
+              proxyReq.setHeader("Authorization", `Bearer ${process.env.API_TOKEN}`);
               proxyReq.setHeader("Content-Type", "application/json");
             });
           },
         },
-
+        "/api/provinces": {
+          target: "https://provinces.open-api.vn",
+          changeOrigin: true,
+          secure: true,
+          rewrite: (path) => path.replace(/^\/api\/provinces/, "/api/v1"),
+        },
       },
-      
     },
     resolve: {
       alias: {

@@ -4,11 +4,15 @@ import { useResetAtom } from "jotai/utils";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { Button, Icon, Input } from "zmp-ui";
+import useLocations from "@/hooks/useLocations";
+import Select from "@/components/select";
 
 function ShippingAddressPage() {
   const [address, setAddress] = useAtom(shippingAddressState);
   const resetAddress = useResetAtom(shippingAddressState);
   const navigate = useNavigate();
+  const { provinces, districts, wards, selectedProvince, selectedDistrict, selectedWard, ensureProvincesLoaded, handleProvinceChange, handleDistrictChange, handleWardChange } =
+    useLocations(address);
 
   return (
     <form
@@ -45,9 +49,53 @@ function ShippingAddressPage() {
               e.currentTarget.setCustomValidity("");
             }}
           />
-          <Input name="province" label="Tỉnh/Thành phố" placeholder="Tỉnh/Thành phố" defaultValue={address?.province as any} />
-          <Input name="district" label="Quận/Huyện" placeholder="Quận/Huyện" defaultValue={address?.district as any} />
-          <Input name="ward" label="Phường/Xã" placeholder="Phường/Xã" defaultValue={address?.ward as any} />
+          <div className="space-y-2">
+            <div className="text-sm text-gray-600">Địa chỉ hành chính</div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+              <div>
+                <div className="text-xs text-gray-500 mb-1">Tỉnh/Thành phố</div>
+                <div onMouseDown={() => ensureProvincesLoaded()}>
+                  <Select
+                    items={provinces}
+                    value={selectedProvince}
+                    renderItemKey={(p: any) => String(p.code ?? p.name)}
+                    renderItemLabel={(p: any) => p.name}
+                    renderTitle={(s) => (s ? s.name : "Chọn tỉnh/Thành phố")}
+                    onChange={(p) => handleProvinceChange(p)}
+                  />
+                </div>
+              </div>
+              <div>
+                <div className="text-xs text-gray-500 mb-1">Quận/Huyện</div>
+                <Select
+                  items={districts}
+                  value={selectedDistrict}
+                  renderItemKey={(d: any) => String(d.code ?? d.name)}
+                  renderItemLabel={(d: any) => d.name}
+                  renderTitle={(s) => (s ? s.name : "Chọn quận/huyện")}
+                  onChange={(d) => handleDistrictChange(d)}
+                />
+              </div>
+              <div>
+                <div className="text-xs text-gray-500 mb-1">Phường/Xã</div>
+                <Select
+                  items={wards}
+                  value={selectedWard}
+                  renderItemKey={(w: any) => String(w.code ?? w.name)}
+                  renderItemLabel={(w: any) => w.name}
+                  renderTitle={(s) => (s ? s.name : "Chọn phường/xã")}
+                  onChange={(w) => handleWardChange(w)}
+                />
+              </div>
+            </div>
+
+            <input type="hidden" name="province" value={selectedProvince?.name ?? address?.province ?? ""} />
+            <input type="hidden" name="province_code" value={selectedProvince?.code ?? (address as any)?.province_code ?? ""} />
+            <input type="hidden" name="district" value={selectedDistrict?.name ?? address?.district ?? ""} />
+            <input type="hidden" name="district_code" value={selectedDistrict?.code ?? (address as any)?.district_code ?? ""} />
+            <input type="hidden" name="ward" value={selectedWard?.name ?? address?.ward ?? ""} />
+            <input type="hidden" name="ward_code" value={selectedWard?.code ?? (address as any)?.ward_code ?? ""} />
+          </div>
         </div>
         <div className="bg-section p-4 grid gap-4">
           <Input name="name" label="Tên người nhận" placeholder="Nhập tên người nhận" defaultValue={address?.name} />
