@@ -202,7 +202,7 @@ export function useCheckout() {
 
       const payload: any = {
         order: {
-          email: userInfo?.email ?? "",
+          email: (shippingAddress as any)?.email ?? userInfo?.email ?? "",
           currency: "VND",
           cart_token: cartToken,
           checkout_token: checkoutToken,
@@ -241,6 +241,7 @@ export function useCheckout() {
             if (shippingAddress) {
               return {
                 address1: shippingAddress.address ?? "",
+                email: (shippingAddress as any)?.email ?? userInfo?.email ?? "",
                 address2: shippingAddress.address2 ?? null,
                 city: shippingAddress.city ?? null,
                 company: shippingAddress.company ?? null,
@@ -264,6 +265,7 @@ export function useCheckout() {
 
             return {
               address1: userInfo?.address ?? "",
+              email: userInfo?.email ?? "",
               address2: null,
               city: null,
               company: null,
@@ -288,6 +290,7 @@ export function useCheckout() {
             if (deliveryMode === "pickup") {
               return {
                 first_name: selectedStation?.name ?? userInfo?.name ?? "",
+                email: userInfo?.email ?? "",
                 phone: userInfo?.phone ?? "",
                 address1: selectedStation?.address ?? userInfo?.address ?? "",
                 country: "Vietnam",
@@ -297,6 +300,7 @@ export function useCheckout() {
             if (shippingAddress) {
               return {
                 address1: shippingAddress.address ?? userInfo?.address ?? "",
+                email: (shippingAddress as any)?.email ?? userInfo?.email ?? "",
                 address2: shippingAddress.address2 ?? null,
                 city: shippingAddress.city ?? null,
                 company: shippingAddress.company ?? null,
