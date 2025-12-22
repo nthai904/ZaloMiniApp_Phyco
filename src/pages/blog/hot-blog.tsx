@@ -10,35 +10,55 @@ const NO_IMAGE_URL = "https://theme.hstatic.net/200000436051/1000801313/14/no_im
 export default function HotBlog() {
   const articlesFallback = useAtomValue(articlesState) as any[] | undefined;
   const [list, setList] = useState<any[]>([]);
+  const HOT_TAGS = new Set(["noi-bat", "noibat"]);
+
+  const hasHotTag = (article: any) => {
+    if (!article) return false;
+    const raw = article.tags ?? article.tags_raw ?? article.tags_list ?? article.tag_list ?? article.meta_tags;
+    if (!raw) return false;
+    if (Array.isArray(raw)) {
+      return raw.some((t) => typeof t === "string" && HOT_TAGS.has(t.trim().toLowerCase()));
+    }
+    if (typeof raw === "string") {
+      return raw
+        .split(/[;,|\s]+/)
+        .map((s) => s.trim().toLowerCase())
+        .some((t) => HOT_TAGS.has(t));
+    }
+    return false;
+  };
   const [loading, setLoading] = useState(false);
   const scrollerRef = useRef<HTMLDivElement | null>(null);
   const [page, setPage] = useState(0);
 
   useEffect(() => {
     let mounted = true;
+
+    if (articlesFallback && articlesFallback.length > 0) {
+      setList((articlesFallback ?? []).filter(hasHotTag).slice(0, 10));
+    }
+
     (async () => {
-      setLoading(true);
+      if (!articlesFallback || articlesFallback.length === 0) setLoading(true);
       try {
-        // 1) try to fetch blogs, take first blog with articles
         const blogs = await fetchBLogList();
         const first = (blogs || []).find((b: any) => (b.article_count ?? b.count ?? 0) > 0) || blogs[0];
         if (first && first.id) {
           const articles = await fetchBlogDetail(first.id);
           if (!mounted) return;
-          setList(Array.isArray(articles) ? articles.slice(0, 10) : []);
-          setLoading(false);
-          return;
+          const newList = Array.isArray(articles) ? articles.filter(hasHotTag).slice(0, 10) : [];
+          if (newList && newList.length > 0) setList(newList);
+        } else {
+          if ((!articlesFallback || articlesFallback.length === 0) && mounted) setList((articlesFallback ?? []).filter(hasHotTag).slice(0, 10));
         }
-
-        // fallback to local articlesState
-        setList((articlesFallback ?? []).slice(0, 10));
       } catch (err) {
         console.error("HotBlog fetch error:", err);
-        setList((articlesFallback ?? []).slice(0, 10));
+        if ((!articlesFallback || articlesFallback.length === 0) && mounted) setList((articlesFallback ?? []).filter(hasHotTag).slice(0, 10));
       } finally {
         if (mounted) setLoading(false);
       }
     })();
+
     return () => {
       mounted = false;
     };
@@ -70,18 +90,6 @@ export default function HotBlog() {
 
   return (
     <div className="py-3 relative">
-      {/* <div className="flex items-center justify-between mb-2 px-2">
-        <h3 className="text-base font-semibold">Bài viết nổi bật</h3>
-        <div className="flex items-center space-x-2">
-          <button aria-label="prev" onClick={() => scrollByPage(-1)} className="w-9 h-9 rounded-full bg-white shadow flex items-center justify-center text-sm border">
-            ‹
-          </button>
-          <button aria-label="next" onClick={() => scrollByPage(1)} className="w-9 h-9 rounded-full bg-white shadow flex items-center justify-center text-sm border">
-            ›
-          </button>
-        </div>
-      </div> */}
-
       <div className="-mx-4 px-4">
         <div ref={scrollerRef} onScroll={onScroll} className="flex gap-3 pb-3 overflow-x-auto snap-x snap-mandatory scroll-smooth scrollbar-hide">
           {list.map((article) => (

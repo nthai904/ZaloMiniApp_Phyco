@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import ProductGridV2 from "@/components/product-grid";
-import { fetchProductsPage } from "@/api/haravan";
+import { fetchProductsPage, fetchAllProducts } from "@/api/haravan";
 import { ProductV2 } from "@/types";
 
 interface Props {
@@ -54,24 +54,8 @@ export default function PaginatedProductGrid({ initialPage = 1, perPage = 20, so
       setError(null);
       try {
         const perFetch = Math.max(perPage, 50);
-        const first = await fetchProductsPage(1, perFetch, (propsCollectionId as any) ?? undefined);
-        let all = first.products.slice();
-        if (first.total_pages && first.total_pages > 1) {
-          for (let p = 2; p <= first.total_pages; p++) {
-            const res = await fetchProductsPage(p, perFetch, (propsCollectionId as any) ?? undefined);
-            all = all.concat(res.products);
-          }
-        } else {
-          // fallback: keep fetching until a shorter page returned
-          let p = 2;
-          while (true) {
-            const res = await fetchProductsPage(p, perFetch, (propsCollectionId as any) ?? undefined);
-            if (!res.products || res.products.length === 0) break;
-            all = all.concat(res.products);
-            if (res.products.length < perFetch) break;
-            p++;
-          }
-        }
+        // use batched fetch helper with limited concurrency to avoid long sequential waits
+        const all = await fetchAllProducts(perFetch, 4, (propsCollectionId as any) ?? undefined);
         if (cancelled) return;
         setAllProductsCache(all);
         setProducts(all.slice((page - 1) * perPage, page * perPage));

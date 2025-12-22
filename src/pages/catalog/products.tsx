@@ -7,7 +7,6 @@ import { useAtomValue } from "jotai";
 import { collectionsWithProductsState } from "@/api/state";
 
 const NO_IMAGE_URL = "https://theme.hstatic.net/200000436051/1000801313/14/no_image.jpg?v=721";
-// const NO_IMAGE_URL = "https://file.hstatic.net/200000436051/collection/228782443_111253167923072_2625562051662799928_n_a6fe477d615241a1919219884c99563f.jpg";
 
 export default function ProductsPage() {
   const [sortOrder, setSortOrder] = useState<"none" | "price-asc" | "price-desc" | "date-new" | "date-old">("none");
