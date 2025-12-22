@@ -1,5 +1,20 @@
 import { ReactNode, useState } from "react";
-import { Icon, Picker } from "zmp-ui";
+import * as ZmpUI from "zmp-ui";
+
+const Icon = (ZmpUI as any).Icon;
+const Picker = (ZmpUI as any).Picker;
+
+try {
+  Object.values(ZmpUI as any).forEach((exp: any) => {
+    if (typeof exp === "function" && exp.defaultProps) {
+      try {
+        delete exp.defaultProps;
+      } catch (e) {
+      }
+    }
+  });
+} catch (e) {
+}
 
 export interface SelectProps<T> {
   renderTitle: (selectedItem?: T) => ReactNode;
@@ -11,19 +26,26 @@ export interface SelectProps<T> {
 }
 
 export default function Select<T>(props: SelectProps<T>) {
-  const [localValue, setLocalValue] = useState(
-    props.value ? props.renderItemKey(props.value) : ""
-  );
+  const [localValue, setLocalValue] = useState(props.value ? props.renderItemKey(props.value) : "");
+
+  if (!props.items || props.items.length === 0) {
+    return (
+      <div className="flex-none h-12 border border-black/15 rounded-lg relative [&>.zaui-picker-input]:absolute [&>.zaui-picker-input]:inset-0 [&>.zaui-picker-input]:opacity-0">
+        <div className="h-full relative flex items-center px-4 space-x-2">
+          <div className="text-sm text-left w-full">{props.renderTitle ? props.renderTitle(props.value) : "Chọn"}</div>
+          <Icon icon="zi-chevron-down" />
+        </div>
+      </div>
+    );
+  }
 
   const flush = () => {
-    const selectedItem = props.items.find(
-      (item) => props.renderItemKey(item) === localValue
-    );
+    const selectedItem = props.items.find((item) => props.renderItemKey(item) === localValue);
     props.onChange(selectedItem);
   };
 
   return (
-    <div className="flex-none h-8 border border-black/15 rounded-full relative [&>.zaui-picker-input]:absolute [&>.zaui-picker-input]:inset-0 [&>.zaui-picker-input]:opacity-0">
+    <div className="flex-none h-12 border border-black/15 rounded-lg relative [&>.zaui-picker-input]:absolute [&>.zaui-picker-input]:inset-0 [&>.zaui-picker-input]:opacity-0">
       <Picker
         mask
         maskClosable
@@ -32,8 +54,7 @@ export default function Select<T>(props: SelectProps<T>) {
           {
             name: "localValue",
             options: props.items.map((item) => ({
-              displayName:
-                props.renderItemLabel?.(item) ?? props.renderItemKey(item),
+              displayName: props.renderItemLabel?.(item) ?? props.renderItemKey(item),
               key: props.renderItemKey(item),
               value: props.renderItemKey(item),
             })),
@@ -53,12 +74,8 @@ export default function Select<T>(props: SelectProps<T>) {
           },
         }}
       />
-      <div className="h-full relative flex justify-center items-center px-3 space-x-1.5 pointer-events-none">
-        <div className="text-xs">
-          {props.renderTitle
-            ? props.renderTitle(props.value)
-            : String(props.value)}
-        </div>
+      <div className="h-full relative flex items-center px-4 space-x-2 pointer-events-none">
+        <div className="text-sm text-left w-full">{props.renderTitle ? props.renderTitle(props.value) : String(props.value)}</div>
         <Icon icon="zi-chevron-down" />
       </div>
     </div>

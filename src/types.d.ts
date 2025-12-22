@@ -27,14 +27,13 @@ export type Cart = CartItem[];
 
 export interface ShippingAddress {
   alias: string;
-  // main address line (kept for backward compatibility)
   address: string;
-  // optional second address line
   address2?: string | null;
   name: string;
   first_name?: string;
   last_name?: string;
   phone: string;
+  email?: string | null;
   company?: string | null;
   city?: string | null;
   province?: string | null;
@@ -82,7 +81,7 @@ export interface Order {
   note: string;
 }
 
-// Interfaces chức năng mới 
+// Interfaces chức năng mới
 export interface Variant {
   barcode: string | null;
   compare_at_price: number;
@@ -140,14 +139,12 @@ export interface ProductV2 {
 
 export type Product = ProductV2;
 
-
 export interface CartItemV2 {
   product: ProductV2;
   quantity: number;
 }
 
 export type CartV2 = CartItemV2[];
-
 
 export interface OrderItemV2 {
   id: number;
@@ -165,8 +162,6 @@ export interface OrderV2 {
   note: string;
   createdAt: Date;
 }
-
-
 
 export interface ArticleAuthor {
   name: string;

@@ -4,35 +4,52 @@ import { useResetAtom } from "jotai/utils";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { Button, Icon, Input } from "zmp-ui";
+import useLocations from "@/hooks/useLocations";
+import Select from "@/components/select";
 
 function ShippingAddressPage() {
   const [address, setAddress] = useAtom(shippingAddressState);
   const resetAddress = useResetAtom(shippingAddressState);
   const navigate = useNavigate();
+  const { provinces, districts, wards, selectedProvince, selectedDistrict, selectedWard, ensureProvincesLoaded, handleProvinceChange, handleDistrictChange, handleWardChange } =
+    useLocations(address);
 
   return (
     <form
       className="h-full flex flex-col justify-between"
       onSubmit={(e) => {
         e.preventDefault();
-        const data = new FormData(e.currentTarget);
-        const newAddress = {};
-        data.forEach((value, key) => {
-          newAddress[key] = value;
-        });
-        setAddress(newAddress as typeof address);
-        toast.success("Đã cập nhật địa chỉ");
-        navigate(-1);
+        try {
+          const data = new FormData(e.currentTarget);
+          const sanitized: any = {
+            address: String(data.get("address") ?? "").trim(),
+            name: String(data.get("name") ?? "").trim(),
+            phone: String(data.get("phone") ?? "").trim(),
+            email: String(data.get("email") ?? "").trim(),
+            province: String(data.get("province") ?? "").trim() || null,
+            province_code: String(data.get("province_code") ?? "").trim() || null,
+            district: String(data.get("district") ?? "").trim() || null,
+            district_code: String(data.get("district_code") ?? "").trim() || null,
+            ward: String(data.get("ward") ?? "").trim() || null,
+            ward_code: String(data.get("ward_code") ?? "").trim() || null,
+          };
+
+          setAddress(sanitized as typeof address);
+          toast.success("Đã cập nhật địa chỉ");
+          navigate(-1);
+        } catch (err) {
+          console.error("Failed to save address", err);
+          toast.error("Không thể lưu địa chỉ lúc này");
+        }
       }}
     >
       <div className="py-2 space-y-2">
         <div className="bg-section p-4 grid gap-4">
-          <Input name="alias" label="Tên địa chỉ" placeholder="Ví dụ: công ty, trường học" defaultValue={address?.alias} />
           <Input
             name="address"
             label={
               <>
-                Địa chỉ (đường, số nhà) <span className="text-danger">*</span>
+                Địa chỉ <span className="text-danger">*</span>
               </>
             }
             placeholder="Nhập địa chỉ"
@@ -46,41 +63,77 @@ function ShippingAddressPage() {
               e.currentTarget.setCustomValidity("");
             }}
           />
-          <Input name="address2" label="Địa chỉ (phần bổ sung)" placeholder="Tầng, căn hộ, tên toà nhà..." defaultValue={address?.address2 as any} />
-          <Input name="company" label="Công ty" placeholder="Tên công ty (nếu có)" defaultValue={address?.company as any} />
-          <Input name="city" label="Thành phố" placeholder="Ví dụ: Hồ Chí Minh" defaultValue={address?.city as any} />
-          <Input name="province" label="Tỉnh/Thành" placeholder="Tỉnh/Thành" defaultValue={address?.province as any} />
-          <Input name="district" label="Quận/Huyện" placeholder="Quận/Huyện" defaultValue={address?.district as any} />
-          <Input name="ward" label="Phường/Xã" placeholder="Phường/Xã" defaultValue={address?.ward as any} />
-          <Input name="zip" label="Mã bưu chính" placeholder="Zip / Postal code" defaultValue={address?.zip as any} />
+          <div className="space-y-2">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+              <div>
+                <div className="text-xs text-gray-500 mb-1">Tỉnh/Thành phố</div>
+                <div onMouseDown={() => ensureProvincesLoaded()}>
+                  <Select
+                    items={provinces}
+                    value={selectedProvince}
+                    renderItemKey={(p: any) => String(p.code ?? p.name)}
+                    renderItemLabel={(p: any) => p.name}
+                    renderTitle={(s) => (s ? s.name : "Chọn tỉnh/Thành phố")}
+                    onChange={(p) => handleProvinceChange(p)}
+                  />
+                </div>
+              </div>
+              <div>
+                <div className="text-xs text-gray-500 mb-1">Quận/Huyện</div>
+                <Select
+                  items={districts}
+                  value={selectedDistrict}
+                  renderItemKey={(d: any) => String(d.code ?? d.name)}
+                  renderItemLabel={(d: any) => d.name}
+                  renderTitle={(s) => (s ? s.name : "Chọn quận/huyện")}
+                  onChange={(d) => handleDistrictChange(d)}
+                />
+              </div>
+              <div>
+                <div className="text-xs text-gray-500 mb-1">Phường/Xã</div>
+                <Select
+                  items={wards}
+                  value={selectedWard}
+                  renderItemKey={(w: any) => String(w.code ?? w.name)}
+                  renderItemLabel={(w: any) => w.name}
+                  renderTitle={(s) => (s ? s.name : "Chọn phường/xã")}
+                  onChange={(w) => handleWardChange(w)}
+                />
+              </div>
+            </div>
+
+            <input type="hidden" name="province" value={selectedProvince?.name ?? address?.province ?? ""} />
+            <input type="hidden" name="province_code" value={selectedProvince?.code ?? (address as any)?.province_code ?? ""} />
+            <input type="hidden" name="district" value={selectedDistrict?.name ?? address?.district ?? ""} />
+            <input type="hidden" name="district_code" value={selectedDistrict?.code ?? (address as any)?.district_code ?? ""} />
+            <input type="hidden" name="ward" value={selectedWard?.name ?? address?.ward ?? ""} />
+            <input type="hidden" name="ward_code" value={selectedWard?.code ?? (address as any)?.ward_code ?? ""} />
+          </div>
         </div>
         <div className="bg-section p-4 grid gap-4">
           <Input name="name" label="Tên người nhận" placeholder="Nhập tên người nhận" defaultValue={address?.name} />
-          <Input name="first_name" label="Tên (first name)" placeholder="First name" defaultValue={address?.first_name as any} />
-          <Input name="last_name" label="Họ (last name)" placeholder="Last name" defaultValue={address?.last_name as any} />
           <Input name="phone" label="Số điện thoại" placeholder="0912345678" defaultValue={address?.phone} />
-          <Input name="province_code" label="Mã tỉnh (province_code)" placeholder="Ví dụ: HC" defaultValue={address?.province_code as any} />
-          <Input name="district_code" label="Mã quận (district_code)" placeholder="district code" defaultValue={address?.district_code as any} />
-          <Input name="ward_code" label="Mã phường (ward_code)" placeholder="ward code" defaultValue={address?.ward_code as any} />
-          <Input name="country_code" label="Mã quốc gia (country_code)" placeholder="Ví dụ: VN" defaultValue={address?.country_code as any} />
+          <Input name="email" label="Email" placeholder="abc@gmail.com" defaultValue={address?.email ?? ""} />
         </div>
+      </div>
+
+      <div className="px-6 py-6 pb-1 pt-4 bg-section">
+        <Button htmlType="submit" fullWidth>
+          Lưu địa chỉ
+        </Button>
+      </div>
+
+      <div className="px-6 py-6 pt-1 bg-section">
         <Button
-          fullWidth
-          className="!bg-section !text-danger !rounded-none"
           type="danger"
-          prefixIcon={<Icon icon="zi-delete" />}
           onClick={() => {
             resetAddress();
             toast.success("Đã xóa địa chỉ");
             navigate(-1);
           }}
+          fullWidth
         >
-          Xóa địa chỉ này
-        </Button>
-      </div>
-      <div className="p-6 pt-4 bg-section">
-        <Button htmlType="submit" fullWidth>
-          Xong
+          Xoá địa chỉ này
         </Button>
       </div>
     </form>
