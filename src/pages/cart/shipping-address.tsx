@@ -19,14 +19,28 @@ function ShippingAddressPage() {
       className="h-full flex flex-col justify-between"
       onSubmit={(e) => {
         e.preventDefault();
-        const data = new FormData(e.currentTarget);
-        const newAddress = {};
-        data.forEach((value, key) => {
-          newAddress[key] = value;
-        });
-        setAddress(newAddress as typeof address);
-        toast.success("Đã cập nhật địa chỉ");
-        navigate(-1);
+        try {
+          const data = new FormData(e.currentTarget);
+          const sanitized: any = {
+            address: String(data.get("address") ?? "").trim(),
+            name: String(data.get("name") ?? "").trim(),
+            phone: String(data.get("phone") ?? "").trim(),
+            email: String(data.get("email") ?? "").trim(),
+            province: String(data.get("province") ?? "").trim() || null,
+            province_code: String(data.get("province_code") ?? "").trim() || null,
+            district: String(data.get("district") ?? "").trim() || null,
+            district_code: String(data.get("district_code") ?? "").trim() || null,
+            ward: String(data.get("ward") ?? "").trim() || null,
+            ward_code: String(data.get("ward_code") ?? "").trim() || null,
+          };
+
+          setAddress(sanitized as typeof address);
+          toast.success("Đã cập nhật địa chỉ");
+          navigate(-1);
+        } catch (err) {
+          console.error("Failed to save address", err);
+          toast.error("Không thể lưu địa chỉ lúc này");
+        }
       }}
     >
       <div className="py-2 space-y-2">
@@ -50,7 +64,6 @@ function ShippingAddressPage() {
             }}
           />
           <div className="space-y-2">
-            <div className="text-sm text-gray-600">Địa chỉ hành chính</div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
               <div>
                 <div className="text-xs text-gray-500 mb-1">Tỉnh/Thành phố</div>
@@ -113,7 +126,6 @@ function ShippingAddressPage() {
       <div className="px-6 py-6 pt-1 bg-section">
         <Button
           type="danger"
-          prefixIcon={<Icon icon="zi-delete" />}
           onClick={() => {
             resetAddress();
             toast.success("Đã xóa địa chỉ");
