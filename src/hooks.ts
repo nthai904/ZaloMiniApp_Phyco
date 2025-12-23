@@ -2,7 +2,18 @@ import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { MutableRefObject, useLayoutEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { UIMatch, useMatches, useNavigate } from "react-router-dom";
-import { cartState, cartStateV2, cartTotalState, ordersState, userInfoKeyState, userInfoState, shippingAddressState, deliveryModeState, selectedStationState } from "@/state";
+import {
+  cartState,
+  cartStateV2,
+  cartTotalState,
+  ordersState,
+  userInfoKeyState,
+  userInfoState,
+  shippingAddressState,
+  deliveryModeState,
+  selectedStationState,
+  localOrdersState,
+} from "@/state";
 import { Product, ProductV2 } from "./types";
 import { getConfig } from "@/utils/template";
 import { authorize, createOrder, openChat } from "zmp-sdk/apis";
@@ -182,287 +193,6 @@ export function useAddToCartCompat(product?: Product | null) {
   return useAddToCartV2(mapped as any);
 }
 
-// hàm liên quan đến checkout giỏ hàng
-export function useCheckout() {
-  const { totalAmount } = useAtomValue(cartTotalState);
-  const [cart, setCart] = useAtom(cartStateV2);
-  const requestInfo = useRequestInformation();
-  const shippingAddress = useAtomValue(shippingAddressState);
-  const deliveryMode = useAtomValue(deliveryModeState);
-  const selectedStation = useAtomValue(selectedStationState);
-  const navigate = useNavigate();
-  const refreshOrders = useSetAtom(ordersState("pending"));
-
-  return async () => {
-    try {
-      const userInfo = await requestInfo();
-
-      const cartToken = `ct_${Date.now()}`;
-      const checkoutToken = cartToken;
-
-      const payload: any = {
-        order: {
-          email: (shippingAddress as any)?.email ?? userInfo?.email ?? "",
-          currency: "VND",
-          cart_token: cartToken,
-          checkout_token: checkoutToken,
-          line_items: cart.map((item) => {
-            const prod: any = item.product as any;
-            const variant = prod?.variants?.[0] ?? {};
-            const variantId = Number(variant?.id ?? prod?.id ?? 0);
-            const productId = Number(prod?.id ?? 0);
-            const title = String(prod?.title ?? prod?.name ?? "");
-            const variantTitle = String(variant?.title ?? "Default");
-            const price = Number(variant?.price ?? prod?.price ?? 0);
-            return {
-              id: undefined,
-              product_id: productId,
-              variant_id: variantId,
-              title,
-              variant_title: variantTitle,
-              quantity: item.quantity,
-              price: price,
-              price_original: price,
-              price_promotion: 0,
-              total_discount: 0,
-              fulfillable_quantity: item.quantity,
-              requires_shipping: true,
-              sku: variant?.sku ?? null,
-              vendor: prod?.vendor ?? null,
-              type: prod?.product_type ?? null,
-              name: `${title} - ${variantTitle}`,
-              product_exists: true,
-              image: { src: prod?.images?.[0]?.src ?? null },
-              taxable: false,
-            };
-          }),
-          // data địa chỉ
-          billing_address: (function () {
-            if (shippingAddress) {
-              return {
-                address1: shippingAddress.address ?? "",
-                email: (shippingAddress as any)?.email ?? userInfo?.email ?? "",
-                address2: shippingAddress.address2 ?? null,
-                city: shippingAddress.city ?? null,
-                company: shippingAddress.company ?? null,
-                country: shippingAddress.country ?? "Vietnam",
-                first_name: shippingAddress.first_name ?? shippingAddress.name ?? userInfo?.name ?? "",
-                id: shippingAddress.id ?? undefined,
-                last_name: shippingAddress.last_name ?? "",
-                phone: shippingAddress.phone ?? userInfo?.phone ?? "",
-                province: shippingAddress.province ?? null,
-                zip: shippingAddress.zip ?? null,
-                name: shippingAddress.name ?? "",
-                province_code: shippingAddress.province_code ?? null,
-                country_code: shippingAddress.country_code ?? "VN",
-                default: shippingAddress.default ?? true,
-                district: shippingAddress.district ?? null,
-                district_code: shippingAddress.district_code ?? null,
-                ward: shippingAddress.ward ?? null,
-                ward_code: shippingAddress.ward_code ?? null,
-              };
-            }
-
-            return {
-              address1: userInfo?.address ?? "",
-              email: userInfo?.email ?? "",
-              address2: null,
-              city: null,
-              company: null,
-              country: "Vietnam",
-              first_name: userInfo?.name ?? "",
-              id: undefined,
-              last_name: "",
-              phone: userInfo?.phone ?? "",
-              province: null,
-              zip: null,
-              name: userInfo?.name ?? "",
-              province_code: null,
-              country_code: "VN",
-              default: true,
-              district: null,
-              district_code: null,
-              ward: null,
-              ward_code: null,
-            };
-          })(),
-          shipping_address: (function () {
-            if (deliveryMode === "pickup") {
-              return {
-                first_name: selectedStation?.name ?? userInfo?.name ?? "",
-                email: userInfo?.email ?? "",
-                phone: userInfo?.phone ?? "",
-                address1: selectedStation?.address ?? userInfo?.address ?? "",
-                country: "Vietnam",
-              };
-            }
-
-            if (shippingAddress) {
-              return {
-                address1: shippingAddress.address ?? userInfo?.address ?? "",
-                email: (shippingAddress as any)?.email ?? userInfo?.email ?? "",
-                address2: shippingAddress.address2 ?? null,
-                city: shippingAddress.city ?? null,
-                company: shippingAddress.company ?? null,
-                country: shippingAddress.country ?? "Vietnam",
-                first_name: shippingAddress.first_name ?? shippingAddress.name ?? userInfo?.name ?? "",
-                id: shippingAddress.id ?? undefined,
-                last_name: shippingAddress.last_name ?? "",
-                phone: shippingAddress.phone ?? userInfo?.phone ?? "",
-                province: shippingAddress.province ?? null,
-                zip: shippingAddress.zip ?? null,
-                name: shippingAddress.name ?? "",
-                province_code: shippingAddress.province_code ?? null,
-                country_code: shippingAddress.country_code ?? "VN",
-                default: shippingAddress.default ?? true,
-                district: shippingAddress.district ?? null,
-                district_code: shippingAddress.district_code ?? null,
-                ward: shippingAddress.ward ?? null,
-                ward_code: shippingAddress.ward_code ?? null,
-              };
-            }
-
-            return {
-              first_name: userInfo?.name ?? "",
-              phone: userInfo?.phone ?? "",
-              address1: userInfo?.address ?? "",
-              country: "Vietnam",
-            };
-          })(),
-          // phương thức thanh toán
-          transactions: [
-            {
-              amount: Number(totalAmount) || 0,
-              authorization: null,
-              created_at: new Date().toISOString(),
-              device_id: null,
-              gateway: "Thanh toán khi giao hàng (COD)",
-              id: undefined,
-              kind: "pending",
-              order_id: undefined,
-              receipt: null,
-              status: null,
-              user_id: null,
-              location_id: selectedStation?.id ?? null,
-              payment_details: null,
-              parent_id: null,
-              currency: "VND",
-              haravan_transaction_id: null,
-              external_transaction_id: null,
-              external_payment_type: null,
-            },
-          ],
-          transactions_count: 1,
-          shipping_lines: [
-            {
-              code: "Freeship",
-              price: 0,
-              source: null,
-              title: "Freeship",
-            },
-          ],
-          subtotal_price: Number(totalAmount) || 0,
-          total_line_items_price: Number(totalAmount) || 0,
-          total_price: Number(totalAmount) || 0,
-          total_discounts: 0,
-          total_tax: 0,
-          taxes_included: false,
-          gateway: "Thanh toán khi giao hàng (COD)",
-          gateway_code: "COD",
-          created_at: new Date().toISOString(),
-          buyer_accepts_marketing: true,
-          client_details: {
-            accept_language: null,
-            browser_ip: null,
-            session_hash: checkoutToken,
-            user_agent: null,
-            browser_height: null,
-            browser_width: null,
-          },
-          customer: {
-            id: userInfo?.id ?? undefined,
-            email: userInfo?.email ?? "",
-            phone: userInfo?.phone ?? "",
-            first_name: userInfo?.name?.split(" ")?.[0] ?? userInfo?.name ?? "",
-            last_name: (userInfo?.name?.split(" ")?.slice(1).join(" ") as string) ?? "",
-            created_at: new Date().toISOString(),
-            addresses: shippingAddress
-              ? [
-                  {
-                    address1: shippingAddress.address ?? "",
-                    address2: shippingAddress.address2 ?? null,
-                    city: shippingAddress.city ?? null,
-                    company: shippingAddress.company ?? null,
-                    country: shippingAddress.country ?? "Vietnam",
-                    first_name: shippingAddress.first_name ?? shippingAddress.name ?? userInfo?.name ?? "",
-                    id: shippingAddress.id ?? undefined,
-                    last_name: shippingAddress.last_name ?? "",
-                    phone: shippingAddress.phone ?? userInfo?.phone ?? "",
-                    province: shippingAddress.province ?? null,
-                    zip: shippingAddress.zip ?? null,
-                    name: shippingAddress.name ?? "",
-                    province_code: shippingAddress.province_code ?? null,
-                    country_code: shippingAddress.country_code ?? "VN",
-                    default: shippingAddress.default ?? true,
-                    district: shippingAddress.district ?? null,
-                    district_code: shippingAddress.district_code ?? null,
-                    ward: shippingAddress.ward ?? null,
-                    ward_code: shippingAddress.ward_code ?? null,
-                  },
-                ]
-              : [],
-            default_address: shippingAddress
-              ? {
-                  address1: shippingAddress.address ?? "",
-                  address2: shippingAddress.address2 ?? null,
-                  city: shippingAddress.city ?? null,
-                  company: shippingAddress.company ?? null,
-                  country: shippingAddress.country ?? "Vietnam",
-                  first_name: shippingAddress.first_name ?? shippingAddress.name ?? userInfo?.name ?? "",
-                  id: shippingAddress.id ?? undefined,
-                  last_name: shippingAddress.last_name ?? "",
-                  phone: shippingAddress.phone ?? userInfo?.phone ?? "",
-                  province: shippingAddress.province ?? null,
-                  zip: shippingAddress.zip ?? null,
-                  name: shippingAddress.name ?? "",
-                  province_code: shippingAddress.province_code ?? null,
-                  country_code: shippingAddress.country_code ?? "VN",
-                  default: shippingAddress.default ?? true,
-                  district: shippingAddress.district ?? null,
-                  district_code: shippingAddress.district_code ?? null,
-                  ward: shippingAddress.ward ?? null,
-                  ward_code: shippingAddress.ward_code ?? null,
-                }
-              : null,
-          },
-        },
-      };
-      console.log("Payload:", payload);
-
-      // await createOrder({
-      //   amount: totalAmount,
-      //   desc: "Thanh toán đơn hàng",
-      //   item: cart.map((item) => ({
-      //     id: item.product.id,
-      //     name: item.product.title,
-      //     price: Number(item.product.variants[0].price),
-      //     quantity: item.quantity,
-      //   })),
-      // });
-
-      setCart([]);
-      refreshOrders();
-
-      navigate("/orders", { viewTransition: true });
-
-      toast.success("Thanh toán thành công! 🎉");
-    } catch (err) {
-      console.error(err);
-      toast.error("Thanh toán thất bại");
-    }
-  };
-}
-
 export function useCustomerSupport() {
   return () =>
     openChat({
@@ -495,4 +225,271 @@ export function useRouteHandle() {
   const lastMatch = matches[matches.length - 1];
 
   return [lastMatch.handle, lastMatch, matches] as const;
+}
+
+// hàm liên quan đến checkout giỏ hàng
+export function useCheckout() {
+  const { totalAmount } = useAtomValue(cartTotalState);
+  const [cart, setCart] = useAtom(cartStateV2);
+  const setLocalOrders = useSetAtom(localOrdersState);
+  const requestInfo = useRequestInformation();
+  const shippingAddress = useAtomValue(shippingAddressState);
+  const deliveryMode = useAtomValue(deliveryModeState);
+  const selectedStation = useAtomValue(selectedStationState);
+  const navigate = useNavigate();
+  const refreshOrders = useSetAtom(ordersState("pending"));
+
+  return async () => {
+    try {
+      const userInfo = await requestInfo();
+
+      const cartToken = `ct_${Date.now()}`;
+      const checkoutToken = cartToken;
+
+      const payload: any = {
+        order: {
+          id: Date.now(),
+          cart_token: cartToken,
+          checkout_token: checkoutToken,
+          token: checkoutToken,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          currency: "VND",
+          name: `#${Date.now()}`,
+          number: Date.now(),
+          order_number: `#${Date.now()}`,
+
+          email: (shippingAddress as any)?.email ?? userInfo?.email ?? "",
+          contact_email: (shippingAddress as any)?.email ?? userInfo?.email ?? "",
+          browser_ip: null,
+          buyer_accepts_marketing: false,
+
+          customer: {
+            id: userInfo?.id ?? undefined,
+            email: userInfo?.email ?? "",
+            phone: userInfo?.phone ?? null,
+            first_name: userInfo?.name?.split(" ")?.[0] ?? null,
+            last_name: (userInfo?.name?.split(" ")?.slice(1).join(" ") as string) ?? null,
+            created_at: new Date().toISOString(),
+            addresses: shippingAddress
+              ? [
+                  {
+                    address1: shippingAddress.address ?? null,
+                    address2: shippingAddress.address2 ?? null,
+                    city: shippingAddress.city ?? null,
+                    company: shippingAddress.company ?? null,
+                    country: shippingAddress.country ?? "Vietnam",
+                    first_name: shippingAddress.first_name ?? shippingAddress.name ?? null,
+                    id: shippingAddress.id ?? undefined,
+                    last_name: shippingAddress.last_name ?? null,
+                    phone: shippingAddress.phone ?? userInfo?.phone ?? null,
+                    province: shippingAddress.province ?? null,
+                    zip: shippingAddress.zip ?? null,
+                    name: shippingAddress.name ?? null,
+                    province_code: shippingAddress.province_code ?? null,
+                    country_code: shippingAddress.country_code ?? "VN",
+                    default: shippingAddress.default ?? true,
+                    district: shippingAddress.district ?? null,
+                    district_code: shippingAddress.district_code ?? null,
+                    ward: shippingAddress.ward ?? null,
+                    ward_code: shippingAddress.ward_code ?? null,
+                  },
+                ]
+              : [],
+            default_address: shippingAddress
+              ? {
+                  address1: shippingAddress.address ?? null,
+                  address2: shippingAddress.address2 ?? null,
+                  city: shippingAddress.city ?? null,
+                  company: shippingAddress.company ?? null,
+                  country: shippingAddress.country ?? "Vietnam",
+                  first_name: shippingAddress.first_name ?? shippingAddress.name ?? null,
+                  id: shippingAddress.id ?? undefined,
+                  last_name: shippingAddress.last_name ?? null,
+                  phone: shippingAddress.phone ?? userInfo?.phone ?? null,
+                  province: shippingAddress.province ?? null,
+                  zip: shippingAddress.zip ?? null,
+                  name: shippingAddress.name ?? null,
+                  province_code: shippingAddress.province_code ?? null,
+                  country_code: shippingAddress.country_code ?? "VN",
+                  default: shippingAddress.default ?? true,
+                  district: shippingAddress.district ?? null,
+                  district_code: shippingAddress.district_code ?? null,
+                  ward: shippingAddress.ward ?? null,
+                  ward_code: shippingAddress.ward_code ?? null,
+                }
+              : null,
+          },
+
+          billing_address: shippingAddress
+            ? {
+                address1: shippingAddress.address ?? null,
+                address2: shippingAddress.address2 ?? null,
+                city: shippingAddress.city ?? null,
+                company: shippingAddress.company ?? null,
+                country: shippingAddress.country ?? "Vietnam",
+                first_name: shippingAddress.first_name ?? shippingAddress.name ?? null,
+                id: shippingAddress.id ?? undefined,
+                last_name: shippingAddress.last_name ?? null,
+                phone: shippingAddress.phone ?? userInfo?.phone ?? null,
+                province: shippingAddress.province ?? null,
+                zip: shippingAddress.zip ?? null,
+                name: shippingAddress.name ?? null,
+                province_code: shippingAddress.province_code ?? null,
+                country_code: shippingAddress.country_code ?? "VN",
+                default: shippingAddress.default ?? true,
+                district: shippingAddress.district ?? null,
+                district_code: shippingAddress.district_code ?? null,
+                ward: shippingAddress.ward ?? null,
+                ward_code: shippingAddress.ward_code ?? null,
+              }
+            : {
+                address1: userInfo?.address ?? null,
+                email: userInfo?.email ?? null,
+                address2: null,
+                city: null,
+                company: null,
+                country: "Vietnam",
+                first_name: userInfo?.name ?? null,
+                id: undefined,
+                last_name: null,
+                phone: userInfo?.phone ?? null,
+                province: null,
+                zip: null,
+                name: userInfo?.name ?? null,
+                province_code: null,
+                country_code: "VN",
+                default: true,
+                district: null,
+                district_code: null,
+                ward: null,
+                ward_code: null,
+              },
+
+          shipping_address: shippingAddress
+            ? {
+                address1: shippingAddress.address ?? null,
+                address2: shippingAddress.address2 ?? null,
+                city: shippingAddress.city ?? null,
+                company: shippingAddress.company ?? null,
+                country: shippingAddress.country ?? "Vietnam",
+                first_name: shippingAddress.name ?? null,
+                id: shippingAddress.id ?? undefined,
+                last_name: shippingAddress.last_name ?? null,
+                phone: shippingAddress.phone ?? null,
+                province: shippingAddress.province ?? null,
+                zip: shippingAddress.zip ?? null,
+                name: shippingAddress.name ?? null,
+                province_code: shippingAddress.province_code ?? null,
+                country_code: shippingAddress.country_code ?? "VN",
+                default: shippingAddress.default ?? true,
+                district: shippingAddress.district ?? null,
+                district_code: shippingAddress.district_code ?? null,
+                ward: shippingAddress.ward ?? null,
+                ward_code: shippingAddress.ward_code ?? null,
+              }
+            : null,
+
+          line_items: cart.map((item) => {
+            const prod: any = item.product as any;
+            const variant = prod?.variants?.[0] ?? {};
+            const variantId = Number(variant?.id ?? prod?.id ?? 0);
+            const productId = Number(prod?.id ?? 0);
+            const title = String(prod?.title ?? prod?.name ?? "");
+            const variantTitle = String(variant?.title ?? "Default");
+            const price = Number(variant?.price ?? prod?.price ?? 0);
+            return {
+              id: undefined,
+              product_id: productId,
+              variant_id: variantId,
+              title,
+              variant_title: variantTitle,
+              quantity: item.quantity,
+              price: price,
+              price_original: price,
+              price_promotion: 0,
+              total_discount: 0,
+              fulfillable_quantity: item.quantity,
+              requires_shipping: true,
+              sku: variant?.sku ?? null,
+              vendor: prod?.vendor ?? null,
+              type: prod?.product_type ?? null,
+              name: `${title} - ${variantTitle}`,
+              product_exists: true,
+              image: { src: prod?.images?.[0]?.src ?? null },
+              taxable: false,
+            };
+          }),
+
+          financial_status: "pending",
+          fulfillment_status: "notfulfilled",
+          shipping_lines: [
+            {
+              code: "Freeship",
+              price: 0,
+              source: null,
+              title: "Freeship",
+            },
+          ],
+          subtotal_price: Number(totalAmount) || 0,
+          total_line_items_price: Number(totalAmount) || 0,
+          total_price: Number(totalAmount) || 0,
+          total_discounts: 0,
+          total_tax: 0,
+          taxes_included: false,
+
+          transactions: [],
+          transactions_count: 0,
+          discount_codes: [],
+          refunds: [],
+          fulfillments: [],
+          note: null,
+          note_attributes: [],
+          gateway: null,
+          gateway_code: null,
+          closed_status: "unclosed",
+          cancelled_status: "uncancelled",
+          confirmed_status: "unconfirmed",
+          user_id: (userInfo as any)?.id ?? undefined,
+          device_id: null,
+          location_id: selectedStation?.id ?? null,
+          ref_order_id: 0,
+          payment_url: null,
+        },
+      };
+      console.log("Data API đơn hàngg:", payload);
+
+      try {
+        const newOrder = {
+          id: Date.now(),
+          status: "pending",
+          paymentStatus: "pending",
+          createdAt: new Date(),
+          receivedAt: new Date(),
+          items: cart.map((item) => ({ product: item.product, quantity: item.quantity })),
+          delivery: (deliveryMode === "pickup"
+            ? { type: "pickup", stationId: selectedStation?.id ?? 0 }
+            : shippingAddress
+            ? { type: "shipping", ...(shippingAddress as any) }
+            : { type: "shipping" }) as any,
+          total: Number(totalAmount) || 0,
+          note: "",
+        } as any;
+
+        setLocalOrders((prev) => [newOrder, ...(prev ?? [])]);
+      } catch (err) {
+        console.warn("Failed to create local order", err);
+      }
+
+      setCart([]);
+      refreshOrders();
+
+      navigate("/orders", { viewTransition: true });
+
+      toast.success("Thanh toán thành công! 🎉");
+    } catch (err) {
+      console.error(err);
+      toast.error("Thanh toán thất bại");
+    }
+  };
 }
