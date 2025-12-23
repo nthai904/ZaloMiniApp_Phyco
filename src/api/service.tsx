@@ -1,4 +1,5 @@
 import { Article, Blog } from "@/types";
+import { request } from "@/utils/request";
 
 // Route lấy ra danh sách sản phẩm
 export async function fetchProductsList() {
@@ -196,15 +197,61 @@ export async function fetchProductsByCollection(collectionId: number | string) {
 
   if (filteredCollects.length === 0) return [];
 
-  const productIds = Array.from(new Set(filteredCollects.map((c: any) => c.product_id)));
+  const productIds: number[] = Array.from(new Set(filteredCollects.map((c: any) => Number(c.product_id))));
 
-  const products = await Promise.all(
-    productIds.map((id: number) =>
-      fetch(`/api/product/${id}`)
-        .then((r) => r.json())
-        .then((d) => d.product)
-        .catch(() => null)
-    )
+  async function mapWithConcurrency<T, R>(items: T[], fn: (item: T) => Promise<R>, concurrency = 4) {
+    const results: R[] = [];
+    let idx = 0;
+    const workers: Promise<void>[] = [];
+    const next = async () => {
+      while (idx < items.length) {
+        const i = idx++;
+        try {
+          results[i] = await fn(items[i]);
+        } catch (e) {
+          results[i] = null as unknown as R;
+        }
+      }
+    };
+
+    for (let i = 0; i < Math.min(concurrency, items.length); i++) workers.push(next());
+    await Promise.all(workers);
+    return results;
+  }
+
+  try {
+    const all = await fetchProductsList();
+    if (Array.isArray(all) && all.length > 0) {
+      const byId = new Map<string, any>();
+      for (const p of all) {
+        if (p && (p.id != null || p.id === 0)) byId.set(String(p.id), p);
+      }
+
+      const found = productIds.map((id) => byId.get(String(id)) ?? null);
+      const missing: number[] = productIds.filter((id, i) => !found[i]).map((x) => Number(x));
+      if (missing.length === 0) return found.filter(Boolean);
+
+      const fetchedMissing = await mapWithConcurrency<number, any>(
+        missing,
+        async (id) => {
+          const d = await request<any>(`/api/product/${id}`, { method: "GET", headers: { Accept: "application/json" } });
+          return d?.product ?? d;
+        },
+        4
+      );
+
+      const final = productIds.map((id) => byId.get(String(id)) ?? fetchedMissing.find((p: any) => p && String(p.id) === String(id)) ?? null).filter(Boolean);
+      return final;
+    }
+  } catch (e) {}
+
+  const products = await mapWithConcurrency<number, any>(
+    productIds,
+    async (id) => {
+      const d = await request<any>(`/api/product/${id}`, { method: "GET", headers: { Accept: "application/json" } });
+      return d?.product ?? d;
+    },
+    4
   );
 
   return products.filter(Boolean);
