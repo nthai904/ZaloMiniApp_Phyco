@@ -2,7 +2,18 @@ import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { MutableRefObject, useLayoutEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { UIMatch, useMatches, useNavigate } from "react-router-dom";
-import { cartState, cartStateV2, cartTotalState, ordersState, userInfoKeyState, userInfoState, shippingAddressState, deliveryModeState, selectedStationState } from "@/state";
+import {
+  cartState,
+  cartStateV2,
+  cartTotalState,
+  ordersState,
+  userInfoKeyState,
+  userInfoState,
+  shippingAddressState,
+  deliveryModeState,
+  selectedStationState,
+  localOrdersState,
+} from "@/state";
 import { Product, ProductV2 } from "./types";
 import { getConfig } from "@/utils/template";
 import { authorize, createOrder, openChat } from "zmp-sdk/apis";
@@ -186,6 +197,7 @@ export function useAddToCartCompat(product?: Product | null) {
 export function useCheckout() {
   const { totalAmount } = useAtomValue(cartTotalState);
   const [cart, setCart] = useAtom(cartStateV2);
+  const setLocalOrders = useSetAtom(localOrdersState);
   const requestInfo = useRequestInformation();
   const shippingAddress = useAtomValue(shippingAddressState);
   const deliveryMode = useAtomValue(deliveryModeState);
@@ -438,6 +450,28 @@ export function useCheckout() {
         },
       };
       console.log("Payload:", payload);
+
+      try {
+        const newOrder = {
+          id: Date.now(),
+          status: "pending",
+          paymentStatus: "pending",
+          createdAt: new Date(),
+          receivedAt: new Date(),
+          items: cart.map((item) => ({ product: item.product, quantity: item.quantity })),
+          delivery: (deliveryMode === "pickup"
+            ? { type: "pickup", stationId: selectedStation?.id ?? 0 }
+            : shippingAddress
+            ? { type: "shipping", ...(shippingAddress as any) }
+            : { type: "shipping" }) as any,
+          total: Number(totalAmount) || 0,
+          note: "",
+        } as any;
+
+        setLocalOrders((prev) => [newOrder, ...(prev ?? [])]);
+      } catch (err) {
+        console.warn("Failed to create local order", err);
+      }
 
       // await createOrder({
       //   amount: totalAmount,
