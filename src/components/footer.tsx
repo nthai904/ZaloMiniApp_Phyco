@@ -24,12 +24,11 @@ const NAV_ITEMS = [
     path: "/articles",
     icon: ArticleIcon,
   },
-  // Phát triển sau
-  // {
-  //   name: "Đơn hàng",
-  //   path: "/orders",
-  //   icon: PackageIcon,
-  // },
+  {
+    name: "Đơn hàng",
+    path: "/orders",
+    icon: PackageIcon,
+  },
   {
     name: "Giỏ hàng",
     path: "/cart",

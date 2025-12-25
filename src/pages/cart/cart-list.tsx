@@ -26,10 +26,6 @@ export default function CartList() {
         ))}
       </div>
       <HorizontalDivider />
-      {/* <div className="flex items-center px-4 pt-3 pb-2 space-x-4">
-        <div className="text-sm font-medium">Ghi chú</div>
-        <input type="text" placeholder="Lưu ý cho người bán..." className="text-sm text-right flex-1 focus:outline-none" />
-      </div> */}
     </Section>
   );
 }
