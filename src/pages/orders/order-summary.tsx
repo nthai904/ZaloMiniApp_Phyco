@@ -17,6 +17,12 @@ function OrderSummary(props: { order: Order; full?: boolean }) {
 
   const status = statusMap[props.order.paymentStatus] ?? { text: props.order.paymentStatus, className: "bg-gray-50 text-gray-800" };
   const itemCount = props.order.items?.length ?? 0;
+  const paymentMethod = (() => {
+    const tx = (props.order as any)?.transactions?.[0];
+    if (tx && tx.gateway) return tx.gateway;
+    if ((props.order as any)?.gateway) return (props.order as any).gateway;
+    return "Chưa rõ";
+  })();
 
   return (
     <Section
@@ -27,7 +33,6 @@ function OrderSummary(props: { order: Order; full?: boolean }) {
               <div className="text-sm font-semibold truncate">Đơn #{props.order.id}</div>
               <span className={`px-2 py-0.5 text-xs font-medium rounded ${status.className}`}>{status.text}</span>
             </div>
-            <div className="text-xs text-muted mt-1 truncate">Thời gian nhận: Từ 16h, 20/1/2025</div>
           </div>
 
           <div className="flex-shrink-0 text-right">
@@ -53,14 +58,13 @@ function OrderSummary(props: { order: Order; full?: boolean }) {
           <div className="flex items-center space-x-3">
             <div className="rounded-md bg-primary/10 text-primary w-9 h-9 flex items-center justify-center text-sm font-medium">{itemCount}</div>
             <div>
-              <div className="text-sm font-medium">Số sản phẩm</div>
-              <div className="text-xs text-gray-500">{itemCount} item(s)</div>
+              <div className="text-sm font-medium">Sản phẩm</div>
             </div>
           </div>
 
           <div className="text-right">
             <div className="text-xs text-gray-500">Phương thức</div>
-            <div className="text-sm font-medium">Chưa rõ</div>
+            <div className="text-sm font-medium">{paymentMethod}</div>
           </div>
         </div>
 

@@ -79,6 +79,10 @@ export interface Order {
   delivery: Delivery;
   total: number;
   note: string;
+  // Optional fields coming from API / local orders
+  transactions?: any[];
+  gateway?: string | null;
+  order_number?: string | number;
 }
 
 // Interfaces chức năng mới

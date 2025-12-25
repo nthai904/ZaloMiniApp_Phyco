@@ -10,14 +10,7 @@ export default function CartList() {
 
   return (
     <Section
-      title={
-        <div className="flex items-center space-x-2">
-          <Icon icon="zi-calendar" />
-          <div>
-            <span className="font-normal text-sm">Danh sách sản phẩm</span>
-          </div>
-        </div>
-      }
+      title="Danh sách giỏ hàng"
       className="flex-1 overflow-y-auto rounded-lg"
     >
       <div className="w-full">

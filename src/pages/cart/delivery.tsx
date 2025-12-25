@@ -20,23 +20,13 @@ function ShippingAddressSummary() {
     );
   }
 
-  return (
-    <DeliverySummary
-      icon={<LocationMarkerLineIcon />}
-      title="Địa chỉ nhận hàng"
-      subtitle={shippingAddress.alias}
-      description={shippingAddress.address}
-      linkTo="/shipping-address"
-    />
-  );
+  return <DeliverySummary icon="" title="" subtitle={shippingAddress.alias} description={shippingAddress.address} linkTo="/shipping-address" />;
 }
 
 function Delivery() {
   return (
-    <Section title="Nhập địa chỉ nhận hàng" className="rounded-lg">
-      <div className="p-2">
-        <ShippingAddressSummary />
-      </div>
+    <Section title="Địa chỉ nhận hàng">
+      <ShippingAddressSummary />
     </Section>
   );
 }
