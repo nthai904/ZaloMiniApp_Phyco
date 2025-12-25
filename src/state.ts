@@ -55,10 +55,10 @@ export const phoneState = atom(async () => {
     // phone = await decodeToken(token);
 
     // Các bước bên dưới để demo chức năng, phía tích hợp có thể bỏ đi sau.
-    toast("Đã lấy được token chứa số điện thoại người dùng. Phía tích hợp cần decode token này ở server. Giả lập số điện thoại 0912345678...", {
-      icon: "ℹ",
-      duration: 10000,
-    });
+    // toast("Đã lấy được token chứa số điện thoại người dùng. Phía tích hợp cần decode token này ở server. Giả lập số điện thoại 0912345678...", {
+    //   icon: "ℹ",
+    //   duration: 10000,
+    // });
     await new Promise((resolve) => setTimeout(resolve, 1000));
     phone = "0912345678";
     // End demo
@@ -86,10 +86,10 @@ export const stationsState = atom(async () => {
     // location = await decodeToken(token);
 
     // Các bước bên dưới để demo chức năng, phía tích hợp có thể bỏ đi sau.
-    toast("Đã lấy được token chứa thông tin vị trí người dùng. Phía tích hợp cần decode token này ở server. Giả lập vị trí tại VNG Campus...", {
-      icon: "ℹ",
-      duration: 10000,
-    });
+    // toast("Đã lấy được token chứa thông tin vị trí người dùng. Phía tích hợp cần decode token này ở server. Giả lập vị trí tại VNG Campus...", {
+    //   icon: "ℹ",
+    //   duration: 10000,
+    // });
     await new Promise((resolve) => setTimeout(resolve, 1000));
     location = {
       lat: 10.773756,
@@ -132,6 +132,9 @@ export const ordersState = atomFamily((status: OrderStatus) =>
 export const localOrdersState = atomWithStorage<Order[]>(CONFIG.STORAGE_KEYS.LOCAL_ORDERS, []);
 
 export const deliveryModeState = atomWithStorage<Delivery["type"]>(CONFIG.STORAGE_KEYS.DELIVERY, "shipping");
+
+// Lưu phương thức thanh toán được chọn: 'cod' hoặc 'bank_transfer'
+export const paymentMethodState = atomWithStorage<string>("paymentMethod", "cod");
 
 export const productsState = atom(async (get) => {
   const categories = await get(categoriesState);

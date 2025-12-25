@@ -56,13 +56,13 @@ export default function Header({ showHeaderOverlay = true, isScrolled = false }:
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               {/* Logo thương hiệu  */}
-              <div className="w-8 h-8 rounded-full flex items-center justify-center cursor-pointer" onClick={() => navigate("/")}>
-                <img src={getConfig((c) => c.template.logoUrl)} alt="Logo" className="w-full h-full object-cover rounded-full" loading="lazy" />
+              <div className="w-20 h-10 sm:w-32 sm:h-10 flex items-center justify-center cursor-pointer" onClick={() => navigate("/")} aria-label="Home">
+                <img src={getConfig((c) => c.template.logoUrl)} alt="Logo" className="max-w-full max-h-full object-contain" loading="lazy" />
               </div>
 
               {/* Thanh tìm kiếm  */}
               <div>
-                <div className="w-[75%] py-3 flex space-x-2">
+                <div className="w-[70%] py-3 flex space-x-2">
                   <SearchBar
                     onFocus={() => {
                       if (location.pathname !== "/search") {

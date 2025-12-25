@@ -16,7 +16,7 @@
     "name": "zaui-market",
     "apiUrl": "",
     "oaIDtoOpenChat": "4318657068771012646",
-    "logoUrl": "https://theme.hstatic.net/200000436051/1000801313/14/logo.png?v=721",
+    "logoUrl": "./assets/logo-1.jpg",
     "shopName": "Phyco Việt Nam",
     "shopAddress": "Số 24, Đường số 6, Khu Dân Cư Xây Dựng, Phường Cái Răng, Thành Phố Cần Thơ"
   }

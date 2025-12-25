@@ -7,6 +7,7 @@ import { EmptyCart } from "@/components/empty";
 import Delivery from "./delivery";
 import HorizontalDivider from "@/components/horizontal-divider";
 import Pay from "./pay";
+import PaymentMethod from "@/components/payment-method";
 
 export default function CartPage() {
   const cart = useAtomValue(cartStateV2);
@@ -19,7 +20,7 @@ export default function CartPage() {
       <div className="flex-1 overflow-y-auto px-4 py-2 space-y-2">
         <Delivery />
         <CartList />
-        <ApplyVoucher />
+        <PaymentMethod />
         <CartSummary />
       </div>
       <HorizontalDivider />

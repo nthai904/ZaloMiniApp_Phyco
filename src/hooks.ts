@@ -11,6 +11,7 @@ import {
   userInfoState,
   shippingAddressState,
   deliveryModeState,
+  paymentMethodState,
   selectedStationState,
   localOrdersState,
 } from "@/state";
@@ -236,6 +237,7 @@ export function useCheckout() {
   const shippingAddress = useAtomValue(shippingAddressState);
   const deliveryMode = useAtomValue(deliveryModeState);
   const selectedStation = useAtomValue(selectedStationState);
+  const paymentMethod = useAtomValue(paymentMethodState);
   const navigate = useNavigate();
   const refreshOrders = useSetAtom(ordersState("pending"));
 
@@ -245,19 +247,59 @@ export function useCheckout() {
 
       const cartToken = `ct_${Date.now()}`;
       const checkoutToken = cartToken;
+      const orderId = Date.now();
+      const orderNumber = `#${orderId}`;
+
+      // Phương thức thanh toán
+      const transactions: any[] = [];
+      const transactionBase = {
+        amount: Number(totalAmount) || 0,
+        authorization: null,
+        created_at: new Date().toISOString(),
+        device_id: null,
+        receipt: null,
+        status: null,
+        user_id: (userInfo as any)?.id ?? null,
+        payment_details: null,
+        parent_id: null,
+        currency: "VND",
+        haravan_transaction_id: null,
+        external_transaction_id: null,
+        external_payment_type: null,
+      };
+
+      if (paymentMethod === "cod") {
+        transactions.push({
+          ...transactionBase,
+          gateway: "Thanh toán khi giao hàng (COD)",
+          id: orderId + 1,
+          kind: "pending",
+          order_id: orderId,
+          location_id: selectedStation?.id ?? null,
+        });
+      } else if (paymentMethod === "bank_transfer") {
+        transactions.push({
+          ...transactionBase,
+          gateway: "Chuyển khoản ngân hàng",
+          id: orderId + 1,
+          kind: "pending",
+          order_id: orderId,
+          location_id: null,
+        });
+      }
 
       const payload: any = {
         order: {
-          id: Date.now(),
+          id: orderId,
           cart_token: cartToken,
           checkout_token: checkoutToken,
           token: checkoutToken,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
           currency: "VND",
-          name: `#${Date.now()}`,
-          number: Date.now(),
-          order_number: `#${Date.now()}`,
+          name: orderNumber,
+          number: orderId,
+          order_number: orderNumber,
 
           email: (shippingAddress as any)?.email ?? userInfo?.email ?? "",
           contact_email: (shippingAddress as any)?.email ?? userInfo?.email ?? "",
@@ -320,7 +362,6 @@ export function useCheckout() {
                 }
               : null,
           },
-
           billing_address: shippingAddress
             ? {
                 address1: shippingAddress.address ?? null,
@@ -389,7 +430,7 @@ export function useCheckout() {
                 ward_code: shippingAddress.ward_code ?? null,
               }
             : null,
-
+          // Danh sach sản phẩm trong giỏ hàng
           line_items: cart.map((item) => {
             const prod: any = item.product as any;
             const variant = prod?.variants?.[0] ?? {};
@@ -437,9 +478,8 @@ export function useCheckout() {
           total_discounts: 0,
           total_tax: 0,
           taxes_included: false,
-
-          transactions: [],
-          transactions_count: 0,
+          transactions,
+          transactions_count: transactions.length,
           discount_codes: [],
           refunds: [],
           fulfillments: [],
@@ -457,11 +497,14 @@ export function useCheckout() {
           payment_url: null,
         },
       };
+
+      // in ra payload ở console
       console.log("Data API đơn hàngg:", payload);
 
       try {
         const newOrder = {
-          id: Date.now(),
+          id: orderId,
+          order_number: orderNumber,
           status: "pending",
           paymentStatus: "pending",
           createdAt: new Date(),
@@ -474,6 +517,8 @@ export function useCheckout() {
             : { type: "shipping" }) as any,
           total: Number(totalAmount) || 0,
           note: "",
+          transactions,
+          gateway: transactions?.[0]?.gateway ?? null,
         } as any;
 
         setLocalOrders((prev) => [newOrder, ...(prev ?? [])]);
