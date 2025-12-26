@@ -14,7 +14,7 @@ export default function HeaderOverlay({ pointsCount = 0, voucherCount = 0, class
   const navigate = useNavigate();
 
   return (
-    <div className={"w-full max-w-md mx-auto bg-white text-black rounded-lg shadow-lg py-3 px-4 flex flex-col gap-3 z-50 pointer-events-auto" + className} role="group">
+    <div className={"w-full mt-12 mb-5 max-w-md mx-auto bg-white text-black rounded-lg shadow-lg py-3 px-4 flex flex-col gap-3 z-50 pointer-events-auto" + className} role="group">
       {/* ------- PHẦN TRÊN ------- */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
