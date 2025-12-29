@@ -39,19 +39,46 @@ export async function fetchProductDetail(id: number | string) {
 }
 
 // Route lấy ra danh sách bài viết
+// Sau này dùng lại
+// export async function fetchBLogList(): Promise<Blog[]> {
+//   const url = `/api/blog`;
+//   const res = await fetch(url, { method: "GET", headers: { Accept: "application/json" } });
+//   if (!res.ok) {
+//     const text = await res.text().catch(() => "");
+//     throw new Error(`Kết nối thất bại ${res.status} ${res.statusText} - ${text.slice(0, 200)}`);
+//   }
+//   const data = await res.json().catch((err) => {
+//     throw new Error(`Không kết nối được api - ${err.message}`);
+//   });
+
+//   return data?.blogs ?? data;
+// }
+// Dùng tạm thời
 export async function fetchBLogList(): Promise<Blog[]> {
   const url = `/api/blog`;
-  const res = await fetch(url, { method: "GET", headers: { Accept: "application/json" } });
+  const res = await fetch(url, {
+    method: "GET",
+    headers: { Accept: "application/json" },
+  });
+
   if (!res.ok) {
     const text = await res.text().catch(() => "");
-    throw new Error(`Kết nối thất bại ${res.status} ${res.statusText} - ${text.slice(0, 200)}`);
+    throw new Error(
+      `Kết nối thất bại ${res.status} ${res.statusText} - ${text.slice(0, 200)}`
+    );
   }
+
   const data = await res.json().catch((err) => {
     throw new Error(`Không kết nối được api - ${err.message}`);
   });
 
-  return data?.blogs ?? data;
+  const blogs: Blog[] = data?.blogs ?? data ?? [];
+
+  return blogs.filter(
+    (blog) => blog.handle !== "phycocyanin-1"
+  );
 }
+
 
 // Route lấy số lượng bài viết của blog (count)
 export async function fetchBlogCount(id: number | string): Promise<number> {

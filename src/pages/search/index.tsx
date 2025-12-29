@@ -11,7 +11,7 @@ export function SearchResult() {
   const searchResult = useAtomValue(searchResultStateV2);
 
   return (
-    <div className="w-full h-full space-y-2 bg-background">
+    <div className="w-full h-full space-y-2 bg-background mt-10">
       <Section title={`Kết quả (${searchResult.length})`} className="h-full flex flex-col overflow-y-auto pb-16">
         {searchResult.length ? <ProductGrid products={searchResult} /> : <EmptySearchResult />}
       </Section>
@@ -21,7 +21,7 @@ export function SearchResult() {
 
 export function SearchResultSkeleton() {
   return (
-    <Section title={`Kết quả`}>
+    <Section title={`Kết quả`} className="mt-10">
       <ProductGridSkeleton />
     </Section>
   );
@@ -42,7 +42,7 @@ export function RecommendedProducts() {
   const recommendedProducts = useAtomValue(recommendedProductsState);
 
   return (
-    <Section title="Gợi ý sản phẩm">
+    <Section title="Gợi ý sản phẩm" className="mt-10">
       <div className="py-2 px-4 pb-6 flex space-x-2 overflow-x-auto">
         {recommendedProducts.map((product) => (
           <div key={product.id} className="flex-none" style={{ flexBasis: "calc((100vw - 48px) / 2)" }}>
