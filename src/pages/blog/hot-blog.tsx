@@ -89,26 +89,30 @@ export default function HotBlog() {
   };
 
   return (
-    <div className="py-3 relative">
+    <div className="py-4 relative">
       <div className="-mx-4 px-4">
-        <div ref={scrollerRef} onScroll={onScroll} className="flex gap-3 ml-3 pb-3 overflow-x-auto snap-x snap-mandatory scroll-smooth scrollbar-hide">
+        <div ref={scrollerRef} onScroll={onScroll} className="flex gap-4 ml-3 pb-4 overflow-x-auto snap-x snap-mandatory scroll-smooth scrollbar-hide">
           {list.map((article) => (
-            <div key={article.id} className="hotblog-card snap-start w-56 sm:w-64 md:w-72 flex-shrink-0">
-              <TransitionLink to={`/article/${article.id}`} className="block bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-200">
-                <div className="relative w-full aspect-[4/3] bg-skeleton overflow-hidden">
+            <div key={article.id} className="hotblog-card snap-start w-[280px] sm:w-[320px] md:w-[360px] flex-shrink-0">
+              <TransitionLink to={`/article/${article.id}`} className="block bg-section rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 group">
+                <div className="relative w-full aspect-[16/10] bg-skeleton overflow-hidden">
                   <LazyImage
                     src={article.image ?? article.image_src ?? NO_IMAGE_URL}
                     placeholder={""}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     alt={article.title}
                     onError={(e: any) => {
                       const t = e?.target as HTMLImageElement | null;
                       if (t && t.src !== NO_IMAGE_URL) t.src = NO_IMAGE_URL;
                     }}
                   />
+                  <div className="absolute top-3 right-3">
+                    <span className="bg-primary text-primaryForeground text-xs font-semibold px-2.5 py-1 rounded-full shadow-md">Nổi bật</span>
+                  </div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </div>
-                <div className="p-3">
-                  <h4 className="text-sm font-medium text-gray-800 line-clamp-2">{article.title}</h4>
+                <div className="p-4">
+                  <h4 className="text-base font-semibold text-foreground line-clamp-2 leading-snug group-hover:text-primary transition-colors duration-200">{article.title}</h4>
                 </div>
               </TransitionLink>
             </div>
