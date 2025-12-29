@@ -312,8 +312,9 @@ export function useCheckout() {
             id: userInfo?.id ?? undefined,
             email: userInfo?.email ?? "",
             phone: userInfo?.phone ?? null,
-            first_name: userInfo?.name?.split(" ")?.[0] ?? null,
-            last_name: (userInfo?.name?.split(" ")?.slice(1).join(" ") as string) ?? null,
+            // Đảo lại để hệ thống hiển thị đúng thứ tự "Lâm Nhật Huy"
+            first_name: (userInfo?.name?.split(" ")?.slice(1).join(" ") as string) || null,
+            last_name: userInfo?.name?.split(" ")?.[0] ?? null,
             created_at: new Date().toISOString(),
             addresses: shippingAddress
               ? [
@@ -323,9 +324,10 @@ export function useCheckout() {
                     city: shippingAddress.city ?? null,
                     company: shippingAddress.company ?? null,
                     country: shippingAddress.country ?? "Vietnam",
-                    first_name: shippingAddress.first_name ?? shippingAddress.name ?? null,
+                    // Nếu có first_name/last_name đã lưu thì dùng luôn, nếu không thì tách từ name và đảo cho đúng thứ tự hiển thị
+                    first_name: shippingAddress.first_name ?? shippingAddress.name?.split(" ")?.slice(1).join(" ") ?? null,
                     id: shippingAddress.id ?? undefined,
-                    last_name: shippingAddress.last_name ?? null,
+                    last_name: shippingAddress.last_name ?? shippingAddress.name?.split(" ")?.[0] ?? null,
                     phone: shippingAddress.phone ?? userInfo?.phone ?? null,
                     province: shippingAddress.province ?? null,
                     zip: shippingAddress.zip ?? null,
@@ -347,9 +349,9 @@ export function useCheckout() {
                   city: shippingAddress.city ?? null,
                   company: shippingAddress.company ?? null,
                   country: shippingAddress.country ?? "Vietnam",
-                  first_name: shippingAddress.first_name ?? shippingAddress.name ?? null,
+                  first_name: shippingAddress.first_name ?? shippingAddress.name?.split(" ")?.slice(1).join(" ") ?? null,
                   id: shippingAddress.id ?? undefined,
-                  last_name: shippingAddress.last_name ?? null,
+                  last_name: shippingAddress.last_name ?? shippingAddress.name?.split(" ")?.[0] ?? null,
                   phone: shippingAddress.phone ?? userInfo?.phone ?? null,
                   province: shippingAddress.province ?? null,
                   zip: shippingAddress.zip ?? null,
@@ -371,9 +373,9 @@ export function useCheckout() {
                 city: shippingAddress.city ?? null,
                 company: shippingAddress.company ?? null,
                 country: shippingAddress.country ?? "Vietnam",
-                first_name: shippingAddress.first_name ?? shippingAddress.name ?? null,
+                first_name: shippingAddress.first_name ?? shippingAddress.name?.split(" ")?.slice(1).join(" ") ?? null,
                 id: shippingAddress.id ?? undefined,
-                last_name: shippingAddress.last_name ?? null,
+                last_name: shippingAddress.last_name ?? shippingAddress.name?.split(" ")?.[0] ?? null,
                 phone: shippingAddress.phone ?? userInfo?.phone ?? null,
                 province: shippingAddress.province ?? null,
                 zip: shippingAddress.zip ?? null,
@@ -416,9 +418,9 @@ export function useCheckout() {
                 city: shippingAddress.city ?? null,
                 company: shippingAddress.company ?? null,
                 country: shippingAddress.country ?? "Vietnam",
-                first_name: shippingAddress.name ?? null,
+                first_name: shippingAddress.first_name ?? shippingAddress.name?.split(" ")?.slice(1).join(" ") ?? null,
                 id: shippingAddress.id ?? undefined,
-                last_name: shippingAddress.last_name ?? null,
+                last_name: shippingAddress.last_name ?? shippingAddress.name?.split(" ")?.[0] ?? null,
                 phone: shippingAddress.phone ?? null,
                 province: shippingAddress.province ?? null,
                 zip: shippingAddress.zip ?? null,
@@ -523,8 +525,8 @@ export function useCheckout() {
       let shippingAddressData: any = null;
       if (shippingAddress) {
         shippingAddressData = {
-          first_name: shippingAddress.first_name ?? shippingAddress.name?.split(" ")?.[0] ?? "",
-          last_name: shippingAddress.last_name ?? shippingAddress.name?.split(" ")?.slice(1).join(" ") ?? "",
+          first_name: shippingAddress.first_name ?? shippingAddress.name?.split(" ")?.slice(1).join(" ") ?? "",
+          last_name: shippingAddress.last_name ?? shippingAddress.name?.split(" ")?.[0] ?? "",
           phone: shippingAddress.phone ?? orderPhone,
           address1: shippingAddress.address ?? "",
           province: shippingAddress.province ?? "",
@@ -533,8 +535,8 @@ export function useCheckout() {
       } else if (userInfo?.name) {
         const nameParts = userInfo.name.split(" ");
         shippingAddressData = {
-          first_name: nameParts[0] ?? "",
-          last_name: nameParts.slice(1).join(" ") ?? "",
+          first_name: nameParts.slice(1).join(" ") || "",
+          last_name: nameParts[0] ?? "",
           phone: orderPhone,
           address1: userInfo.address ?? "",
           province: "",
@@ -571,12 +573,10 @@ export function useCheckout() {
         },
       };
 
-      console.log("Payload gửi lên Haravan API:", simplePayload);
 
       let haravanOrderResponse: OrderResponse | null = null;
       try {
         haravanOrderResponse = await createHaravanOrder(simplePayload);
-        console.log("Đơn hàng đã được tạo trên Haravan:", haravanOrderResponse);
 
         if (haravanOrderResponse?.order?.id) {
           orderId = haravanOrderResponse.order.id;
