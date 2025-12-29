@@ -40,7 +40,6 @@ export async function fetchProductsPage(page = 1, perPage = 20, collectionId?: s
   };
 }
 
-// Fetch all products (uses batching / limited concurrency to avoid long sequential fetches)
 export async function fetchAllProducts(perFetch = 100, concurrency = 4, collectionId?: string | number): Promise<ProductV2[]> {
   const first = await fetchProductsPage(1, perFetch, collectionId);
   let all = first.products.slice();
@@ -48,7 +47,6 @@ export async function fetchAllProducts(perFetch = 100, concurrency = 4, collecti
   const totalPages = first.total_pages ?? 0;
 
   if (totalPages <= 1) {
-    // fallback: try fetching until empty page
     let p = 2;
     while (true) {
       const res = await fetchProductsPage(p, perFetch, collectionId);
@@ -60,15 +58,12 @@ export async function fetchAllProducts(perFetch = 100, concurrency = 4, collecti
     return all;
   }
 
-  // create array of page numbers to fetch
   const pages: number[] = [];
   for (let p = 2; p <= totalPages; p++) pages.push(p);
 
-  // fetch in batches to limit concurrency
   for (let i = 0; i < pages.length; i += concurrency) {
     const batch = pages.slice(i, i + concurrency);
     const promises = batch.map((p) => fetchProductsPage(p, perFetch, collectionId).then((r) => r.products || []));
-    // run batch in parallel
     const results = await Promise.all(promises);
     for (const res of results) {
       if (res && res.length) all = all.concat(res);
@@ -89,15 +84,13 @@ export async function searchProductsByTitle(query: string): Promise<ProductV2[]>
   const q = (query || "").trim();
   if (!q) return [];
 
-  // Small in-memory cache to avoid repeating heavy scans for same query
-  // Note: simple single-run cache - can be improved with TTL if needed
+
   (searchProductsByTitle as any)._cache = (searchProductsByTitle as any)._cache || new Map<string, ProductV2[]>();
   const cache: Map<string, ProductV2[]> = (searchProductsByTitle as any)._cache;
   if (cache.has(q)) return cache.get(q)!;
 
-  // incremental fetch: fetch in pages and filter locally, stop early if we've scanned a reasonable amount
   const perFetch = 100;
-  const maxScanned = 1000; // safety cap
+  const maxScanned = 1000; 
   let scanned = 0;
   let page = 1;
   let matched: ProductV2[] = [];
@@ -112,14 +105,76 @@ export async function searchProductsByTitle(query: string): Promise<ProductV2[]>
         const title = (p.title || "").toString();
         if (normalizeForSearch(title).includes(qNorm)) matched.push(p);
       }
-      if (!items || items.length < perFetch) break; // no more pages
+      if (!items || items.length < perFetch) break; 
       page++;
     }
 
-    // cache small result set for repeated queries
     cache.set(q, matched.slice(0, 500));
     return matched;
   } catch (err) {
     throw err;
   }
+}
+
+export interface CreateOrderPayload {
+  order: {
+    email?: string;
+    phone?: string;
+    shipping_address?: {
+      first_name?: string;
+      last_name?: string;
+      phone?: string;
+      address1?: string;
+      province?: string;
+      country?: string;
+      [key: string]: any;
+    };
+    line_items: Array<{
+      variant_id: number;
+      quantity: number;
+      price?: number;
+      title?: string; 
+      [key: string]: any;
+    }>;
+    total_price?: number;
+    [key: string]: any; 
+  };
+}
+
+export interface OrderResponse {
+  order: any;
+}
+
+/**
+ * Tạo đơn hàng mới trên Haravan
+ * @param payload - Payload chứa thông tin đơn hàng
+ * @returns Promise<OrderResponse> - Response từ API
+ */
+export async function createOrder(payload: CreateOrderPayload): Promise<OrderResponse> {
+  console.log("Payload gửi lên API:", JSON.stringify(payload, null, 2));
+
+  const res = await fetch("/api/order", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    const errorText = await res.text();
+    console.error("API Error Response:", errorText);
+    let errorMessage = `Tạo đơn hàng thất bại: ${res.status} ${res.statusText}`;
+    try {
+      const errorJson = JSON.parse(errorText);
+      errorMessage = errorJson.error || errorJson.message || errorJson.errors || JSON.stringify(errorJson) || errorMessage;
+    } catch {
+      // If parsing fails, use the text as is
+      if (errorText) errorMessage = errorText;
+    }
+    throw new Error(errorMessage);
+  }
+
+  const body = await res.json();
+  return body;
 }

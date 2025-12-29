@@ -102,10 +102,22 @@ export default () => {
           },
         },
         "/api/provinces": {
-          target: "https://provinces.open-api.vn",
+          target: `${process.env.PROVICES_API_URL}`,
           changeOrigin: true,
           secure: true,
           rewrite: (path) => path.replace(/^\/api\/provinces/, "/api/v1"),
+        },
+        "/api/order": {
+          target: `${process.env.API_URL}`,
+          changeOrigin: true,
+          secure: true,
+          rewrite: () => "/com/orders.json",
+          configure: (proxy) => {
+            proxy.on("proxyReq", (proxyReq: any) => {
+              proxyReq.setHeader("Authorization", `Bearer ${process.env.API_TOKEN}`);
+              proxyReq.setHeader("Content-Type", "application/json");
+            });
+          },
         },
       },
     },

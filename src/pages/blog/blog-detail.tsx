@@ -195,7 +195,7 @@ export default function BlogDetailPage() {
           <LazyImage
             src={currentArticle.image || NO_IMAGE_URL}
             placeholder={""}
-            className="w-full h-full"
+            className="w-full"
             alt={currentArticle.title}
             onLoad={() => setImageLoaded(true)}
             onError={(e: any) => {
