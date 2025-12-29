@@ -169,6 +169,7 @@ export function useAddToCartV2(product?: ProductV2 | null) {
         name: product.title,
         price: Number(product.variants?.[0]?.price ?? 0),
         image: product.images?.[0]?.src ?? "/placeholder.jpg",
+        variants: product.variants,
         category: (product as any).category ?? { id: 0, name: product.product_type ?? "", image: "" },
       } as any;
 
@@ -499,44 +500,26 @@ export function useCheckout() {
         },
       };
 
-      // in ra payload ở console
-      console.log("Data API đơn hàng đầy đủ:", payload);
+      const lineItems = cart.map((item) => {
+        const prod: any = item.product as any;
+        const variant = Array.isArray(prod?.variants) && prod.variants.length > 0 ? prod.variants[0] : null;
+        const variantId = variant?.id ? Number(variant.id) : 0;
+        const price = Number(variant?.price ?? prod?.price ?? 0);
 
-      // Tạo payload theo format yêu cầu của Haravan API
-      const lineItems = cart
-        .map((item) => {
-          const prod: any = item.product as any;
-          const variant = prod?.variants?.[0] ?? {};
-          const variantId = Number(variant?.id ?? prod?.id ?? 0);
-          const price = Number(variant?.price ?? prod?.price ?? 0);
-          const title = String(prod?.title ?? prod?.name ?? "");
-
-          if (!variantId || variantId === 0) {
-            console.warn("Variant ID không hợp lệ cho sản phẩm:", prod);
-          }
-
-          if (!title) {
-            console.warn("Tên sản phẩm không có cho sản phẩm:", prod);
-          }
-
-          return {
-            variant_id: variantId,
-            quantity: item.quantity,
-            price: price,
-            title: title, 
-          };
-        })
-        .filter((item) => item.variant_id > 0 && item.title); // Lọc bỏ các item không hợp lệ
+        return {
+          variant_id: String(variantId),
+          quantity: item.quantity,
+          price: price,
+        };
+      });
 
       if (lineItems.length === 0) {
         throw new Error("Không có sản phẩm hợp lệ trong giỏ hàng");
       }
 
-      // Lấy thông tin email và phone từ userInfo hoặc shippingAddress
       const orderEmail = (shippingAddress as any)?.email ?? userInfo?.email ?? "";
       const orderPhone = shippingAddress?.phone ?? userInfo?.phone ?? "";
 
-      // Tạo shipping_address từ shippingAddress hoặc userInfo
       let shippingAddressData: any = null;
       if (shippingAddress) {
         shippingAddressData = {
@@ -548,7 +531,6 @@ export function useCheckout() {
           country: shippingAddress.country ?? "Vietnam",
         };
       } else if (userInfo?.name) {
-        // Nếu không có shippingAddress, tạo từ userInfo
         const nameParts = userInfo.name.split(" ");
         shippingAddressData = {
           first_name: nameParts[0] ?? "",
@@ -560,25 +542,42 @@ export function useCheckout() {
         };
       }
 
+      let gateway = "";
+      let gatewayCode = "";
+      let isCodGateway: boolean | string = false;
+      if (paymentMethod === "cod") {
+        gateway = "Thanh toán khi giao hàng (COD)";
+        gatewayCode = "COD";
+        isCodGateway = true;
+      } else if (paymentMethod === "bank_transfer") {
+        gateway = "Chuyển khoản ngân hàng";
+        gatewayCode = "BANK_TRANSFER";
+        isCodGateway = false;
+      }
+
       const simplePayload: CreateOrderPayload = {
         order: {
           email: orderEmail,
           phone: orderPhone,
           shipping_address: shippingAddressData,
+          source: "ZaloMiniApp",
+          source_name: "ZaloMiniApp",
+          gateway: gateway,
+          gateway_code: gatewayCode,
+          is_cod_gateway: isCodGateway,
+          financial_status: "pending",
           line_items: lineItems,
-          total_price: Number(totalAmount) || 0,
+          total_price: Number(totalAmount),
         },
       };
 
       console.log("Payload gửi lên Haravan API:", simplePayload);
 
-      // Gọi API Haravan để tạo đơn hàng
       let haravanOrderResponse: OrderResponse | null = null;
       try {
         haravanOrderResponse = await createHaravanOrder(simplePayload);
         console.log("Đơn hàng đã được tạo trên Haravan:", haravanOrderResponse);
 
-        // Cập nhật orderId và orderNumber từ response nếu có
         if (haravanOrderResponse?.order?.id) {
           orderId = haravanOrderResponse.order.id;
         }
@@ -587,9 +586,7 @@ export function useCheckout() {
         }
       } catch (apiError: any) {
         console.error("Lỗi khi tạo đơn hàng trên Haravan:", apiError);
-        // Vẫn tiếp tục tạo local order nếu API thất bại
         toast.error(`Lỗi API: ${apiError.message || "Không thể tạo đơn hàng trên Haravan"}`);
-        // Không throw error để vẫn có thể tạo local order
       }
 
       // Tạo local order để lưu trữ

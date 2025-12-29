@@ -84,13 +84,12 @@ export async function searchProductsByTitle(query: string): Promise<ProductV2[]>
   const q = (query || "").trim();
   if (!q) return [];
 
-
   (searchProductsByTitle as any)._cache = (searchProductsByTitle as any)._cache || new Map<string, ProductV2[]>();
   const cache: Map<string, ProductV2[]> = (searchProductsByTitle as any)._cache;
   if (cache.has(q)) return cache.get(q)!;
 
   const perFetch = 100;
-  const maxScanned = 1000; 
+  const maxScanned = 1000;
   let scanned = 0;
   let page = 1;
   let matched: ProductV2[] = [];
@@ -105,7 +104,7 @@ export async function searchProductsByTitle(query: string): Promise<ProductV2[]>
         const title = (p.title || "").toString();
         if (normalizeForSearch(title).includes(qNorm)) matched.push(p);
       }
-      if (!items || items.length < perFetch) break; 
+      if (!items || items.length < perFetch) break;
       page++;
     }
 
@@ -129,15 +128,22 @@ export interface CreateOrderPayload {
       country?: string;
       [key: string]: any;
     };
+    source?: string;
+    gateway?: string;
+    gateway_code?: string;
+    financial_status?: string;
     line_items: Array<{
-      variant_id: number;
+      variant_id: string;
       quantity: number;
       price?: number;
-      title?: string; 
       [key: string]: any;
     }>;
     total_price?: number;
-    [key: string]: any; 
+    note_attributes?: Array<{
+      name: string;
+      value: string;
+    }>;
+    [key: string]: any;
   };
 }
 
