@@ -157,7 +157,7 @@ export interface OrderResponse {
  * @returns Promise<OrderResponse> - Response từ API
  */
 export async function createOrder(payload: CreateOrderPayload): Promise<OrderResponse> {
-  console.log("Payload gửi lên API:", JSON.stringify(payload, null, 2));
+  // console.log("Payload gửi lên API:", JSON.stringify(payload, null, 2));
 
   const res = await fetch("/api/order", {
     method: "POST",
@@ -175,7 +175,6 @@ export async function createOrder(payload: CreateOrderPayload): Promise<OrderRes
       const errorJson = JSON.parse(errorText);
       errorMessage = errorJson.error || errorJson.message || errorJson.errors || JSON.stringify(errorJson) || errorMessage;
     } catch {
-      // If parsing fails, use the text as is
       if (errorText) errorMessage = errorText;
     }
     throw new Error(errorMessage);
