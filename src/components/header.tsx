@@ -3,21 +3,18 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { categoriesStateUpwrapped, loadableUserInfoState } from "@/state";
 import { useMemo, useState, useEffect } from "react";
 import { useRouteHandle } from "@/hooks";
-import { getConfig } from "@/utils/template";
 import SearchBar from "./search-bar";
 import { ShoppingCartOutlined } from "@ant-design/icons";
 import HeaderOverlay from "@/components/header-overlay";
 import { cartStateV2 } from "@/state";
+import logoImage from "@/static/logo-1.png";
 
 type HeaderProps = {
   showHeaderOverlay?: boolean;
   isScrolled?: boolean;
 };
 
-export default function Header({
-  showHeaderOverlay = true,
-  isScrolled = false,
-}: HeaderProps) {
+export default function Header({ showHeaderOverlay = true, isScrolled = false }: HeaderProps) {
   const categories = useAtomValue(categoriesStateUpwrapped);
   const navigate = useNavigate();
   const location = useLocation();
@@ -65,17 +62,8 @@ export default function Header({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               {/* Logo thương hiệu  */}
-              <div
-                className="w-20 h-10 sm:w-32 sm:h-10 flex items-center justify-center cursor-pointer"
-                onClick={() => navigate("/")}
-                aria-label="Home"
-              >
-                <img
-                  src={getConfig((c) => c.template.logoUrl)}
-                  alt="Logo"
-                  className="max-w-full max-h-full object-contain"
-                  loading="lazy"
-                />
+              <div className="w-20 h-10 sm:w-32 sm:h-10 flex items-center justify-center cursor-pointer" onClick={() => navigate("/")} aria-label="Home">
+                <img src={logoImage} alt="Logo" className="max-w-full max-h-full object-contain" loading="lazy" />
               </div>
 
               {/* Thanh tìm kiếm  */}
@@ -92,11 +80,7 @@ export default function Header({
                 </div>
               </div>
 
-              <div
-                className="w-8 h-8 relative flex items-center justify-center cursor-pointer"
-                onClick={() => navigate("/cart")}
-                aria-label="Giỏ hàng"
-              >
+              <div className="w-8 h-8 relative flex items-center justify-center cursor-pointer" onClick={() => navigate("/cart")} aria-label="Giỏ hàng">
                 <ShoppingCartOutlined
                   style={{
                     fontSize: 24,
@@ -104,9 +88,7 @@ export default function Header({
                     transform: "translateX(-70px)",
                   }}
                 />
-                <span className="absolute -top-0 -left-12 bg-danger text-white text-[8px] rounded-full w-4 h-4 flex items-center justify-center">
-                  {cart.length}
-                </span>
+                <span className="absolute -top-0 -left-12 bg-danger text-white text-[8px] rounded-full w-4 h-4 flex items-center justify-center">{cart.length}</span>
               </div>
             </div>
           </div>
@@ -116,20 +98,14 @@ export default function Header({
       {handle?.search && (
         <div
           className={`-mt-6 px-4 overflow-hidden transition-all duration-300 ease-in-out ${
-            showHeaderOverlay && !searchFocused
-              ? "max-h-96 opacity-100"
-              : "max-h-0 opacity-0 pointer-events-none"
+            showHeaderOverlay && !searchFocused ? "max-h-96 opacity-100" : "max-h-0 opacity-0 pointer-events-none"
           }`}
           style={{
             willChange: "max-height, opacity",
           }}
         >
           <div
-            className={`transition-transform duration-300 ease-in-out ${
-              showHeaderOverlay && !searchFocused
-                ? "translate-y-0 opacity-100"
-                : "-translate-y-4 opacity-0"
-            }`}
+            className={`transition-transform duration-300 ease-in-out ${showHeaderOverlay && !searchFocused ? "translate-y-0 opacity-100" : "-translate-y-4 opacity-0"}`}
             style={{
               willChange: "transform, opacity",
             }}

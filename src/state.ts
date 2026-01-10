@@ -23,22 +23,61 @@ export const userInfoState = atom<Promise<UserInfo>>(async (get) => {
     return JSON.parse(savedUserInfo);
   }
 
-  const {
-    authSetting: { "scope.userInfo": grantedUserInfo, "scope.userPhonenumber": grantedPhoneNumber },
-  } = await getSetting({});
-  const isDev = !window.ZJSBridge;
-  if (grantedUserInfo || isDev) {
-    // Người dùng cho phép truy cập tên và ảnh đại diện
-    const { userInfo } = await getUserInfo({});
-    const phone =
-      grantedPhoneNumber || isDev // Người dùng cho phép truy cập số điện thoại
-        ? await get(phoneState)
-        : "";
+  try {
+    const {
+      authSetting: { "scope.userInfo": grantedUserInfo, "scope.userPhonenumber": grantedPhoneNumber },
+    } = await getSetting({});
+    const isDev = !window.ZJSBridge;
+    if (grantedUserInfo || isDev) {
+      // Người dùng cho phép truy cập tên và ảnh đại diện
+      try {
+        const { userInfo } = await getUserInfo({});
+        const phone =
+          grantedPhoneNumber || isDev // Người dùng cho phép truy cập số điện thoại
+            ? await get(phoneState)
+            : "";
+        return {
+          id: userInfo.id,
+          name: userInfo.name,
+          avatar: userInfo.avatar,
+          phone,
+          email: "",
+          address: "",
+        };
+      } catch (error: any) {
+        // Xử lý lỗi khi getUserInfo thất bại (ví dụ: lỗi -1401 - app chưa được kích hoạt)
+        console.warn("getUserInfo error:", error);
+        if (error?.code === -1401) {
+          console.warn("Zalo app has not been activated. Please deploy and activate the app in Zalo Developer Console.");
+        }
+        // Trả về userInfo mặc định nếu không thể lấy thông tin
+        return {
+          id: 0,
+          name: "Guest",
+          avatar: "",
+          phone: "",
+          email: "",
+          address: "",
+        };
+      }
+    }
+    // Nếu người dùng không cấp quyền, trả về userInfo mặc định
     return {
-      id: userInfo.id,
-      name: userInfo.name,
-      avatar: userInfo.avatar,
-      phone,
+      id: 0,
+      name: "Guest",
+      avatar: "",
+      phone: "",
+      email: "",
+      address: "",
+    };
+  } catch (error) {
+    console.warn("getSetting error:", error);
+    // Trả về userInfo mặc định nếu có lỗi
+    return {
+      id: 0,
+      name: "Guest",
+      avatar: "",
+      phone: "",
       email: "",
       address: "",
     };
