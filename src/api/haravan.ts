@@ -152,34 +152,52 @@ export interface OrderResponse {
 }
 
 /**
- * Tạo đơn hàng mới trên Haravan
+ * Tạo đơn hàng mới trên server
  * @param payload - Payload chứa thông tin đơn hàng
  * @returns Promise<OrderResponse> - Response từ API
  */
 export async function createOrder(payload: CreateOrderPayload): Promise<OrderResponse> {
-  // console.log("Payload gửi lên API:", JSON.stringify(payload, null, 2));
+  const apiUrl = "https://api-server-nuj6.onrender.com/api/order";
 
-  const res = await fetch("/api/order", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(payload),
-  });
+  try {
+    const res = await fetch(apiUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
 
-  if (!res.ok) {
-    const errorText = await res.text();
-    console.error("API Error Response:", errorText);
-    let errorMessage = `Tạo đơn hàng thất bại: ${res.status} ${res.statusText}`;
-    try {
-      const errorJson = JSON.parse(errorText);
-      errorMessage = errorJson.error || errorJson.message || errorJson.errors || JSON.stringify(errorJson) || errorMessage;
-    } catch {
-      if (errorText) errorMessage = errorText;
+    if (!res.ok) {
+      let errorText = "";
+      try {
+        errorText = await res.text();
+        console.error("API Error Response:", errorText);
+      } catch (e) {
+        errorText = `HTTP ${res.status}: ${res.statusText}`;
+      }
+
+      let errorMessage = `Tạo đơn hàng thất bại: ${res.status} ${res.statusText}`;
+      try {
+        if (errorText) {
+          const errorJson = JSON.parse(errorText);
+          errorMessage = errorJson.error || errorJson.message || (Array.isArray(errorJson.errors) ? errorJson.errors.join(", ") : String(errorJson.errors)) || errorMessage;
+        }
+      } catch {
+        if (errorText) {
+          errorMessage = errorText.length > 500 ? errorText.slice(0, 500) + "..." : errorText;
+        }
+      }
+      throw new Error(errorMessage);
     }
-    throw new Error(errorMessage);
-  }
 
-  const body = await res.json();
-  return body;
+    const body = await res.json();
+    return body;
+  } catch (error: any) {
+    // Xử lý lỗi network hoặc CORS
+    if (error.name === "TypeError" || error.message?.includes("Failed to fetch")) {
+      throw new Error(`Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng.\nChi tiết: ${error.message || "Unknown error"}`);
+    }
+    throw error;
+  }
 }
