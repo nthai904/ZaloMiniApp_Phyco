@@ -32,14 +32,14 @@ const router = createBrowserRouter(
             search: true,
           },
         },
-          {
-            path: "/categories",
-            element: <CategoryListPage />,
-            handle: {
-              title: "Danh mục",
-              noBack: true,
-            },
+        {
+          path: "/categories",
+          element: <CategoryListPage />,
+          handle: {
+            title: "Danh mục",
+            noBack: true,
           },
+        },
         {
           path: "/products",
           element: <ProductsPage />,
@@ -142,6 +142,14 @@ const router = createBrowserRouter(
           handle: {
             title: "Bài viết",
             noBack: true,
+          },
+        },
+        {
+          path: "/article/:blogId/:id",
+          element: <BlogDetailPage />,
+          handle: {
+            scrollRestoration: 0,
+            noFloatingCart: true,
           },
         },
         {

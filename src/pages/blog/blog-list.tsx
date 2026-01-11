@@ -104,7 +104,7 @@ export default function BlogListV2() {
         {!loading && !error && articles.length > 0 && (
           <div className="grid grid-cols-2 gap-3">
             {articles.map((article) => (
-              <BlogItem key={article.id} article={article} />
+              <BlogItem key={(article as any).id ?? (article as any)._id ?? Math.random()} article={article} />
             ))}
           </div>
         )}

@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { articleState, relatedArticlesState } from "@/state";
 import { useState, useEffect } from "react";
 import BlogItem from "./blog-item";
-import { fetchBlogDetail, fetchBLogList } from "@/api/service";
+import { fetchBlogDetail, fetchBLogList, fetchArticleDetail } from "@/api/service";
 import LazyImage from "@/components/lazy-image";
 
 const NO_IMAGE_URL = "https://theme.hstatic.net/200000436051/1000801313/14/no_image.jpg?v=721";
@@ -82,7 +82,9 @@ function formatContent(content: string): JSX.Element {
 }
 
 export default function BlogDetailPage() {
-  const { id } = useParams();
+  const params = useParams();
+  const id = params.id;
+  const blogIdParam = params.blogId;
   const article = useAtomValue(articleState(Number(id)));
   const relatedArticles = useAtomValue(relatedArticlesState(Number(id)));
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -92,6 +94,8 @@ export default function BlogDetailPage() {
 
   useEffect(() => {
     if (article) return;
+    if (!id) return;
+    
     let mounted = true;
 
     setApiArticle(null);
@@ -100,6 +104,40 @@ export default function BlogDetailPage() {
 
     (async () => {
       try {
+        // Ưu tiên dùng API mới nếu có cả blogId và articleId
+        if (blogIdParam && id) {
+          try {
+            const articleDetail = await fetchArticleDetail(blogIdParam, id);
+            if (!mounted) return;
+            if (articleDetail) {
+              setApiArticle(articleDetail);
+              setApiRelated([]); // API mới không trả về related articles, có thể fetch sau nếu cần
+              return;
+            }
+          } catch (err) {
+            console.error("Error fetching article detail:", err);
+            // continue to fallback to old method
+          }
+        }
+
+        // Fallback: If the route contains blogId, fetch that blog directly (faster and more reliable)
+        if (blogIdParam) {
+          try {
+            const articles = await fetchBlogDetail(blogIdParam);
+            if (!mounted) return;
+            if (Array.isArray(articles) && articles.length > 0) {
+              const found = articles.find((a: any) => [a.id, a._id, a.handle, a.slug].some((x) => typeof x !== "undefined" && String(x) === String(id)));
+              if (found) {
+                setApiArticle(found);
+                setApiRelated(articles.filter((a: any) => ![a.id, a._id, a.handle, a.slug].some((x) => typeof x !== "undefined" && String(x) === String(id))).slice(0, 6));
+                return;
+              }
+            }
+          } catch (err) {
+            // continue to fallback to scanning blogs
+          }
+        }
+
         const blogs = await fetchBLogList();
         if (!Array.isArray(blogs) || blogs.length === 0) {
           if (mounted) {
@@ -117,10 +155,12 @@ export default function BlogDetailPage() {
             const articles = await fetchBlogDetail(blogId);
             if (!mounted) return;
             if (Array.isArray(articles) && articles.length > 0) {
-              const found = articles.find((a: any) => String(a.id) === String(id));
+              const found = articles.find((a: any) => {
+                return [a.id, a._id, a.handle, a.slug].some((x) => typeof x !== "undefined" && String(x) === String(id));
+              });
               if (found) {
                 setApiArticle(found);
-                setApiRelated(articles.filter((a: any) => String(a.id) !== String(id)).slice(0, 6));
+                setApiRelated(articles.filter((a: any) => ![a.id, a._id, a.handle, a.slug].some((x) => typeof x !== "undefined" && String(x) === String(id))).slice(0, 6));
                 return;
               }
             }
@@ -143,15 +183,21 @@ export default function BlogDetailPage() {
     return () => {
       mounted = false;
     };
-  }, [id, article]);
+  }, [id, blogIdParam, article]);
 
   const currentArticle = article ?? apiArticle;
   const currentRelated = article ? relatedArticles : apiRelated;
 
   const [sanitizedHtml, setSanitizedHtml] = useState<string | null>(null);
 
+  const getImageSrc = (img: any) => {
+    if (!img) return NO_IMAGE_URL;
+    if (typeof img === "string") return img;
+    return img.src ?? img.attachment ?? img.url ?? NO_IMAGE_URL;
+  };
+
   useEffect(() => {
-    const content: string = currentArticle?.content ?? "";
+    const content: string = currentArticle?.body_html ?? currentArticle?.content ?? currentArticle?.summary_html ?? "";
     if (!content) {
       setSanitizedHtml(null);
       return;
@@ -184,7 +230,7 @@ export default function BlogDetailPage() {
     );
   }
 
-  const publishedDate = new Date(currentArticle.publishedAt);
+  const publishedDate = new Date(currentArticle?.publishedAt ?? currentArticle?.published_at ?? currentArticle?.created_at ?? Date.now());
   const dateTime = formatDateTime(publishedDate);
 
   return (
@@ -193,10 +239,10 @@ export default function BlogDetailPage() {
         <div className="relative w-full aspect-[4/3] bg-skeleton">
           {!imageLoaded && <div className="absolute inset-0 bg-skeleton animate-pulse" />}
           <LazyImage
-            src={currentArticle.image || NO_IMAGE_URL}
+            src={getImageSrc(currentArticle.image)}
             placeholder={""}
             className="w-full"
-            alt={currentArticle.title}
+            alt={currentArticle.title ?? currentArticle.page_title}
             onLoad={() => setImageLoaded(true)}
             onError={(e: any) => {
               const t = e?.target as HTMLImageElement | null;
@@ -248,7 +294,7 @@ export default function BlogDetailPage() {
               <h2 className="text-base font-bold text-foreground mb-3">Bài viết liên quan</h2>
               <div className="grid grid-cols-2 gap-3">
                 {currentRelated.map((relatedArticle) => (
-                  <BlogItem key={relatedArticle.id} article={relatedArticle} />
+                  <BlogItem key={relatedArticle.id ?? relatedArticle._id ?? Math.random()} article={relatedArticle} />
                 ))}
               </div>
             </div>

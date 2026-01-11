@@ -92,9 +92,14 @@ export default function HotBlog() {
     <div className="py-4 relative">
       <div className="-mx-4 px-4">
         <div ref={scrollerRef} onScroll={onScroll} className="flex gap-4 ml-3 pb-4 overflow-x-auto snap-x snap-mandatory scroll-smooth scrollbar-hide">
-          {list.map((article) => (
-            <div key={article.id} className="hotblog-card snap-start w-[280px] sm:w-[320px] md:w-[360px] flex-shrink-0">
-              <TransitionLink to={`/article/${article.id}`} className="block bg-section rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 group">
+          {list.map((article) => {
+            const a: any = article as any;
+            const aid = a.id ?? a._id ?? a.handle ?? a.slug ?? Math.random();
+            const bid = a.blog_id ?? a.blogId ?? a.category ?? a.categoryId ?? a.blog_handle ?? undefined;
+            const to = bid ? `/article/${encodeURIComponent(String(bid))}/${encodeURIComponent(String(aid))}` : `/article/${encodeURIComponent(String(aid))}`;
+            return (
+              <div key={aid} className="hotblog-card snap-start w-[280px] sm:w-[320px] md:w-[360px] flex-shrink-0">
+                <TransitionLink to={to} className="block bg-section rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 group">
                 <div className="relative w-full aspect-[16/10] bg-skeleton overflow-hidden">
                   <LazyImage
                     src={article.image ?? article.image_src ?? NO_IMAGE_URL}

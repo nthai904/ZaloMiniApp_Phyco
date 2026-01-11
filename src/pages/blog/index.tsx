@@ -5,6 +5,7 @@ import BlogCategory from "./blog-category";
 import BlogItem from "./blog-item";
 import { fetchBlogDetail } from "@/api/service";
 import { useEffect, useState } from "react";
+import NewBlogList from "./new-blog-list";
 
 export default function BlogList() {
   const blogs = useAtomValue(blogsState) as any[] | undefined;
@@ -72,34 +73,7 @@ export default function BlogList() {
   return (
     <div className="min-h-full bg-background">
       <div className="p-4">
-        <BlogCategory
-          onSelect={handleSelect}
-          selectedKey={selectedBlogId ?? selectedCategory}
-          onCategoryChange={(k) => {
-            // k is string|null
-            if (!k) {
-              handleSelect({});
-            } else if (/^\d+$/.test(String(k))) {
-              handleSelect({ id: String(k) });
-            } else {
-              handleSelect({ title: String(k) });
-            }
-          }}
-        />
-
-        <div className="mt-4">
-          {loading ? (
-            <div className="text-center py-12 text-subtitle">Đang tải bài viết...</div>
-          ) : apiArticles && apiArticles.length > 0 ? (
-            <div className="grid grid-cols-2 gap-3">
-              {apiArticles.map((article) => (
-                <BlogItem key={article.id} article={article} />
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-12 text-subtitle">Chưa có bài viết trong danh mục này</div>
-          )}
-        </div>
+        <NewBlogList />
       </div>
     </div>
   );

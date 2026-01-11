@@ -184,6 +184,73 @@ export async function fetchBlogDetail(id: number | string): Promise<Article[]> {
   return mapped;
 }
 
+// Route lấy ra chi tiết bài viết theo blog_id và article_id
+export async function fetchArticleDetail(blogId: number | string, articleId: number | string): Promise<Article | null> {
+  const url = `https://api-server-nuj6.onrender.com/api/blog/${blogId}/article/${articleId}`;
+  const res = await fetch(url, { method: "GET", headers: { Accept: "application/json" } });
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`Kết nối thất bại ${res.status} ${res.statusText} - ${text.slice(0, 200)}`);
+  }
+
+  const data = await res.json().catch((err) => {
+    throw new Error(`Không kết nối được api - ${err.message}`);
+  });
+
+  const a = data?.article;
+  if (!a) return null;
+
+  const content = a.body_html ?? a.content ?? a.excerpt ?? "";
+  const imageSrc = (() => {
+    if (typeof a.image === "string") return a.image;
+    if (a.image && typeof a.image === "object") return a.image.src ?? a.image.url ?? a.image.attachment ?? "";
+    return (a.featured_image || "") ?? "";
+  })();
+  const tags = typeof a.tags === "string" ? a.tags.split(",").map((t: string) => t.trim()).filter(Boolean) : Array.isArray(a.tags) ? a.tags : [];
+
+  const authorName = ((): string => {
+    if (!a) return "";
+    if (typeof a.author === "string") return a.author;
+    if (a.author && typeof a.author === "object") {
+      return a.author.name ?? a.author_name ?? "";
+    }
+    return a.author_name ?? "";
+  })();
+
+  const authorAvatar = ((): string => {
+    if (!a) return "";
+    if (a.author && typeof a.author === "object") return a.author.avatar ?? a.author.image ?? "";
+    return a.author_avatar ?? a.author_image ?? "";
+  })();
+
+  const isPublished = (() => {
+    if (typeof a.published === "boolean") return a.published === true;
+    if (a.published_at) return Boolean(a.published_at);
+    return false;
+  })();
+
+  return {
+    id: Number(a.id) || 0,
+    title: a.title ?? a.page_title ?? "",
+    excerpt: a.excerpt ?? a.summary_html ?? a.meta_description ?? "",
+    content: content,
+    body_html: a.body_html ?? content,
+    image: imageSrc,
+    published: isPublished,
+    author: { name: authorName, avatar: authorAvatar },
+    category: a.blog_id ? String(a.blog_id) : a.category ?? "",
+    blog_id: a.blog_id ?? a.blogId ?? undefined,
+    blog_handle: a.blog_handle ?? a.handle ?? undefined,
+    publishedAt: a.published_at ?? a.publishedAt ?? a.created_at ?? new Date().toISOString(),
+    readTime: Math.max(1, Math.round((content || "").length / 200)),
+    views: a.views ?? 0,
+    tags: tags,
+    page_title: a.page_title ?? a.title ?? "",
+    meta_description: a.meta_description ?? "",
+  };
+}
+
 // Lấy danh sách danh mục
 export async function fetchCollections() {
   const res = await fetch("/api/collection", {
