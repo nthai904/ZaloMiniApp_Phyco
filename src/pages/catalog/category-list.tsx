@@ -1,15 +1,50 @@
-import { collectionsWithProductsState, productsByCollectionState } from "@/api/state";
-import { useAtomValue } from "jotai";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import ProductItemV2 from "@/components/product-item";
 
+interface Collection {
+  id: number | string;
+  title: string;
+  handle: string;
+  image: { src: string } | string | null;
+}
+
 export default function CategoryListPage() {
-  const collections = useAtomValue(collectionsWithProductsState) as any[];
+  const [collections, setCollections] = useState<Collection[]>([]);
   const [activeCollection, setActiveCollection] = useState<number | string | null>(null);
   const [searchParams] = useSearchParams();
-  const products = useAtomValue(productsByCollectionState(activeCollection ?? ""));
-  const navigate = useNavigate();
+
+  useEffect(() => {
+    fetch("https://api-server-nuj6.onrender.com/api/collection/")
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("🔥 COLLECTION DATA FROM SERVER:", data);
+
+        let collectionArray: any[] = [];
+
+        if (data.custom_collections && Array.isArray(data.custom_collections)) {
+          collectionArray = data.custom_collections;
+        } else if (Array.isArray(data)) {
+          collectionArray = data;
+        } else if (data.collections && Array.isArray(data.collections)) {
+          collectionArray = data.collections;
+        }
+
+        const mappedCollections = collectionArray
+          .filter((c) => c != null)
+          .map((c: any) => ({
+            id: c.id ?? 0,
+            title: c.title ?? "",
+            handle: c.handle ?? "",
+            image: c.image ?? null,
+          }));
+        
+        setCollections(mappedCollections);
+      })
+      .catch((err) => {
+        console.error("❌ API ERROR:", err);
+      });
+  }, []);
 
   useEffect(() => {
     const param = searchParams.get("active");
@@ -18,10 +53,10 @@ export default function CategoryListPage() {
       return;
     }
 
-    if (!activeCollection && Array.isArray(collections) && collections.length > 0) {
+    if (!activeCollection && collections.length > 0) {
       setActiveCollection(collections[0].id);
     }
-  }, [collections, searchParams]);
+  }, [collections, searchParams, activeCollection]);
 
   return (
     <div className="p-3">
@@ -40,15 +75,7 @@ export default function CategoryListPage() {
       </div>
 
       <div className="grid grid-cols-2 gap-3">
-        {Array.isArray(products) && products.length > 0 ? (
-          products.map((p: any) => (
-            <div key={p.id}>
-              <ProductItemV2 product={p} />
-            </div>
-          ))
-        ) : (
-          <div className="text-center text-subtitle col-span-2 py-8">Chưa có sản phẩm trong danh mục này.</div>
-        )}
+        <div className="text-center text-subtitle col-span-2 py-8">Chọn danh mục để xem sản phẩm</div>
       </div>
     </div>
   );

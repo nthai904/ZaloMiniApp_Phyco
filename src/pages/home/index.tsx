@@ -5,6 +5,7 @@ import TransitionLink from "@/components/transition-link";
 import PaginatedProductGrid from "@/components/paginated-product-grid";
 import BlogList from "../blog";
 import HotBlog from "../blog/hot-blog";
+import NewProductList from "./new-product-list";
 
 const HomePage: React.FunctionComponent = () => {
   return (
@@ -12,9 +13,7 @@ const HomePage: React.FunctionComponent = () => {
       <div className="bg-sction mt-1">
         <Banners />
       </div>
-      <div className="bg-section">
-        <Category />
-      </div>
+      <div className="bg-section">{/* <Category /> */}</div>
 
       <Section
         title={
@@ -26,7 +25,7 @@ const HomePage: React.FunctionComponent = () => {
           </div>
         }
       >
-        <PaginatedProductGrid perPage={10} />
+        <NewProductList />
       </Section>
 
       <Section
