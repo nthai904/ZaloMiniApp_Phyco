@@ -12,7 +12,7 @@ export default function useLocations(address?: any) {
   const ensureProvincesLoaded = async () => {
     if (provinces.length > 0) return provinces;
     try {
-      const res = await fetch(`/api/provinces/p`);
+      const res = await fetch(`https://provinces.open-api.vn/api/p/`);
       if (!res.ok) throw new Error("Failed to fetch provinces");
       const data = await res.json();
       const list = data || [];
@@ -34,19 +34,19 @@ export default function useLocations(address?: any) {
           if (prov) {
             setSelectedProvince(prov);
             try {
-              const dRes = await fetch(`/api/provinces/d`);
+              const dRes = await fetch(`https://provinces.open-api.vn/api/p/${prov.code}?depth=2`);
               if (dRes.ok) {
-                const allDistricts = (await dRes.json()) || [];
-                const ds = allDistricts.filter((d: any) => String(d.province_code) === String(prov.code));
+                const provinceData = await dRes.json();
+                const ds = provinceData.districts || [];
                 setDistricts(ds);
                 const dist = ds.find((d: any) => String(d.code) === String((address as any).district_code) || d.name === address?.district);
                 if (dist) {
                   setSelectedDistrict(dist);
                   try {
-                    const wRes = await fetch(`/api/provinces/w`);
+                    const wRes = await fetch(`https://provinces.open-api.vn/api/d/${dist.code}?depth=2`);
                     if (wRes.ok) {
-                      const allWards = (await wRes.json()) || [];
-                      const ws = allWards.filter((w: any) => String(w.district_code) === String(dist.code));
+                      const districtData = await wRes.json();
+                      const ws = districtData.wards || [];
                       setWards(ws);
                       const w = ws.find((x: any) => String(x.code) === String((address as any).ward_code) || x.name === address?.ward);
                       if (w) setSelectedWard(w);
@@ -75,11 +75,10 @@ export default function useLocations(address?: any) {
     setWards([]);
     if (!prov) return;
     try {
-      const res = await fetch(`/api/provinces/d`);
+      const res = await fetch(`https://provinces.open-api.vn/api/p/${prov.code}?depth=2`);
       if (!res.ok) throw new Error("Failed to fetch districts");
-      const data = await res.json();
-      const allDistricts = data || [];
-      const ds = allDistricts.filter((d: any) => String(d.province_code) === String(prov.code));
+      const provinceData = await res.json();
+      const ds = provinceData.districts || [];
       setDistricts(ds);
     } catch (err) {
       console.warn("Failed to load districts for province", prov, err);
@@ -92,11 +91,10 @@ export default function useLocations(address?: any) {
     setWards([]);
     if (!dist) return;
     try {
-      const res = await fetch(`/api/provinces/w`);
+      const res = await fetch(`https://provinces.open-api.vn/api/d/${dist.code}?depth=2`);
       if (!res.ok) throw new Error("Failed to fetch wards");
-      const data = await res.json();
-      const allWards = data || [];
-      const ws = allWards.filter((w: any) => String(w.district_code) === String(dist.code));
+      const districtData = await res.json();
+      const ws = districtData.wards || [];
       setWards(ws);
     } catch (err) {
       console.warn("Failed to load wards for district", dist, err);
