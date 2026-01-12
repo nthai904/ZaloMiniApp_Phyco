@@ -28,7 +28,7 @@ const HomePage: React.FunctionComponent = () => {
         <NewProductList enablePagination={true} perPage={10} />
       </Section>
 
-      {/* <Section
+      <Section
         title={
           <div className="flex items-center justify-between w-full">
             <span>Bài viết nổi bật</span>
@@ -36,7 +36,7 @@ const HomePage: React.FunctionComponent = () => {
         }
       >
         <HotBlog />
-      </Section> */}
+      </Section>
     </div>
   );
 };

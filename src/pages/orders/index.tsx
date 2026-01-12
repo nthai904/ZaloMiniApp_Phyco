@@ -8,20 +8,16 @@ function OrdersPage() {
   const navigate = useNavigate();
 
   return (
-    <Tabs
-      className="h-full flex flex-col"
-      activeKey={status}
-      onChange={(status) => navigate(`/orders/${status}`)}
-    >
+    <Tabs className="h-full flex flex-col" activeKey={status} onChange={(status) => navigate(`/orders/${status}`)}>
       <Tabs.Tab key="pending" label="Đang xử lý">
         <OrderList ordersState={ordersState("pending")} />
       </Tabs.Tab>
-      <Tabs.Tab key="shipping" label="Đang giao">
+      {/* <Tabs.Tab key="shipping" label="Đang giao">
         <OrderList ordersState={ordersState("shipping")} />
       </Tabs.Tab>
       <Tabs.Tab key="completed" label="Lịch sử">
         <OrderList ordersState={ordersState("completed")} />
-      </Tabs.Tab>
+      </Tabs.Tab> */}
     </Tabs>
   );
 }

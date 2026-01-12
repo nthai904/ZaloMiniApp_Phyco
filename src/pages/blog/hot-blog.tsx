@@ -1,14 +1,10 @@
-import { useAtomValue } from "jotai";
-import { articlesState } from "@/state";
 import TransitionLink from "@/components/transition-link";
 import LazyImage from "@/components/lazy-image";
 import { useEffect, useState, useRef } from "react";
-import { fetchBLogList, fetchBlogDetail } from "@/api/service";
 
 const NO_IMAGE_URL = "https://theme.hstatic.net/200000436051/1000801313/14/no_image.jpg?v=721";
 
 export default function HotBlog() {
-  const articlesFallback = useAtomValue(articlesState) as any[] | undefined;
   const [list, setList] = useState<any[]>([]);
   const HOT_TAGS = new Set(["noi-bat", "noibat"]);
 
@@ -34,35 +30,57 @@ export default function HotBlog() {
   useEffect(() => {
     let mounted = true;
 
-    if (articlesFallback && articlesFallback.length > 0) {
-      setList((articlesFallback ?? []).filter(hasHotTag).slice(0, 10));
-    }
-
-    (async () => {
-      if (!articlesFallback || articlesFallback.length === 0) setLoading(true);
+    async function fetchHotArticles() {
+      setLoading(true);
       try {
-        const blogs = await fetchBLogList();
-        const first = (blogs || []).find((b: any) => (b.article_count ?? b.count ?? 0) > 0) || blogs[0];
-        if (first && first.id) {
-          const articles = await fetchBlogDetail(first.id);
-          if (!mounted) return;
-          const newList = Array.isArray(articles) ? articles.filter(hasHotTag).slice(0, 10) : [];
-          if (newList && newList.length > 0) setList(newList);
-        } else {
-          if ((!articlesFallback || articlesFallback.length === 0) && mounted) setList((articlesFallback ?? []).filter(hasHotTag).slice(0, 10));
+        // Fetch tất cả blogs
+        const blogsRes = await fetch(`${import.meta.env.VITE_RENDER_API_URL}/api/blog/`);
+        const blogsData = await blogsRes.json();
+        const blogs = Array.isArray(blogsData) ? blogsData : blogsData?.blogs ?? blogsData?.categories ?? [];
+
+        if (!mounted || !Array.isArray(blogs) || blogs.length === 0) {
+          setList([]);
+          return;
         }
+
+        // Fetch articles của tất cả blogs
+        const allArticlesPromises = blogs.map(async (blog: any) => {
+          const blogId = blog.id ?? blog.blog_id ?? blog.key;
+          if (!blogId) return [];
+
+          try {
+            const articlesRes = await fetch(`${import.meta.env.VITE_RENDER_API_URL}/api/blog/${blogId}`);
+            const articlesData = await articlesRes.json();
+            const articles = Array.isArray(articlesData) ? articlesData : articlesData?.articles ?? articlesData?.posts ?? articlesData?.list ?? [];
+            return Array.isArray(articles) ? articles : [];
+          } catch (err) {
+            console.error(`Error fetching articles for blog ${blogId}:`, err);
+            return [];
+          }
+        });
+
+        const allArticlesArrays = await Promise.all(allArticlesPromises);
+        const allArticles = ([] as any[]).concat(...allArticlesArrays);
+
+        if (!mounted) return;
+
+        // Lọc articles có tag noi-bat hoặc noibat
+        const hotArticles = allArticles.filter(hasHotTag).slice(0, 10);
+        setList(hotArticles);
       } catch (err) {
         console.error("HotBlog fetch error:", err);
-        if ((!articlesFallback || articlesFallback.length === 0) && mounted) setList((articlesFallback ?? []).filter(hasHotTag).slice(0, 10));
+        if (mounted) setList([]);
       } finally {
         if (mounted) setLoading(false);
       }
-    })();
+    }
+
+    fetchHotArticles();
 
     return () => {
       mounted = false;
     };
-  }, [articlesFallback]);
+  }, []);
 
   if (loading) return <div className="text-center py-6 text-subtitle">Đang tải bài viết...</div>;
 
@@ -88,42 +106,73 @@ export default function HotBlog() {
     setPage(idx);
   };
 
+  const getImageSrc = (img: any) => {
+    if (!img) return NO_IMAGE_URL;
+    if (typeof img === "string") return img;
+    return img.src ?? img.attachment ?? img.url ?? NO_IMAGE_URL;
+  };
+
   return (
-    <div className="py-4 relative">
-      <div className="-mx-4 px-4">
-        <div ref={scrollerRef} onScroll={onScroll} className="flex gap-4 ml-3 pb-4 overflow-x-auto snap-x snap-mandatory scroll-smooth scrollbar-hide">
+    <div className="py-4 relative w-full overflow-hidden">
+      <div className="w-full px-4">
+        <div
+          ref={scrollerRef}
+          onScroll={onScroll}
+          className="flex gap-3 pb-4 overflow-x-auto snap-x snap-mandatory scroll-smooth"
+          style={{
+            scrollbarWidth: "none",
+            msOverflowStyle: "none",
+            WebkitOverflowScrolling: "touch",
+          }}
+        >
           {list.map((article) => {
             const a: any = article as any;
             const aid = a.id ?? a._id ?? a.handle ?? a.slug ?? Math.random();
             const bid = a.blog_id ?? a.blogId ?? a.category ?? a.categoryId ?? a.blog_handle ?? undefined;
             const to = bid ? `/article/${encodeURIComponent(String(bid))}/${encodeURIComponent(String(aid))}` : `/article/${encodeURIComponent(String(aid))}`;
+            const imageSrc = getImageSrc(article.image);
+
             return (
-              <div key={aid} className="hotblog-card snap-start w-[280px] sm:w-[320px] md:w-[360px] flex-shrink-0">
-                <TransitionLink to={to} className="block bg-section rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 group">
-                <div className="relative w-full aspect-[16/10] bg-skeleton overflow-hidden">
-                  <LazyImage
-                    src={article.image ?? article.image_src ?? NO_IMAGE_URL}
-                    placeholder={""}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    alt={article.title}
-                    onError={(e: any) => {
-                      const t = e?.target as HTMLImageElement | null;
-                      if (t && t.src !== NO_IMAGE_URL) t.src = NO_IMAGE_URL;
-                    }}
-                  />
-                  <div className="absolute top-3 right-3">
-                    <span className="bg-primary text-primaryForeground text-xs font-semibold px-2.5 py-1 rounded-full shadow-md">Nổi bật</span>
+              <div key={aid} className="hotblog-card snap-start w-[200px] sm:w-[220px] flex-shrink-0">
+                <TransitionLink to={to} className="bg-section rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 group h-full flex flex-col">
+                  <div className="relative w-full aspect-[4/3] bg-skeleton">
+                    <LazyImage
+                      src={imageSrc || NO_IMAGE_URL}
+                      placeholder={""}
+                      className="w-full h-full"
+                      alt={article.title ?? ""}
+                      onError={(e: any) => {
+                        const t = e?.target as HTMLImageElement | null;
+                        if (t && t.src !== NO_IMAGE_URL) {
+                          t.src = NO_IMAGE_URL;
+                        }
+                      }}
+                    />
+                    <div className="absolute top-0 left-0 right-0 h-16 bg-gradient-to-b from-black/30 to-transparent" />
+                    <div className="absolute top-3 right-3">
+                      <span className="bg-primary text-primaryForeground text-xs font-semibold px-2.5 py-1 rounded-full shadow-md">Nổi bật</span>
+                    </div>
                   </div>
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                </div>
-                <div className="p-4">
-                  <h4 className="text-base font-semibold text-foreground line-clamp-2 leading-snug group-hover:text-primary transition-colors duration-200">{article.title}</h4>
-                </div>
-              </TransitionLink>
-            </div>
-          ))}
+                  <div className="p-3 flex-1 flex flex-col">
+                    <h4 className="text-sm font-semibold text-foreground line-clamp-2 leading-tight group-hover:text-primary transition-colors duration-200">
+                      {article.title ?? "Không có tiêu đề"}
+                    </h4>
+                  </div>
+                </TransitionLink>
+              </div>
+            );
+          })}
         </div>
       </div>
+      <style>{`
+        .hotblog-card::-webkit-scrollbar {
+          display: none;
+        }
+        .hotblog-card {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+      `}</style>
     </div>
   );
 }

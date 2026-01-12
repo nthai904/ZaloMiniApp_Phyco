@@ -288,6 +288,10 @@ export default function NewProductList({ collectionId, enablePagination = false,
     return null;
   }
 
+  if (loading && products.length === 0) {
+    return <div className="text-center py-6 text-subtitle">Đang tải sản phẩm...</div>;
+  }
+
   return (
     <div>
       <ProductGridV2 products={products} />

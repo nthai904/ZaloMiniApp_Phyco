@@ -32,7 +32,6 @@ export default function NewBlogList({ categoryId }: NewBlogListProps = {}) {
 
     async function fetchCategories() {
       try {
-        setLoading(true);
         const res = await fetch(`${import.meta.env.VITE_RENDER_API_URL}/api/blog/`);
         const data = await res.json();
         const cats = Array.isArray(data) ? data : data?.blogs ?? data?.categories ?? [];
@@ -54,8 +53,6 @@ export default function NewBlogList({ categoryId }: NewBlogListProps = {}) {
           setCategories([]);
           setArticles([]);
         }
-      } finally {
-        if (mounted) setLoading(false);
       }
     }
 
@@ -116,7 +113,7 @@ export default function NewBlogList({ categoryId }: NewBlogListProps = {}) {
       {/* Articles grid or loading/empty state */}
       <div className="mt-3">
         {loading ? (
-          <div className="text-center py-12 text-subtitle">Đang tải bài viết...</div>
+          <div className="text-center py-12 text-subtitle"></div>
         ) : articles && articles.length > 0 ? (
           <div className="grid grid-cols-2 gap-3">
             {articles.map((article) => (

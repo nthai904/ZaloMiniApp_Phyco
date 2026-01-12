@@ -85,7 +85,7 @@ export default function BlogListV2() {
       <div className="p-4">
         {loading && (
           <div className="text-center py-12">
-            <p className="text-subtitle">Đang tải bài viết...</p>
+            <p className="text-subtitle"></p>
           </div>
         )}
 
