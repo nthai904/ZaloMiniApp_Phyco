@@ -43,21 +43,18 @@ export default function ProductsPage() {
 
       <div className="flex-1 overflow-y-auto">
         <Suspense fallback={<ProductGridSkeleton className="pt-4" />}>
-          <NewProductList collectionId={activeCollection} />
+          <NewProductList collectionId={activeCollection} enablePagination={true} perPage={10} />
         </Suspense>
       </div>
     </div>
   );
 }
 
-// initialize from ?active= when page first loads
 function useInitActiveFromQuery(setActive: (id?: string | number) => void) {
   const [searchParams] = useSearchParams();
   useEffect(() => {
     const a = searchParams.get("active");
     if (a) setActive(a);
-    // only run on mount; ignore deps intentionally
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 }
 

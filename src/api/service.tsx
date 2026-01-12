@@ -353,3 +353,54 @@ export async function fetchProductsByCollection(collectionId: number | string) {
 
   return products.filter(Boolean);
 }
+
+// Interface cho paginated response
+export interface PaginatedProductsResponse {
+  products: any[];
+  page: number;
+  perPage: number;
+  total?: number;
+  total_pages?: number;
+}
+
+// Route lấy ra danh sách sản phẩm với phân trang
+export async function fetchProductsPage(page = 1, perPage = 20, collectionId?: string | number): Promise<PaginatedProductsResponse> {
+  const baseUrl = import.meta.env.VITE_RENDER_API_URL || "";
+  const qs = new URLSearchParams();
+  qs.set("page", String(page));
+  qs.set("limit", String(perPage));
+  if (collectionId != null && collectionId !== "") {
+    qs.set("collection_id", String(collectionId));
+  }
+
+  const url = `${baseUrl}/api/product?${qs.toString()}`;
+  const res = await fetch(url, { method: "GET", headers: { Accept: "application/json" } });
+  
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`Kết nối thất bại ${res.status} ${res.statusText} - ${text.slice(0, 200)}`);
+  }
+  
+  const data = await res.json().catch((err) => {
+    throw new Error(`Không kết nối được api - ${err.message}`);
+  });
+
+  let productArray: any[] = [];
+  if (Array.isArray(data)) {
+    productArray = data;
+  } else if (data.products && Array.isArray(data.products)) {
+    productArray = data.products;
+  } else if (data) {
+    productArray = [data];
+  }
+
+  const products = productArray.filter((p: any) => (p?.published_scope ?? p?.publishedScope ?? "") === "global");
+
+  return {
+    products,
+    page,
+    perPage,
+    total: typeof data.total === "number" ? data.total : undefined,
+    total_pages: typeof data.total_pages === "number" ? data.total_pages : undefined,
+  };
+}

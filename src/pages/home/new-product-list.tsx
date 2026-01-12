@@ -87,68 +87,71 @@ function mapProductToV2(p: any): ProductV2 {
 
 interface NewProductListProps {
   collectionId?: string | number;
+  enablePagination?: boolean;
+  perPage?: number;
 }
 
-export default function NewProductList({ collectionId }: NewProductListProps = {}) {
+export default function NewProductList({ collectionId, enablePagination = false, perPage = 20 }: NewProductListProps = {}) {
   const [products, setProducts] = useState<ProductV2[]>([]);
+  const [allProducts, setAllProducts] = useState<ProductV2[]>([]);
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [totalPages, setTotalPages] = useState<number | undefined>(undefined);
 
+  // Reset page when collectionId changes
   useEffect(() => {
-    if (collectionId) {
-      fetch(`${import.meta.env.VITE_RENDER_API_URL}/api/collect?collection_id=${collectionId}`)
-        .then((res) => res.json())
-        .then((data) => {
-          console.log("🔥 COLLECT DATA FROM SERVER:", data);
+    setPage(1);
+  }, [collectionId]);
 
+  // Fetch all products when collectionId or enablePagination changes
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadAllProducts() {
+      if (!enablePagination) return;
+
+      setLoading(true);
+      setAllProducts([]);
+
+      try {
+        let productArray: any[] = [];
+
+        if (collectionId) {
+          // Fetch products by collection
+          const res = await fetch(`${import.meta.env.VITE_RENDER_API_URL}/api/collect?collection_id=${collectionId}`);
+          const data = await res.json();
           const collects = data?.collects ?? data ?? [];
+
           if (!Array.isArray(collects) || collects.length === 0) {
-            setProducts([]);
+            if (cancelled) return;
+            setAllProducts([]);
             return;
           }
 
-          // Lấy danh sách product_ids
           const productIds = Array.from(new Set(collects.map((c: any) => Number(c.product_id)).filter(Boolean)));
 
           if (productIds.length === 0) {
-            setProducts([]);
+            if (cancelled) return;
+            setAllProducts([]);
             return;
           }
 
-          // Fetch từng product theo id
-          Promise.all(
+          const productsData = await Promise.all(
             productIds.map((id) =>
               fetch(`${import.meta.env.VITE_RENDER_API_URL}/api/product/${id}`)
                 .then((res) => res.json())
-                .then((data) => {
-                  const productData = data?.product ?? data;
-                  return productData;
-                })
-                .catch((err) => {
-                  console.error(`❌ Error fetching product ${id}:`, err);
-                  return null;
-                })
+                .then((data) => data?.product ?? data)
+                .catch(() => null)
             )
-          )
-            .then((productsData) => {
-              const validProducts = productsData.filter((p) => p != null);
-              const transformedProducts = validProducts.map(mapProductToV2);
-              setProducts(transformedProducts);
-            })
-            .catch((err) => {
-              console.error("❌ API ERROR:", err);
-              setProducts([]);
-            });
-        })
-        .catch((err) => {
-          console.error("❌ API ERROR (collects):", err);
-          setProducts([]);
-        });
-    } else {
-      // Không có collectionId, fetch tất cả sản phẩm
-      fetch(`${import.meta.env.VITE_RENDER_API_URL}/api/product`)
-        .then((res) => res.json())
-        .then((data) => {
+          );
 
-          let productArray: any[] = [];
+          if (cancelled) return;
+          productArray = productsData.filter((p) => p != null);
+        } else {
+          // Fetch all products
+          const res = await fetch(`${import.meta.env.VITE_RENDER_API_URL}/api/product`);
+          const data = await res.json();
 
           if (Array.isArray(data)) {
             productArray = data;
@@ -157,20 +160,174 @@ export default function NewProductList({ collectionId }: NewProductListProps = {
           } else if (data) {
             productArray = [data];
           }
+        }
 
+        if (cancelled) return;
+
+        const transformedProducts = productArray.filter((p) => p != null).map(mapProductToV2);
+        setAllProducts(transformedProducts);
+      } catch (err) {
+        if (cancelled) return;
+        console.error("❌ API ERROR:", err);
+        setAllProducts([]);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    loadAllProducts();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [collectionId, enablePagination]);
+
+  // Paginate products when page, allProducts, or perPage changes
+  useEffect(() => {
+    if (!enablePagination) return;
+
+    const total = allProducts.length;
+    const calculatedTotalPages = Math.ceil(total / perPage);
+    setTotalPages(calculatedTotalPages);
+
+    const start = (page - 1) * perPage;
+    const end = start + perPage;
+    const paginatedProducts = allProducts.slice(start, end);
+    setProducts(paginatedProducts);
+
+    setHasMore(page < calculatedTotalPages);
+  }, [page, allProducts, perPage, enablePagination]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadProducts() {
+      if (enablePagination) {
+        // Phân trang đã được xử lý ở useEffect trên
+        return;
+      }
+
+      setLoading(true);
+
+      try {
+        // Logic cũ - không phân trang
+        if (collectionId) {
+          const res = await fetch(`${import.meta.env.VITE_RENDER_API_URL}/api/collect?collection_id=${collectionId}`);
+          const data = await res.json();
+          const collects = data?.collects ?? data ?? [];
+
+          if (!Array.isArray(collects) || collects.length === 0) {
+            setProducts([]);
+            return;
+          }
+
+          const productIds = Array.from(new Set(collects.map((c: any) => Number(c.product_id)).filter(Boolean)));
+
+          if (productIds.length === 0) {
+            setProducts([]);
+            return;
+          }
+
+          const productsData = await Promise.all(
+            productIds.map((id) =>
+              fetch(`${import.meta.env.VITE_RENDER_API_URL}/api/product/${id}`)
+                .then((res) => res.json())
+                .then((data) => data?.product ?? data)
+                .catch(() => null)
+            )
+          );
+
+          if (cancelled) return;
+          const validProducts = productsData.filter((p) => p != null);
+          const transformedProducts = validProducts.map(mapProductToV2);
+          setProducts(transformedProducts);
+        } else {
+          const res = await fetch(`${import.meta.env.VITE_RENDER_API_URL}/api/product`);
+          const data = await res.json();
+
+          let productArray: any[] = [];
+          if (Array.isArray(data)) {
+            productArray = data;
+          } else if (data.products && Array.isArray(data.products)) {
+            productArray = data.products;
+          } else if (data) {
+            productArray = [data];
+          }
+
+          if (cancelled) return;
           const transformedProducts = productArray.filter((p) => p != null).map(mapProductToV2);
           setProducts(transformedProducts);
-        })
-        .catch((err) => {
-          console.error("❌ API ERROR:", err);
-          setProducts([]);
-        });
+        }
+      } catch (err) {
+        if (cancelled) return;
+        console.error("❌ API ERROR:", err);
+        setProducts([]);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
     }
-  }, [collectionId]);
 
-  if (products.length === 0) {
+    loadProducts();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [collectionId, enablePagination]);
+
+  function handlePrev() {
+    if (page <= 1) return;
+    setPage((p) => p - 1);
+  }
+
+  function handleNext() {
+    if (!hasMore) return;
+    setPage((p) => p + 1);
+  }
+
+  if (products.length === 0 && !loading) {
     return null;
   }
 
-  return <ProductGridV2 products={products} />;
+  return (
+    <div>
+      <ProductGridV2 products={products} />
+
+      {enablePagination && products.length > 0 && (
+        <div className="pb-4 pt-2 flex items-center justify-center gap-4">
+          <button
+            onClick={handlePrev}
+            disabled={page <= 1 || loading}
+            aria-label="Trang trước"
+            title="Trang trước"
+            className={`p-2 rounded-full border flex items-center justify-center transition-colors duration-150 ${
+              page <= 1 || loading ? "bg-gray-100 text-gray-400 cursor-not-allowed" : "bg-white hover:bg-gray-50 active:scale-95"
+            }`}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M15 18l-6-6 6-6" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+
+          <span className="text-sm px-2 opacity-70">
+            Trang {page}
+            {totalPages ? ` / ${totalPages}` : ""}
+          </span>
+
+          <button
+            onClick={handleNext}
+            disabled={!hasMore || loading}
+            aria-label="Trang sau"
+            title="Trang sau"
+            className={`p-2 rounded-full border flex items-center justify-center transition-colors duration-150 ${
+              !hasMore || loading ? "bg-gray-100 text-gray-400 cursor-not-allowed" : "bg-white hover:bg-gray-50 active:scale-95"
+            }`}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M9 6l6 6-6 6" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+        </div>
+      )}
+    </div>
+  );
 }

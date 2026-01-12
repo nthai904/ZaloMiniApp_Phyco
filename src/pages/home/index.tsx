@@ -25,7 +25,7 @@ const HomePage: React.FunctionComponent = () => {
           </div>
         }
       >
-        <NewProductList />
+        <NewProductList enablePagination={true} perPage={10} />
       </Section>
 
       {/* <Section
