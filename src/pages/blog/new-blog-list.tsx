@@ -36,14 +36,46 @@ export default function NewBlogList({ categoryId }: NewBlogListProps = {}) {
         const data = await res.json();
         const cats = Array.isArray(data) ? data : data?.blogs ?? data?.categories ?? [];
         if (!mounted) return;
-        const list = Array.isArray(cats) ? cats : [];
-        setCategories(list);
+        const allCategories = Array.isArray(cats) ? cats : [];
+
+        // Filter categories that have at least one published article
+        const categoriesWithPublished = await Promise.all(
+          allCategories.map(async (cat: any) => {
+            try {
+              const catId = cat?.id ?? cat?.blog_id ?? cat?.key ?? null;
+              if (!catId) return null;
+
+              // Fetch articles for this category
+              const articlesRes = await fetch(`${import.meta.env.VITE_RENDER_API_URL}/api/blog/${catId}`);
+              const articlesData = await articlesRes.json();
+              const articles = Array.isArray(articlesData) ? articlesData : articlesData?.articles ?? articlesData?.posts ?? articlesData?.list ?? [];
+              const articlesArray = Array.isArray(articles) ? articles : [];
+
+              // Check if at least one article has published: true
+              const hasPublished = articlesArray.some((a: any) => {
+                if (typeof a.published === "boolean") return a.published === true;
+                if (a.published_at || a.publishedAt) return Boolean(a.published_at ?? a.publishedAt);
+                return false;
+              });
+
+              // Only return category if it has at least one published article
+              return hasPublished ? cat : null;
+            } catch (err) {
+              console.error(`Error checking published articles for category ${cat?.id}:`, err);
+              return null;
+            }
+          })
+        );
+
+        // Filter out null values (categories without published articles)
+        const filteredCategories = categoriesWithPublished.filter((c) => c != null);
+        setCategories(filteredCategories);
 
         // If user passed a categoryId prop, use it; otherwise select first
         if (categoryId) {
           setSelectedCategory(categoryId);
         } else {
-          const first = list.length > 0 ? list[0] : null;
+          const first = filteredCategories.length > 0 ? filteredCategories[0] : null;
           const firstId = first?.id ?? first?.blog_id ?? first?.key ?? null;
           setSelectedCategory(firstId ?? null);
         }

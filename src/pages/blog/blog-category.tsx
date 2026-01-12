@@ -30,7 +30,8 @@ export default function BlogCategory({
         id: b.id ?? b.handle ?? String(b.title ?? Math.random()),
         title: b.title ?? b.name ?? b.handle ?? "",
         count: b.article_count ?? b.count ?? 0,
-        hasPublished: typeof b.hasPublished !== "undefined" ? Boolean(b.hasPublished) : true,
+        // Only set hasPublished to true if explicitly true, otherwise false
+        hasPublished: typeof b.hasPublished !== "undefined" ? Boolean(b.hasPublished) : false,
       }));
     }
 
@@ -42,16 +43,22 @@ export default function BlogCategory({
       }
       const item = map.get(key)!;
       item.count += 1;
+      // Only set hasPublished to true if article is explicitly published: true
       if (!item.hasPublished) {
-        if (a.published === true) item.hasPublished = true;
-        else if (a.publishedAt || a.published_at) item.hasPublished = true;
+        if (a.published === true) {
+          item.hasPublished = true;
+        } else if (a.publishedAt || a.published_at) {
+          // If has publishedAt, consider it published
+          item.hasPublished = true;
+        }
       }
     });
 
     return Array.from(map.values());
   }, [blogs, articles]);
 
-  const visibleCategories = (categories ?? []).filter((c) => c.hasPublished !== false && c.count > 0);
+  // Only show categories that have at least one published article (hasPublished === true)
+  const visibleCategories = (categories ?? []).filter((c) => c.hasPublished === true && c.count > 0);
   if (!visibleCategories || visibleCategories.length === 0) return null;
   const [activeKey, setActiveKey] = useState<string | null>(selectedKey ?? null);
 
