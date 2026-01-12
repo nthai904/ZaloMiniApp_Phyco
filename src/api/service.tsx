@@ -63,9 +63,7 @@ export async function fetchBLogList(): Promise<Blog[]> {
 
   if (!res.ok) {
     const text = await res.text().catch(() => "");
-    throw new Error(
-      `Kết nối thất bại ${res.status} ${res.statusText} - ${text.slice(0, 200)}`
-    );
+    throw new Error(`Kết nối thất bại ${res.status} ${res.statusText} - ${text.slice(0, 200)}`);
   }
 
   const data = await res.json().catch((err) => {
@@ -74,11 +72,8 @@ export async function fetchBLogList(): Promise<Blog[]> {
 
   const blogs: Blog[] = data?.blogs ?? data ?? [];
 
-  return blogs.filter(
-    (blog) => blog.handle !== "phycocyanin-1"
-  );
+  return blogs.filter((blog) => blog.handle !== "phycocyanin-1");
 }
-
 
 // Route lấy số lượng bài viết của blog (count)
 export async function fetchBlogCount(id: number | string): Promise<number> {
@@ -186,7 +181,7 @@ export async function fetchBlogDetail(id: number | string): Promise<Article[]> {
 
 // Route lấy ra chi tiết bài viết theo blog_id và article_id
 export async function fetchArticleDetail(blogId: number | string, articleId: number | string): Promise<Article | null> {
-  const url = `https://api-server-nuj6.onrender.com/api/blog/${blogId}/article/${articleId}`;
+  const url = `${import.meta.env.VITE_RENDER_API_URL}/api/blog/${blogId}/article/${articleId}`;
   const res = await fetch(url, { method: "GET", headers: { Accept: "application/json" } });
 
   if (!res.ok) {
@@ -207,7 +202,15 @@ export async function fetchArticleDetail(blogId: number | string, articleId: num
     if (a.image && typeof a.image === "object") return a.image.src ?? a.image.url ?? a.image.attachment ?? "";
     return (a.featured_image || "") ?? "";
   })();
-  const tags = typeof a.tags === "string" ? a.tags.split(",").map((t: string) => t.trim()).filter(Boolean) : Array.isArray(a.tags) ? a.tags : [];
+  const tags =
+    typeof a.tags === "string"
+      ? a.tags
+          .split(",")
+          .map((t: string) => t.trim())
+          .filter(Boolean)
+      : Array.isArray(a.tags)
+      ? a.tags
+      : [];
 
   const authorName = ((): string => {
     if (!a) return "";

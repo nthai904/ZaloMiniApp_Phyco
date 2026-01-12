@@ -177,6 +177,7 @@ export interface Article {
   title: string;
   excerpt: string;
   content: string;
+  body_html?: string;
   image: string;
   author: ArticleAuthor;
   category: string;
@@ -187,6 +188,8 @@ export interface Article {
   readTime: number;
   views: number;
   tags: string[];
+  page_title?: string;
+  meta_description?: string;
 }
 
 export interface Blog {

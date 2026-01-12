@@ -100,7 +100,7 @@ export default function ProductDetailPage() {
   useEffect(() => {
     if (!id) return;
 
-    fetch(`https://api-server-nuj6.onrender.com/api/product/${id}`)
+    fetch(`${import.meta.env.VITE_RENDER_API_URL}/api/product/${id}`)
       .then((res) => res.json())
       .then((data) => {
         console.log("🔥 PRODUCT DETAIL FROM SERVER:", data);

@@ -94,8 +94,7 @@ export default function NewProductList({ collectionId }: NewProductListProps = {
 
   useEffect(() => {
     if (collectionId) {
-      // Fetch collects để lấy product_ids của collection
-      fetch(`https://api-server-nuj6.onrender.com/api/collect?collection_id=${collectionId}`)
+      fetch(`${import.meta.env.VITE_RENDER_API_URL}/api/collect?collection_id=${collectionId}`)
         .then((res) => res.json())
         .then((data) => {
           console.log("🔥 COLLECT DATA FROM SERVER:", data);
@@ -117,7 +116,7 @@ export default function NewProductList({ collectionId }: NewProductListProps = {
           // Fetch từng product theo id
           Promise.all(
             productIds.map((id) =>
-              fetch(`https://api-server-nuj6.onrender.com/api/product/${id}`)
+              fetch(`${import.meta.env.VITE_RENDER_API_URL}/api/product/${id}`)
                 .then((res) => res.json())
                 .then((data) => {
                   const productData = data?.product ?? data;
@@ -145,10 +144,9 @@ export default function NewProductList({ collectionId }: NewProductListProps = {
         });
     } else {
       // Không có collectionId, fetch tất cả sản phẩm
-      fetch("https://api-server-nuj6.onrender.com/api/product")
+      fetch(`${import.meta.env.VITE_RENDER_API_URL}/api/product`)
         .then((res) => res.json())
         .then((data) => {
-          console.log("🔥 PRODUCT DATA FROM SERVER:", data);
 
           let productArray: any[] = [];
 

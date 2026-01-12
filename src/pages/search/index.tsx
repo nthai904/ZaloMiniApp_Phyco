@@ -106,11 +106,9 @@ export function SearchResult() {
   const [allProducts, setAllProducts] = useState<ProductV2[]>([]);
 
   useEffect(() => {
-    fetch("https://api-server-nuj6.onrender.com/api/product")
+    fetch(`${import.meta.env.VITE_RENDER_API_URL}/api/product`)
       .then((res) => res.json())
       .then((data) => {
-        console.log("🔥 PRODUCT DATA FROM SERVER (SEARCH):", data);
-
         let productArray: any[] = [];
 
         if (Array.isArray(data)) {

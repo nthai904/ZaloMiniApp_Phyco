@@ -17,7 +17,7 @@ export default function NewBlogList({ categoryId }: NewBlogListProps = {}) {
     async function fetchPostsForCategory(id: string | number) {
       try {
         setLoading(true);
-        const res = await fetch(`https://api-server-nuj6.onrender.com/api/blog/${id}`);
+        const res = await fetch(`${import.meta.env.VITE_RENDER_API_URL}/api/blog/${id}`);
         const data = await res.json();
         if (!mounted) return;
         const arr = Array.isArray(data) ? data : data?.articles ?? data?.posts ?? data?.list ?? [];
@@ -33,7 +33,7 @@ export default function NewBlogList({ categoryId }: NewBlogListProps = {}) {
     async function fetchCategories() {
       try {
         setLoading(true);
-        const res = await fetch(`https://api-server-nuj6.onrender.com/api/blog/`);
+        const res = await fetch(`${import.meta.env.VITE_RENDER_API_URL}/api/blog/`);
         const data = await res.json();
         const cats = Array.isArray(data) ? data : data?.blogs ?? data?.categories ?? [];
         if (!mounted) return;
@@ -75,7 +75,7 @@ export default function NewBlogList({ categoryId }: NewBlogListProps = {}) {
     (async () => {
       try {
         setLoading(true);
-        const res = await fetch(`https://api-server-nuj6.onrender.com/api/blog/${selectedCategory}`);
+        const res = await fetch(`${import.meta.env.VITE_RENDER_API_URL}/api/blog/${selectedCategory}`);
         const data = await res.json();
         if (!mounted) return;
         const arr = Array.isArray(data) ? data : data?.articles ?? data?.posts ?? data?.list ?? [];

@@ -157,7 +157,7 @@ export interface OrderResponse {
  * @returns Promise<OrderResponse> - Response từ API
  */
 export async function createOrder(payload: CreateOrderPayload): Promise<OrderResponse> {
-  const apiUrl = "https://api-server-nuj6.onrender.com/api/order";
+  const apiUrl = `${import.meta.env.VITE_RENDER_API_URL}/api/order`;
 
   try {
     const res = await fetch(apiUrl, {

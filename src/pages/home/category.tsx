@@ -23,7 +23,7 @@ export default function Category() {
   const [collections, setCollections] = useState<Collection[]>([]);
 
   useEffect(() => {
-    fetch("https://api-server-nuj6.onrender.com/api/collection/")
+    fetch(`${import.meta.env.VITE_RENDER_API_URL}/api/collection/`)
       .then((res) => res.json())
       .then((data) => {
         console.log("🔥 COLLECTION DATA FROM SERVER:", data);
