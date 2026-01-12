@@ -91,6 +91,31 @@ interface NewProductListProps {
   perPage?: number;
 }
 
+// NEW: Lightweight skeleton loading components
+function SkeletonCard() {
+  return (
+    <div className="rounded-lg border bg-white overflow-hidden">
+      <div className="aspect-square bg-gray-200 animate-pulse" />
+      <div className="p-3">
+        <div className="h-4 bg-gray-200 rounded w-3/4 mb-2 animate-pulse" />
+        <div className="h-4 bg-gray-200 rounded w-1/2 animate-pulse" />
+      </div>
+    </div>
+  );
+}
+
+function SkeletonGrid({ count = 12, className }: { count?: number; className?: string }) {
+  return (
+    <div className={className ?? "px-3 sm:px-4"}>
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+        {Array.from({ length: count }).map((_, i) => (
+          <SkeletonCard key={i} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function NewProductList({ collectionId, enablePagination = false, perPage = 20 }: NewProductListProps = {}) {
   const [products, setProducts] = useState<ProductV2[]>([]);
   const [allProducts, setAllProducts] = useState<ProductV2[]>([]);
@@ -99,12 +124,10 @@ export default function NewProductList({ collectionId, enablePagination = false,
   const [hasMore, setHasMore] = useState(true);
   const [totalPages, setTotalPages] = useState<number | undefined>(undefined);
 
-  // Reset page when collectionId changes
   useEffect(() => {
     setPage(1);
   }, [collectionId]);
 
-  // Fetch all products when collectionId or enablePagination changes
   useEffect(() => {
     let cancelled = false;
 
@@ -298,13 +321,13 @@ export default function NewProductList({ collectionId, enablePagination = false,
     return null;
   }
 
-  if (loading && products.length === 0) {
-    return <div className="text-center py-6 text-subtitle">Đang tải sản phẩm...</div>;
-  }
-
   return (
-    <div>
-      <ProductGridV2 products={products} />
+    <div className="relative">
+      {loading ? (
+        <SkeletonGrid count={enablePagination ? perPage : 12} className="px-3 sm:px-4" />
+      ) : (
+        <ProductGridV2 products={products} />
+      )}
 
       {enablePagination && products.length > 0 && (
         <div className="pb-4 pt-2 flex items-center justify-center gap-4">

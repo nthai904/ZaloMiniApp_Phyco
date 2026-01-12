@@ -1,8 +1,6 @@
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { ProductGridSkeleton } from "../search";
-import PaginatedProductGrid from "@/components/paginated-product-grid";
-import SortDropdown from "@/components/sort-dropdown";
 import NewProductList from "../home/new-product-list";
 
 interface Collection {
@@ -30,7 +28,6 @@ export default function ProductsPage() {
 
   function handleCategoryChange(id?: string | number) {
     setActiveCollection(id);
-    // Update URL to reflect selected category
     if (id) {
       setSearchParams({ active: String(id) });
     } else {
@@ -138,47 +135,68 @@ function CategoryFilterBar({ onSelect, active }: { onSelect?: (id?: string | num
     onSelect?.(id);
   }
 
+  const activeTitle = active != null ? collections.find((c) => String(c.id) === String(active))?.title : undefined;
+
   return (
     <div className="relative bg-section">
-      <div className="overflow-x-auto no-scrollbar -mx-4 px-0 pb-1 snap-x snap-mandatory scroll-smooth">
-        <div className="flex gap-3 items-start py-1.5 pl-1">
-          <button
-            onClick={() => handleClick(undefined)}
-            className={`flex flex-col items-center gap-1.5 w-20 shrink-0 snap-center text-center focus:outline-none transition-transform hover:scale-105`}
-            aria-pressed={active == null}
-          >
-            <div
-              className={`w-12 h-12 rounded-full bg-skeleton flex items-center justify-center overflow-hidden border transition-shadow ${
-                active == null ? "ring-1 ring-main/30 shadow-sm" : "border-gray-100"
-              }`}
-            >
-              <img src={NO_IMAGE_URL} alt="Tất cả" className="w-full h-full object-cover" />
-            </div>
-            <div className={`${active == null ? "text-main font-semibold" : "text-subtitle"} text-xs leading-tight truncate w-full`}>Tất cả</div>
-          </button>
-
-          {collections.map((c) => {
-            const img = (c?.image && (typeof c.image === "object" ? c.image.src : c.image)) || NO_IMAGE_URL;
-            return (
-              <button
-                key={c.id}
-                onClick={() => handleClick(c.id)}
-                className={`flex flex-col items-center gap-1.5 w-20 shrink-0 snap-center text-center focus:outline-none transition-transform hover:scale-105`}
-                aria-pressed={String(active) === String(c.id)}
-              >
-                <div
-                  className={`w-12 h-12 rounded-full bg-skeleton flex items-center justify-center overflow-hidden border transition-shadow ${
-                    String(active) === String(c.id) ? "ring-1 ring-main/30 border-main shadow-sm" : "border-gray-100"
-                  }`}
-                >
-                  <img src={img} alt={c.title || c.handle} className="w-full h-full object-cover" />
-                </div>
-                <div className={`text-xs leading-tight truncate w-full ${String(active) === String(c.id) ? "text-main font-semibold" : "text-subtitle"}`}>{c.title}</div>
-              </button>
-            );
-          })}
+      {loading ? (
+        <div className="overflow-x-auto no-scrollbar -mx-4 px-0 pb-1 snap-x snap-mandatory scroll-smooth">
+          <div className="flex gap-3 items-start py-1.5 pl-1">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="flex flex-col items-center gap-1.5 w-24 shrink-0 snap-center text-center">
+                <div className="w-12 h-12 rounded-full bg-skeleton animate-pulse" />
+                <div className="w-16 h-3 rounded bg-skeleton animate-pulse" />
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="overflow-x-auto no-scrollbar -mx-4 px-0 pb-1 snap-x snap-mandatory scroll-smooth">
+          <div className="flex gap-3 items-start py-1.5 pl-1">
+            <button
+              onClick={() => handleClick(undefined)}
+              className={`flex flex-col items-center gap-1.5 w-24 shrink-0 snap-center text-center focus:outline-none transition-transform hover:scale-105`}
+              aria-pressed={active == null}
+              title="Tất cả"
+            >
+              <div
+                className={`w-12 h-12 rounded-full bg-skeleton flex items-center justify-center overflow-hidden border transition-shadow ${
+                  active == null ? "ring-1 ring-main/30 shadow-sm" : "border-gray-100"
+                }`}
+              >
+                <img src={NO_IMAGE_URL} alt="Tất cả" className="w-full h-full object-cover" />
+              </div>
+              <div className={`${active == null ? "text-main font-semibold" : "text-subtitle"} text-xs leading-tight break-words whitespace-normal text-center max-h-[32px] overflow-hidden`}>
+                Tất cả
+              </div>
+            </button>
+
+            {collections.map((c) => {
+              const img = (c?.image && (typeof c.image === "object" ? c.image.src : c.image)) || NO_IMAGE_URL;
+              return (
+                <button
+                  key={c.id}
+                  onClick={() => handleClick(c.id)}
+                  className={`flex flex-col items-center gap-1.5 w-24 shrink-0 snap-center text-center focus:outline-none transition-transform hover:scale-105`}
+                  aria-pressed={String(active) === String(c.id)}
+                  title={c.title || c.handle}
+                >
+                  <div
+                    className={`w-12 h-12 rounded-full bg-skeleton flex items-center justify-center overflow-hidden border transition-shadow ${
+                      String(active) === String(c.id) ? "ring-1 ring-main/30 border-main shadow-sm" : "border-gray-100"
+                    }`}
+                  >
+                    <img src={img} alt={c.title || c.handle} className="w-full h-full object-cover" />
+                  </div>
+                  <div className={`text-xs leading-tight break-words whitespace-normal text-center max-h-[32px] overflow-hidden ${String(active) === String(c.id) ? "text-main font-semibold" : "text-subtitle"}`}>
+                    {c.title}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

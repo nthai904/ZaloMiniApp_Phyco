@@ -14,6 +14,9 @@ export default function NewBlogList({ categoryId }: NewBlogListProps = {}) {
   useEffect(() => {
     let mounted = true;
 
+    // Bật loading trong lúc lấy danh mục để tránh màn trắng
+    setLoading(true);
+
     async function fetchPostsForCategory(id: string | number) {
       try {
         setLoading(true);
@@ -38,27 +41,23 @@ export default function NewBlogList({ categoryId }: NewBlogListProps = {}) {
         if (!mounted) return;
         const allCategories = Array.isArray(cats) ? cats : [];
 
-        // Filter categories that have at least one published article
         const categoriesWithPublished = await Promise.all(
           allCategories.map(async (cat: any) => {
             try {
               const catId = cat?.id ?? cat?.blog_id ?? cat?.key ?? null;
               if (!catId) return null;
 
-              // Fetch articles for this category
               const articlesRes = await fetch(`${import.meta.env.VITE_RENDER_API_URL}/api/blog/${catId}`);
               const articlesData = await articlesRes.json();
               const articles = Array.isArray(articlesData) ? articlesData : articlesData?.articles ?? articlesData?.posts ?? articlesData?.list ?? [];
               const articlesArray = Array.isArray(articles) ? articles : [];
 
-              // Check if at least one article has published: true
               const hasPublished = articlesArray.some((a: any) => {
                 if (typeof a.published === "boolean") return a.published === true;
                 if (a.published_at || a.publishedAt) return Boolean(a.published_at ?? a.publishedAt);
                 return false;
               });
 
-              // Only return category if it has at least one published article
               return hasPublished ? cat : null;
             } catch (err) {
               console.error(`Error checking published articles for category ${cat?.id}:`, err);
@@ -67,11 +66,9 @@ export default function NewBlogList({ categoryId }: NewBlogListProps = {}) {
           })
         );
 
-        // Filter out null values (categories without published articles)
         const filteredCategories = categoriesWithPublished.filter((c) => c != null);
         setCategories(filteredCategories);
 
-        // If user passed a categoryId prop, use it; otherwise select first
         if (categoryId) {
           setSelectedCategory(categoryId);
         } else {
@@ -79,11 +76,18 @@ export default function NewBlogList({ categoryId }: NewBlogListProps = {}) {
           const firstId = first?.id ?? first?.blog_id ?? first?.key ?? null;
           setSelectedCategory(firstId ?? null);
         }
+
+        // Nếu không có danh mục nào thì dừng loading để không hiển thị skeleton vô hạn
+        if (filteredCategories.length === 0) {
+          setLoading(false);
+        }
       } catch (err) {
         console.error("Error fetching blog categories:", err);
         if (mounted) {
           setCategories([]);
           setArticles([]);
+          // Tắt loading khi lỗi để tránh treo skeleton
+          setLoading(false);
         }
       }
     }
@@ -98,12 +102,13 @@ export default function NewBlogList({ categoryId }: NewBlogListProps = {}) {
   useEffect(() => {
     if (!selectedCategory) {
       setArticles([]);
+      // giữ nguyên loading trạng thái hiện tại để tránh flicker
       return;
     }
     let mounted = true;
     (async () => {
       try {
-        setLoading(true);
+        setLoading(true); // giữ skeleton trong lúc lấy bài viết
         const res = await fetch(`${import.meta.env.VITE_RENDER_API_URL}/api/blog/${selectedCategory}`);
         const data = await res.json();
         if (!mounted) return;
@@ -113,7 +118,7 @@ export default function NewBlogList({ categoryId }: NewBlogListProps = {}) {
         console.error("Error fetching blog posts:", err);
         if (mounted) setArticles([]);
       } finally {
-        if (mounted) setLoading(false);
+        if (mounted) setLoading(false); // tắt skeleton sau khi lấy xong
       }
     })();
 
@@ -122,9 +127,19 @@ export default function NewBlogList({ categoryId }: NewBlogListProps = {}) {
     };
   }, [selectedCategory]);
 
+  const SkeletonCard: React.FC = () => (
+    <div className="rounded-lg border overflow-hidden">
+      <div className="aspect-video bg-gray-200 animate-pulse"></div>
+      <div className="p-3 space-y-2">
+        <div className="h-4 bg-gray-200 rounded animate-pulse w-3/4"></div>
+        <div className="h-3 bg-gray-200 rounded animate-pulse w-full"></div>
+        <div className="h-3 bg-gray-200 rounded animate-pulse w-2/3"></div>
+      </div>
+    </div>
+  );
+
   return (
     <div>
-      {/* Categories pills */}
       <div className="flex gap-2 overflow-x-auto py-2">
         {categories.map((cat) => {
           const idVal = cat?.id ?? cat?.blog_id ?? cat?.key ?? String(cat?.handle ?? cat?.title ?? Math.random());
@@ -142,10 +157,13 @@ export default function NewBlogList({ categoryId }: NewBlogListProps = {}) {
         })}
       </div>
 
-      {/* Articles grid or loading/empty state */}
       <div className="mt-3">
         {loading ? (
-          <div className="text-center py-12 text-subtitle"></div>
+          <div className="grid grid-cols-2 gap-3">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <SkeletonCard key={i} />
+            ))}
+          </div>
         ) : articles && articles.length > 0 ? (
           <div className="grid grid-cols-2 gap-3">
             {articles.map((article) => (
@@ -153,7 +171,7 @@ export default function NewBlogList({ categoryId }: NewBlogListProps = {}) {
             ))}
           </div>
         ) : (
-          <div className="text-center py-12 text-subtitle">Chưa có bài viết trong danh mục này</div>
+          <div className="text-center py-12 text-subtitle"></div>
         )}
       </div>
     </div>
