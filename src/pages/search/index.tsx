@@ -3,7 +3,7 @@ import Section from "@/components/section";
 import { ProductItemSkeleton } from "@/components/skeleton";
 import { useAtomValue } from "jotai";
 import { HTMLAttributes, Suspense, useEffect, useState, useMemo } from "react";
-import { keywordState, recommendedProductsState } from "@/state";
+import { keywordState } from "@/state";
 import ProductGrid from "@/components/product-grid";
 import { EmptySearchResult } from "@/components/empty";
 import { ProductV2 } from "@/types";
@@ -168,7 +168,30 @@ export function ProductGridSkeleton({ className, ...props }: HTMLAttributes<HTML
 }
 
 export function RecommendedProducts() {
-  const recommendedProducts = useAtomValue(recommendedProductsState);
+  const [recommendedProducts, setRecommendedProducts] = useState<ProductV2[]>([]);
+
+  useEffect(() => {
+    fetch(`${import.meta.env.VITE_RENDER_API_URL}/api/product`)
+      .then((res) => res.json())
+      .then((data) => {
+        let productArray: any[] = [];
+
+        if (Array.isArray(data)) {
+          productArray = data;
+        } else if (data.products && Array.isArray(data.products)) {
+          productArray = data.products;
+        } else if (data) {
+          productArray = [data];
+        }
+
+        const transformedProducts = productArray.filter((p) => p != null).map(mapProductToV2);
+        setRecommendedProducts(transformedProducts.slice(0, 10));
+      })
+      .catch((err) => {
+        console.error("❌ API ERROR:", err);
+        setRecommendedProducts([]);
+      });
+  }, []);
 
   return (
     <Section title="Gợi ý sản phẩm" className="mt-10">
