@@ -49,18 +49,20 @@ export default function ProductsPage() {
         </div>
       </div>
 
-      <div className="px-4">
-        <div className="flex items-center gap-3 pb-0">{/* <SortDropdown value={sortOrder} onChange={(v) => setSortOrder(v)} /> */}</div>
-
-        <Suspense fallback={<div className="h-12" />}>
-          <CategoryFilterBar active={activeCollection} onSelect={handleCategoryChange} />
-        </Suspense>
-      </div>
-
       <div className="flex-1 overflow-y-auto">
-        <Suspense fallback={<ProductGridSkeleton className="pt-4" />}>
-          <NewProductList collectionId={activeCollection} enablePagination={true} perPage={10} />
-        </Suspense>
+        <div className="px-4 pb-2">
+          <div className="flex items-center gap-3 pb-0">{/* <SortDropdown value={sortOrder} onChange={(v) => setSortOrder(v)} /> */}</div>
+
+          <Suspense fallback={<div className="h-10" />}>
+            <CategoryFilterBar active={activeCollection} onSelect={handleCategoryChange} />
+          </Suspense>
+        </div>
+
+        <div className="px-2 pt-2">
+          <Suspense fallback={<ProductGridSkeleton className="pt-4" />}>
+            <NewProductList collectionId={activeCollection} enablePagination={true} perPage={10} />
+          </Suspense>
+        </div>
       </div>
     </div>
   );
@@ -83,7 +85,7 @@ function CategoryFilterBar({ onSelect, active }: { onSelect?: (id?: string | num
       try {
         const res = await fetch(`${import.meta.env.VITE_RENDER_API_URL}/api/collection/`);
         const data = await res.json();
-        
+
         let collectionArray: any[] = [];
 
         if (data.custom_collections && Array.isArray(data.custom_collections)) {
@@ -103,23 +105,21 @@ function CategoryFilterBar({ onSelect, active }: { onSelect?: (id?: string | num
             image: c.image ?? null,
           }));
 
-        const collectionsWithProducts = await Promise.all(
-          mappedCollections.map(async (collection) => {
-            try {
-              const collectRes = await fetch(`${import.meta.env.VITE_RENDER_API_URL}/api/collect?collection_id=${collection.id}`);
-              const collectData = await collectRes.json();
-              const collects = collectData?.collects ?? collectData ?? [];
-              
-              if (Array.isArray(collects) && collects.length > 0) {
-                return collection;
-              }
-              return null;
-            } catch (err) {
-              console.error(`Error checking products for collection ${collection.id}:`, err);
-              return null;
-            }
-          })
-        );
+        // Fetch all collects once (API returns all collects, not filtered)
+        const collectRes = await fetch(`${import.meta.env.VITE_RENDER_API_URL}/api/collect`);
+        const collectData = await collectRes.json();
+        const allCollects = collectData?.collects ?? collectData ?? [];
+
+        // Filter collections that have more than 1 product
+        const collectionsWithProducts = mappedCollections.filter((collection) => {
+          if (!Array.isArray(allCollects)) return false;
+
+          // Filter collects by collection_id
+          const filteredCollects = allCollects.filter((c: any) => String(c.collection_id) === String(collection.id));
+
+          // Only return collections with more than 1 product
+          return filteredCollects.length > 1;
+        });
 
         const filteredCollections = collectionsWithProducts.filter((c) => c != null) as Collection[];
         setCollections(filteredCollections);
@@ -139,22 +139,22 @@ function CategoryFilterBar({ onSelect, active }: { onSelect?: (id?: string | num
   }
 
   return (
-    <div className="relative">
-      <div className="overflow-x-auto no-scrollbar -mx-4 px-4 pb-1 snap-x snap-mandatory scroll-smooth">
-        <div className="flex gap-4 items-start py-2 pl-2">
+    <div className="relative bg-section">
+      <div className="overflow-x-auto no-scrollbar -mx-4 px-0 pb-1 snap-x snap-mandatory scroll-smooth">
+        <div className="flex gap-3 items-start py-1.5 pl-1">
           <button
             onClick={() => handleClick(undefined)}
-            className={`flex flex-col items-center gap-2 w-24 shrink-0 snap-center text-center focus:outline-none transition-transform hover:scale-105`}
+            className={`flex flex-col items-center gap-1.5 w-20 shrink-0 snap-center text-center focus:outline-none transition-transform hover:scale-105`}
             aria-pressed={active == null}
           >
             <div
-              className={`w-14 h-14 rounded-full bg-skeleton flex items-center justify-center overflow-hidden border transition-shadow ${
-                active == null ? "ring-2 ring-main/30 shadow-sm" : "border-gray-100"
+              className={`w-12 h-12 rounded-full bg-skeleton flex items-center justify-center overflow-hidden border transition-shadow ${
+                active == null ? "ring-1 ring-main/30 shadow-sm" : "border-gray-100"
               }`}
             >
               <img src={NO_IMAGE_URL} alt="Tất cả" className="w-full h-full object-cover" />
             </div>
-            <div className={`${active == null ? "text-main font-semibold" : "text-subtitle"} text-xs truncate`}>Tất cả</div>
+            <div className={`${active == null ? "text-main font-semibold" : "text-subtitle"} text-xs leading-tight truncate w-full`}>Tất cả</div>
           </button>
 
           {collections.map((c) => {
@@ -163,17 +163,17 @@ function CategoryFilterBar({ onSelect, active }: { onSelect?: (id?: string | num
               <button
                 key={c.id}
                 onClick={() => handleClick(c.id)}
-                className={`flex flex-col items-center gap-2 w-24 shrink-0 snap-center text-center focus:outline-none transition-transform hover:scale-105`}
+                className={`flex flex-col items-center gap-1.5 w-20 shrink-0 snap-center text-center focus:outline-none transition-transform hover:scale-105`}
                 aria-pressed={String(active) === String(c.id)}
               >
                 <div
-                  className={`w-14 h-14 rounded-full bg-skeleton flex items-center justify-center overflow-hidden border transition-shadow ${
-                    String(active) === String(c.id) ? "ring-2 ring-main/30 border-main shadow-sm" : "border-gray-100"
+                  className={`w-12 h-12 rounded-full bg-skeleton flex items-center justify-center overflow-hidden border transition-shadow ${
+                    String(active) === String(c.id) ? "ring-1 ring-main/30 border-main shadow-sm" : "border-gray-100"
                   }`}
                 >
                   <img src={img} alt={c.title || c.handle} className="w-full h-full object-cover" />
                 </div>
-                <div className={`text-xs truncate w-full ${String(active) === String(c.id) ? "text-main font-semibold" : "text-subtitle"}`}>{c.title}</div>
+                <div className={`text-xs leading-tight truncate w-full ${String(active) === String(c.id) ? "text-main font-semibold" : "text-subtitle"}`}>{c.title}</div>
               </button>
             );
           })}

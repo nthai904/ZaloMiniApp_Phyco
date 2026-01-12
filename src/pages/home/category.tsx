@@ -40,25 +40,21 @@ export default function Category() {
 
         const mappedCollections = collectionArray.filter((c) => c != null).map(mapToCollection);
 
-        const collectionsWithProducts = await Promise.all(
-          mappedCollections.map(async (collection) => {
-            try {
-              const collectRes = await fetch(`${import.meta.env.VITE_RENDER_API_URL}/api/collect?collection_id=${collection.id}`);
-              const collectData = await collectRes.json();
-              const collects = collectData?.collects ?? collectData ?? [];
+        // Fetch all collects once (API returns all collects, not filtered)
+        const collectRes = await fetch(`${import.meta.env.VITE_RENDER_API_URL}/api/collect`);
+        const collectData = await collectRes.json();
+        const allCollects = collectData?.collects ?? collectData ?? [];
 
-              if (Array.isArray(collects) && collects.length > 0) {
-                return collection;
-              }
-              return null;
-            } catch (err) {
-              console.error(`Error checking products for collection ${collection.id}:`, err);
-              return null;
-            }
-          })
-        );
+        // Filter collections that have more than 1 product
+        const filteredCollections = mappedCollections.filter((collection) => {
+          if (!Array.isArray(allCollects)) return false;
 
-        const filteredCollections = collectionsWithProducts.filter((c) => c != null) as Collection[];
+          // Filter collects by collection_id
+          const filteredCollects = allCollects.filter((c: any) => String(c.collection_id) === String(collection.id));
+
+          // Only return collections with more than 1 product
+          return filteredCollects.length > 1;
+        });
         setCollections(filteredCollections);
       } catch (err) {
         console.error("❌ API ERROR:", err);
