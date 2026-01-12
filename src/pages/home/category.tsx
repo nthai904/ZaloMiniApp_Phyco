@@ -23,10 +23,10 @@ export default function Category() {
   const [collections, setCollections] = useState<Collection[]>([]);
 
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_RENDER_API_URL}/api/collection/`)
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("🔥 COLLECTION DATA FROM SERVER:", data);
+    async function loadCollectionsWithProducts() {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_RENDER_API_URL}/api/collection/`);
+        const data = await res.json();
 
         let collectionArray: any[] = [];
 
@@ -39,11 +39,34 @@ export default function Category() {
         }
 
         const mappedCollections = collectionArray.filter((c) => c != null).map(mapToCollection);
-        setCollections(mappedCollections);
-      })
-      .catch((err) => {
+
+        const collectionsWithProducts = await Promise.all(
+          mappedCollections.map(async (collection) => {
+            try {
+              const collectRes = await fetch(`${import.meta.env.VITE_RENDER_API_URL}/api/collect?collection_id=${collection.id}`);
+              const collectData = await collectRes.json();
+              const collects = collectData?.collects ?? collectData ?? [];
+
+              if (Array.isArray(collects) && collects.length > 0) {
+                return collection;
+              }
+              return null;
+            } catch (err) {
+              console.error(`Error checking products for collection ${collection.id}:`, err);
+              return null;
+            }
+          })
+        );
+
+        const filteredCollections = collectionsWithProducts.filter((c) => c != null) as Collection[];
+        setCollections(filteredCollections);
+      } catch (err) {
         console.error("❌ API ERROR:", err);
-      });
+        setCollections([]);
+      }
+    }
+
+    loadCollectionsWithProducts();
   }, []);
 
   if (collections.length === 0) {

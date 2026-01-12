@@ -1,5 +1,5 @@
 import { Suspense, useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { ProductGridSkeleton } from "../search";
 import PaginatedProductGrid from "@/components/paginated-product-grid";
 import SortDropdown from "@/components/sort-dropdown";
@@ -17,12 +17,26 @@ const NO_IMAGE_URL = "https://theme.hstatic.net/200000436051/1000801313/14/no_im
 export default function ProductsPage() {
   const [sortOrder, setSortOrder] = useState<"none" | "price-asc" | "price-desc" | "date-new" | "date-old">("none");
   const [activeCollection, setActiveCollection] = useState<string | number | undefined>(undefined);
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   useEffect(() => {
     const a = searchParams.get("active");
-    if (a && !activeCollection) setActiveCollection(a);
-  }, [searchParams, activeCollection]);
+    if (a) {
+      setActiveCollection(a);
+    } else {
+      setActiveCollection(undefined);
+    }
+  }, [searchParams]);
+
+  function handleCategoryChange(id?: string | number) {
+    setActiveCollection(id);
+    // Update URL to reflect selected category
+    if (id) {
+      setSearchParams({ active: String(id) });
+    } else {
+      setSearchParams({});
+    }
+  }
 
   return (
     <div className="h-full flex flex-col bg-section">
@@ -38,7 +52,9 @@ export default function ProductsPage() {
       <div className="px-4">
         <div className="flex items-center gap-3 pb-0">{/* <SortDropdown value={sortOrder} onChange={(v) => setSortOrder(v)} /> */}</div>
 
-        <Suspense fallback={<div className="h-12" />}>{/* <CategoryFilterBar active={activeCollection} onSelect={(id) => setActiveCollection(id)} /> */}</Suspense>
+        <Suspense fallback={<div className="h-12" />}>
+          <CategoryFilterBar active={activeCollection} onSelect={handleCategoryChange} />
+        </Suspense>
       </div>
 
       <div className="flex-1 overflow-y-auto">
@@ -60,11 +76,14 @@ function useInitActiveFromQuery(setActive: (id?: string | number) => void) {
 
 function CategoryFilterBar({ onSelect, active }: { onSelect?: (id?: string | number) => void; active?: string | number }) {
   const [collections, setCollections] = useState<Collection[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_RENDER_API_URL}/api/collection/`)
-      .then((res) => res.json())
-      .then((data) => {
+    async function loadCollectionsWithProducts() {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_RENDER_API_URL}/api/collection/`);
+        const data = await res.json();
+        
         let collectionArray: any[] = [];
 
         if (data.custom_collections && Array.isArray(data.custom_collections)) {
@@ -84,11 +103,35 @@ function CategoryFilterBar({ onSelect, active }: { onSelect?: (id?: string | num
             image: c.image ?? null,
           }));
 
-        setCollections(mappedCollections);
-      })
-      .catch((err) => {
+        const collectionsWithProducts = await Promise.all(
+          mappedCollections.map(async (collection) => {
+            try {
+              const collectRes = await fetch(`${import.meta.env.VITE_RENDER_API_URL}/api/collect?collection_id=${collection.id}`);
+              const collectData = await collectRes.json();
+              const collects = collectData?.collects ?? collectData ?? [];
+              
+              if (Array.isArray(collects) && collects.length > 0) {
+                return collection;
+              }
+              return null;
+            } catch (err) {
+              console.error(`Error checking products for collection ${collection.id}:`, err);
+              return null;
+            }
+          })
+        );
+
+        const filteredCollections = collectionsWithProducts.filter((c) => c != null) as Collection[];
+        setCollections(filteredCollections);
+      } catch (err) {
         console.error("❌ API ERROR:", err);
-      });
+        setCollections([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadCollectionsWithProducts();
   }, []);
 
   function handleClick(id?: string | number) {

@@ -18,7 +18,6 @@ export default function CategoryListPage() {
     fetch(`${import.meta.env.VITE_RENDER_API_URL}/api/collection/`)
       .then((res) => res.json())
       .then((data) => {
-        console.log("🔥 COLLECTION DATA FROM SERVER:", data);
 
         let collectionArray: any[] = [];
 

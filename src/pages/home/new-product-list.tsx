@@ -118,8 +118,7 @@ export default function NewProductList({ collectionId, enablePagination = false,
         let productArray: any[] = [];
 
         if (collectionId) {
-          // Fetch products by collection
-          const res = await fetch(`${import.meta.env.VITE_RENDER_API_URL}/api/collect?collection_id=${collectionId}`);
+          const res = await fetch(`${import.meta.env.VITE_RENDER_API_URL}/api/collect`);
           const data = await res.json();
           const collects = data?.collects ?? data ?? [];
 
@@ -129,7 +128,15 @@ export default function NewProductList({ collectionId, enablePagination = false,
             return;
           }
 
-          const productIds = Array.from(new Set(collects.map((c: any) => Number(c.product_id)).filter(Boolean)));
+          const filteredCollects = collects.filter((c: any) => String(c.collection_id) === String(collectionId));
+
+          if (filteredCollects.length === 0) {
+            if (cancelled) return;
+            setAllProducts([]);
+            return;
+          }
+
+          const productIds = Array.from(new Set(filteredCollects.map((c: any) => Number(c.product_id)).filter(Boolean)));
 
           if (productIds.length === 0) {
             if (cancelled) return;
@@ -149,7 +156,6 @@ export default function NewProductList({ collectionId, enablePagination = false,
           if (cancelled) return;
           productArray = productsData.filter((p) => p != null);
         } else {
-          // Fetch all products
           const res = await fetch(`${import.meta.env.VITE_RENDER_API_URL}/api/product`);
           const data = await res.json();
 
@@ -182,7 +188,6 @@ export default function NewProductList({ collectionId, enablePagination = false,
     };
   }, [collectionId, enablePagination]);
 
-  // Paginate products when page, allProducts, or perPage changes
   useEffect(() => {
     if (!enablePagination) return;
 
@@ -203,16 +208,14 @@ export default function NewProductList({ collectionId, enablePagination = false,
 
     async function loadProducts() {
       if (enablePagination) {
-        // Phân trang đã được xử lý ở useEffect trên
         return;
       }
 
       setLoading(true);
 
       try {
-        // Logic cũ - không phân trang
         if (collectionId) {
-          const res = await fetch(`${import.meta.env.VITE_RENDER_API_URL}/api/collect?collection_id=${collectionId}`);
+          const res = await fetch(`${import.meta.env.VITE_RENDER_API_URL}/api/collect`);
           const data = await res.json();
           const collects = data?.collects ?? data ?? [];
 
@@ -221,7 +224,14 @@ export default function NewProductList({ collectionId, enablePagination = false,
             return;
           }
 
-          const productIds = Array.from(new Set(collects.map((c: any) => Number(c.product_id)).filter(Boolean)));
+          const filteredCollects = collects.filter((c: any) => String(c.collection_id) === String(collectionId));
+
+          if (filteredCollects.length === 0) {
+            setProducts([]);
+            return;
+          }
+
+          const productIds = Array.from(new Set(filteredCollects.map((c: any) => Number(c.product_id)).filter(Boolean)));
 
           if (productIds.length === 0) {
             setProducts([]);

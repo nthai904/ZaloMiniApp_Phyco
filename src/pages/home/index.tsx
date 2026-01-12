@@ -13,7 +13,9 @@ const HomePage: React.FunctionComponent = () => {
       <div className="bg-sction mt-1">
         <Banners />
       </div>
-      <div className="bg-section">{/* <Category /> */}</div>
+      <div className="bg-section">
+        <Category />
+      </div>
 
       <Section
         title={
