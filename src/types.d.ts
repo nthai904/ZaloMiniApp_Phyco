@@ -28,6 +28,7 @@ export type Cart = CartItem[];
 export interface ShippingAddress {
   alias: string;
   address: string;
+  address1?: string | null; // Địa chỉ đầy đủ (địa chỉ + xã + huyện + tỉnh)
   address2?: string | null;
   name: string;
   first_name?: string;

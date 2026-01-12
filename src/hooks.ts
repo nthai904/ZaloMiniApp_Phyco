@@ -313,11 +313,23 @@ export function useCheckout() {
 
       let shippingAddressData: any = null;
       if (shippingAddress) {
+        // Ưu tiên dùng address1 nếu có (đã được ghép sẵn), nếu không thì tự ghép hoặc dùng address
+        let address1Value = shippingAddress.address1;
+        if (!address1Value) {
+          // Tự ghép: địa chỉ + xã + huyện + tỉnh
+          const addressParts: string[] = [];
+          if (shippingAddress.address) addressParts.push(shippingAddress.address);
+          if (shippingAddress.ward) addressParts.push(shippingAddress.ward);
+          if (shippingAddress.district) addressParts.push(shippingAddress.district);
+          if (shippingAddress.province) addressParts.push(shippingAddress.province);
+          address1Value = addressParts.length > 0 ? addressParts.join(" ") : shippingAddress.address ?? "";
+        }
+
         shippingAddressData = {
           first_name: shippingAddress.first_name ?? shippingAddress.name?.split(" ")?.slice(1).join(" ") ?? "",
           last_name: shippingAddress.last_name ?? shippingAddress.name?.split(" ")?.[0] ?? "",
           phone: shippingAddress.phone ?? orderPhone,
-          address1: shippingAddress.address ?? "",
+          address1: address1Value,
           province: shippingAddress.province ?? "",
           country: shippingAddress.country ?? "Vietnam",
         };

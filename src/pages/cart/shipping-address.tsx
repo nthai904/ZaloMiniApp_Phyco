@@ -21,16 +21,30 @@ function ShippingAddressPage() {
         e.preventDefault();
         try {
           const data = new FormData(e.currentTarget);
+          const addressInput = String(data.get("address") ?? "").trim();
+          const ward = String(data.get("ward") ?? "").trim() || null;
+          const district = String(data.get("district") ?? "").trim() || null;
+          const province = String(data.get("province") ?? "").trim() || null;
+
+          // Tạo address1 bằng cách ghép: địa chỉ + xã + huyện + tỉnh
+          const addressParts: string[] = [];
+          if (addressInput) addressParts.push(addressInput);
+          if (ward) addressParts.push(ward);
+          if (district) addressParts.push(district);
+          if (province) addressParts.push(province);
+          const address1 = addressParts.join(" ");
+
           const sanitized: any = {
-            address: String(data.get("address") ?? "").trim(),
+            address: addressInput,
+            address1: address1, // Lưu địa chỉ đầy đủ
             name: String(data.get("name") ?? "").trim(),
             phone: String(data.get("phone") ?? "").trim(),
             email: String(data.get("email") ?? "").trim(),
-            province: String(data.get("province") ?? "").trim() || null,
+            province: province,
             province_code: String(data.get("province_code") ?? "").trim() || null,
-            district: String(data.get("district") ?? "").trim() || null,
+            district: district,
             district_code: String(data.get("district_code") ?? "").trim() || null,
-            ward: String(data.get("ward") ?? "").trim() || null,
+            ward: ward,
             ward_code: String(data.get("ward_code") ?? "").trim() || null,
           };
 
