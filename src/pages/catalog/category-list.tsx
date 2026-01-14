@@ -18,7 +18,6 @@ export default function CategoryListPage() {
     fetch(`${import.meta.env.VITE_RENDER_API_URL}/api/collection/`)
       .then((res) => res.json())
       .then((data) => {
-
         let collectionArray: any[] = [];
 
         if (data.custom_collections && Array.isArray(data.custom_collections)) {
@@ -29,14 +28,15 @@ export default function CategoryListPage() {
           collectionArray = data.collections;
         }
 
-        const mappedCollections = collectionArray
-          .filter((c) => c != null)
-          .map((c: any) => ({
-            id: c.id ?? 0,
-            title: c.title ?? "",
-            handle: c.handle ?? "",
-            image: c.image ?? null,
-          }));
+        // Only include collections that are published to web
+        collectionArray = collectionArray.filter((c) => c != null && (c.published_scope ?? c.publishedScope ?? "") === "web");
+
+        const mappedCollections = collectionArray.map((c: any) => ({
+          id: c.id ?? 0,
+          title: c.title ?? "",
+          handle: c.handle ?? "",
+          image: c.image ?? null,
+        }));
 
         setCollections(mappedCollections);
       })

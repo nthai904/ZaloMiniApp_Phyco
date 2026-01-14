@@ -38,7 +38,10 @@ export default function Category() {
           collectionArray = data.collections;
         }
 
-        const mappedCollections = collectionArray.filter((c) => c != null).map(mapToCollection);
+        // Only include collections that are published to web
+        collectionArray = collectionArray.filter((c) => c != null && (c.published_scope ?? c.publishedScope ?? "") === "web");
+
+        const mappedCollections = collectionArray.map(mapToCollection);
 
         // Fetch all collects once (API returns all collects, not filtered)
         const collectRes = await fetch(`${import.meta.env.VITE_RENDER_API_URL}/api/collect`);

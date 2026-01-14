@@ -18,7 +18,6 @@ export default function ProductsPage() {
   const [activeCollection, setActiveCollection] = useState<string | number | undefined>(undefined);
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // Add local state to toggle the parent category open/close
   const [isParentOpen, setIsParentOpen] = useState(true);
   useEffect(() => {
     const a = searchParams.get("active");
@@ -48,7 +47,6 @@ export default function ProductsPage() {
             <p className="text-sm text-subtitle mt-1">Khám phá các sản phẩm của chúng tôi</p>
           </div>
           <div>
-            {/* Updated: nicer circular icon-only button, no visible "Danh mục" text */}
             <button
               onClick={() => setShowCategories(true)}
               aria-label="Mở danh mục"
@@ -105,23 +103,13 @@ export default function ProductsPage() {
             <div className="flex items-center gap-3">
               <div className="font-semibold">Danh mục</div>
             </div>
-            {/* Updated: icon-only circular close button */}
             <button
               onClick={() => setShowCategories(false)}
               aria-label="Đóng"
               title="Đóng"
               className="h-8 w-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 text-subtitle transition-colors"
             >
-              <svg
-                className="w-4 h-4"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={2}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden="true"
-              >
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <path d="M6 6l12 12M18 6L6 18" />
               </svg>
             </button>
@@ -132,7 +120,6 @@ export default function ProductsPage() {
               <li>
                 <button
                   className="w-full text-left py-3 px-2 rounded hover:bg-gray-50 flex items-center justify-between"
-                  // Toggle parent category open/close
                   onClick={() => setIsParentOpen((prev) => !prev)}
                   aria-expanded={isParentOpen}
                 >
@@ -140,14 +127,12 @@ export default function ProductsPage() {
                   <span className={`text-subtitle transform transition-transform ${isParentOpen ? "rotate-90" : "rotate-0"}`}>›</span>
                 </button>
 
-                {/* Render children only when parent is open */}
                 {isParentOpen && (
                   <div className="mt-2">
                     <ChildCategoryList
                       active={activeCollection}
                       onSelect={(id) => {
                         handleCategoryChange(id);
-                        // Close the sidebar after selecting a child category (optional UX improvement)
                         setShowCategories(false);
                       }}
                     />
@@ -216,28 +201,24 @@ function CategoryFilterBar({ onSelect, active }: { onSelect?: (id?: string | num
           collectionArray = data.collections;
         }
 
-        const mappedCollections = collectionArray
-          .filter((c) => c != null)
-          .map((c: any) => ({
-            id: c.id ?? 0,
-            title: c.title ?? "",
-            handle: c.handle ?? "",
-            image: c.image ?? null,
-          }));
+        collectionArray = collectionArray.filter((c) => c != null && (c.published_scope ?? c.publishedScope ?? "") === "web");
 
-        // Fetch all collects once (API returns all collects, not filtered)
+        const mappedCollections = collectionArray.map((c: any) => ({
+          id: c.id ?? 0,
+          title: c.title ?? "",
+          handle: c.handle ?? "",
+          image: c.image ?? null,
+        }));
+
         const collectRes = await fetch(`${import.meta.env.VITE_RENDER_API_URL}/api/collect`);
         const collectData = await collectRes.json();
         const allCollects = collectData?.collects ?? collectData ?? [];
 
-        // Filter collections that have more than 1 product
         const collectionsWithProducts = mappedCollections.filter((collection) => {
           if (!Array.isArray(allCollects)) return false;
 
-          // Filter collects by collection_id
           const filteredCollects = allCollects.filter((c: any) => String(c.collection_id) === String(collection.id));
 
-          // Only return collections with more than 1 product
           return filteredCollects.length > 1;
         });
 
@@ -348,9 +329,10 @@ function ChildCategoryList({ onSelect, active }: { onSelect?: (id?: string | num
         else if (Array.isArray(data)) collectionArray = data;
         else if (data.collections && Array.isArray(data.collections)) collectionArray = data.collections;
 
-        const mappedCollections = collectionArray
-          .filter((c) => c != null)
-          .map((c: any) => ({ id: c.id ?? 0, title: c.title ?? "", handle: c.handle ?? "", image: c.image ?? null }));
+        // Only include collections that are published to web
+        collectionArray = collectionArray.filter((c) => c != null && (c.published_scope ?? c.publishedScope ?? "") === "web");
+
+        const mappedCollections = collectionArray.map((c: any) => ({ id: c.id ?? 0, title: c.title ?? "", handle: c.handle ?? "", image: c.image ?? null }));
 
         // fetch collects to ensure collections have products
         const collectRes = await fetch(`${import.meta.env.VITE_RENDER_API_URL}/api/collect`);
