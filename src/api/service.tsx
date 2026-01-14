@@ -404,3 +404,20 @@ export async function fetchProductsPage(page = 1, perPage = 20, collectionId?: s
     total_pages: typeof data.total_pages === "number" ? data.total_pages : undefined,
   };
 }
+
+// Route lấy ra danh sách đơn hàng từ API
+export async function fetchOrders() {
+  const url = "https://api-server-nuj6.onrender.com/api/order/";
+  const res = await fetch(url, { method: "GET", headers: { Accept: "application/json" } });
+  
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`Kết nối thất bại ${res.status} ${res.statusText} - ${text.slice(0, 200)}`);
+  }
+  
+  const data = await res.json().catch((err) => {
+    throw new Error(`Không kết nối được api - ${err.message}`);
+  });
+
+  return data?.orders ?? [];
+}

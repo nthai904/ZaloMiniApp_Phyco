@@ -67,7 +67,7 @@ export type Delivery =
       stationId: number;
     };
 
-export type OrderStatus = "pending" | "shipping" | "completed";
+export type OrderStatus = "pending" | "shipping" | "completed" | "cancelled";
 export type PaymentStatus = "pending" | "success" | "failed";
 
 export interface Order {
@@ -84,6 +84,8 @@ export interface Order {
   transactions?: any[];
   gateway?: string | null;
   order_number?: string | number;
+  subtotal?: number;
+  shippingFee?: number;
 }
 
 // Interfaces chức năng mới

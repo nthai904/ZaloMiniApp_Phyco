@@ -12,12 +12,15 @@ function OrdersPage() {
       <Tabs.Tab key="pending" label="Đang xử lý">
         <OrderList ordersState={ordersState("pending")} />
       </Tabs.Tab>
-      {/* <Tabs.Tab key="shipping" label="Đang giao">
+      <Tabs.Tab key="shipping" label="Đang giao">
         <OrderList ordersState={ordersState("shipping")} />
       </Tabs.Tab>
-      <Tabs.Tab key="completed" label="Lịch sử">
+      <Tabs.Tab key="completed" label="Đã hoàn thành">
         <OrderList ordersState={ordersState("completed")} />
-      </Tabs.Tab> */}
+      </Tabs.Tab>
+      <Tabs.Tab key="cancelled" label="Đã hủy">
+        <OrderList ordersState={ordersState("cancelled")} />
+      </Tabs.Tab>
     </Tabs>
   );
 }

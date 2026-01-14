@@ -10,12 +10,11 @@ function OrderList(props: { ordersState: Atom<Promise<Order[]>> }) {
   const orderList = useAtomValue(useMemo(() => loadable(props.ordersState), [props.ordersState]));
 
   if (orderList.state === "hasData") {
-    const filtered = orderList.data.filter((o) => o.id !== 1);
-    if (filtered.length === 0) return <EmptyOrder />;
+    if (orderList.data.length === 0) return <EmptyOrder />;
 
     return (
       <div className="space-y-2 p-4">
-        {filtered.map((order) => (
+        {orderList.data.map((order) => (
           <OrderSummary key={order.id} order={order} />
         ))}
       </div>

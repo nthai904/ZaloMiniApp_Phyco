@@ -9,13 +9,23 @@ import { useNavigate } from "react-router-dom";
 function OrderSummary(props: { order: Order; full?: boolean }) {
   const navigate = useNavigate();
 
-  const statusMap: Record<string, { text: string; className: string }> = {
+  // Map status của đơn hàng (không phải payment status)
+  const orderStatusMap: Record<string, { text: string; className: string }> = {
     pending: { text: "Chờ xác nhận", className: "bg-yellow-50 text-yellow-800" },
+    shipping: { text: "Đang giao", className: "bg-blue-50 text-blue-800" },
+    completed: { text: "Đã hoàn thành", className: "bg-green-50 text-green-800" },
+    cancelled: { text: "Đã hủy", className: "bg-red-50 text-red-800" },
+  };
+
+  // Map payment status
+  const paymentStatusMap: Record<string, { text: string; className: string }> = {
+    pending: { text: "Chờ thanh toán", className: "bg-yellow-50 text-yellow-800" },
     success: { text: "Đã thanh toán", className: "bg-green-50 text-green-800" },
     failed: { text: "Thanh toán thất bại", className: "bg-red-50 text-red-800" },
   };
 
-  const status = statusMap[props.order.paymentStatus] ?? { text: props.order.paymentStatus, className: "bg-gray-50 text-gray-800" };
+  const orderStatus = orderStatusMap[props.order.status] ?? { text: props.order.status, className: "bg-gray-50 text-gray-800" };
+  const paymentStatus = paymentStatusMap[props.order.paymentStatus] ?? { text: props.order.paymentStatus, className: "bg-gray-50 text-gray-800" };
   const itemCount = props.order.items?.length ?? 0;
   const paymentMethod = (() => {
     const tx = (props.order as any)?.transactions?.[0];
@@ -24,14 +34,24 @@ function OrderSummary(props: { order: Order; full?: boolean }) {
     return "Chưa rõ";
   })();
 
+  // Hiển thị order_number nếu có, nếu không thì hiển thị id
+  const displayOrderNumber = props.order.order_number || props.order.id;
+  const subtotal = props.order.subtotal ?? props.order.total;
+  const shippingFee = props.order.shippingFee ?? 0;
+
   return (
     <Section
       title={
         <div className="w-full flex items-center justify-between space-x-3">
           <div className="min-w-0">
-            <div className="flex items-center space-x-2">
-              <div className="text-sm font-semibold truncate">Đơn #{props.order.id}</div>
-              <span className={`px-2 py-0.5 text-xs font-medium rounded ${status.className}`}>{status.text}</span>
+            <div className="flex items-center space-x-2 flex-wrap gap-1">
+              <div className="text-sm font-semibold truncate">
+                Đơn {typeof displayOrderNumber === "string" && displayOrderNumber.startsWith("#") ? displayOrderNumber : `#${displayOrderNumber}`}
+              </div>
+              <span className={`px-2 py-0.5 text-xs font-medium rounded ${orderStatus.className}`}>{orderStatus.text}</span>
+              {props.order.paymentStatus !== "success" && (
+                <span className={`px-2 py-0.5 text-xs font-medium rounded ${paymentStatus.className}`}>{paymentStatus.text}</span>
+              )}
             </div>
           </div>
 
@@ -75,12 +95,12 @@ function OrderSummary(props: { order: Order; full?: boolean }) {
         <div className="px-3 py-2 space-y-2">
           <div className="flex justify-between text-xs text-gray-500">
             <div>Tạm tính</div>
-            <div>{formatPrice(props.order.total)}</div>
+            <div>{formatPrice(subtotal)}</div>
           </div>
-          {"" !== undefined && (
+          {shippingFee > 0 && (
             <div className="flex justify-between text-xs text-gray-500">
               <div>Phí vận chuyển</div>
-              <div>0đ</div>
+              <div>{formatPrice(shippingFee)}</div>
             </div>
           )}
           <div className="flex justify-between items-center pt-1">

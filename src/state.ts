@@ -9,6 +9,7 @@ import { calculateDistance } from "./utils/location";
 import { formatDistant } from "./utils/format";
 import CONFIG from "./config";
 import { searchProductsByTitle, fetchProductsPage } from "@/api/haravan";
+import { fetchOrders } from "@/api/service";
 
 export const userInfoKeyState = atom(0);
 
@@ -102,8 +103,16 @@ export const phoneState = atom(async () => {
     phone = "0912345678";
     // End demo
   } catch (error) {
-    console.warn(error);
+    console.warn("getPhoneNumber error:", error);
+    // Fallback về số điện thoại test nếu có lỗi
+    phone = "0912345678";
   }
+  
+  // Đảm bảo luôn có số điện thoại (fallback về số test)
+  if (!phone) {
+    phone = "0912345678";
+  }
+  
   return phone;
 });
 
@@ -160,11 +169,208 @@ export const shippingAddressState = atomWithStorage<ShippingAddress | undefined>
 
 export const ordersState = atomFamily((status: OrderStatus) =>
   atomWithRefresh(async (get) => {
-    const allMockOrders = await requestWithFallback<Order[]>("/orders", []);
-    const local = get(localOrdersState) ?? [];
-    const merged = Array.isArray(allMockOrders) ? [...allMockOrders, ...local] : [...local];
-    const clientSideFilteredData = merged.filter((order) => order.status === status);
-    return clientSideFilteredData;
+    try {
+      // Lấy thông tin user hiện tại
+      const userInfo = await get(userInfoState);
+      let userPhone = (userInfo.phone || "").trim();
+      
+      // Nếu không có số điện thoại trong userInfo, thử lấy từ phoneState
+      if (!userPhone) {
+        console.warn("⚠️ [Orders] User phone is empty, trying to get from phoneState...");
+        try {
+          userPhone = (await get(phoneState)).trim();
+        } catch (error) {
+          console.warn("Failed to get phone from phoneState:", error);
+        }
+      }
+      
+      // Fallback về số điện thoại test nếu vẫn không có
+      if (!userPhone) {
+        console.warn("⚠️ [Orders] No phone found, using test phone: 0912345678");
+        userPhone = "0912345678";
+      }
+      
+      console.log("🔍 [Orders] User info:", { id: userInfo.id, name: userInfo.name, phone: userPhone });
+      
+      // Gọi API lấy danh sách đơn hàng
+      const apiOrders = await fetchOrders();
+      console.log("📦 [Orders] Total orders from API:", apiOrders.length);
+      
+      // Helper function để normalize số điện thoại (loại bỏ khoảng trắng, dấu gạch ngang, v.v.)
+      const normalizePhone = (phone: string) => {
+        return phone.replace(/\s+/g, "").replace(/-/g, "").replace(/\(/g, "").replace(/\)/g, "");
+      };
+      
+      // Filter đơn hàng theo số điện thoại của user
+      const userOrders = apiOrders.filter((order: any) => {
+        const orderPhone = (order?.customer?.phone || order?.billing_address?.phone || order?.shipping_address?.phone || "").trim();
+        const normalizedUserPhone = normalizePhone(userPhone);
+        const normalizedOrderPhone = normalizePhone(orderPhone);
+        const isMatch = normalizedOrderPhone && normalizedUserPhone && normalizedOrderPhone === normalizedUserPhone;
+        
+        console.log(`📞 [Orders] Order #${order.order_number || order.id}: orderPhone="${orderPhone}", userPhone="${userPhone}", normalizedOrder="${normalizedOrderPhone}", normalizedUser="${normalizedUserPhone}", match=${isMatch}`);
+        
+        return isMatch;
+      });
+      
+      console.log("✅ [Orders] Filtered orders by phone:", userOrders.length, "out of", apiOrders.length);
+      
+      // Map dữ liệu từ API format sang Order format
+      const mappedOrders: Order[] = userOrders.map((order: any) => {
+        // Map paymentStatus từ financial_status
+        let paymentStatus: PaymentStatus = "pending";
+        if (order.financial_status === "paid") {
+          paymentStatus = "success";
+        } else if (order.financial_status === "refunded" || order.financial_status === "voided") {
+          paymentStatus = "failed";
+        }
+        
+        // Map status - ưu tiên kiểm tra đơn hàng đã hủy
+        let orderStatus: OrderStatus = "pending";
+        
+        // Kiểm tra đơn hàng đã hủy: cancelled_at có giá trị hoặc cancelled_status === "cancelled"
+        const isCancelled = order.cancelled_at !== null && order.cancelled_at !== undefined || 
+                           order.cancelled_status === "cancelled";
+        
+        if (isCancelled) {
+          orderStatus = "cancelled";
+        } else {
+          // Nếu chưa hủy thì check fulfillment_status
+          if (order.fulfillment_status === "fulfilled") {
+            orderStatus = "completed";
+          } else if (order.fulfillment_status === "partial") {
+            orderStatus = "shipping";
+          }
+        }
+        
+        console.log(`📋 [Orders] Order #${order.order_number || order.id}: cancelled_at="${order.cancelled_at}", cancelled_status="${order.cancelled_status}", fulfillment_status="${order.fulfillment_status}" → status="${orderStatus}", financial_status="${order.financial_status}" → paymentStatus="${paymentStatus}"`);
+        
+        // Map line_items sang items (CartItem[])
+        const items: CartItem[] = (order.line_items || []).map((item: any) => {
+          // Tạo product object từ line_item data
+          const product: Product = {
+            id: item.product_id || 0,
+            title: item.title || item.name || "",
+            name: item.title || item.name || "",
+            body_html: "",
+            body_plain: null,
+            created_at: "",
+            handle: String(item.product_id || ""),
+            images: item.image?.src ? [{ src: item.image.src }] : [],
+            product_type: item.type || "",
+            published_at: "",
+            published_scope: "global",
+            tags: "",
+            template_suffix: "",
+            updated_at: "",
+            variants: [{
+              barcode: item.barcode || null,
+              compare_at_price: item.price_original || item.price || 0,
+              created_at: "",
+              fulfillment_service: item.fulfillment_service || null,
+              grams: item.grams || 0,
+              id: item.variant_id || 0,
+              inventory_management: null,
+              inventory_policy: "deny",
+              inventory_quantity: 0,
+              old_inventory_quantity: 0,
+              inventory_quantity_adjustment: null,
+              position: 0,
+              price: item.price || 0,
+              product_id: item.product_id || 0,
+              requires_shipping: item.requires_shipping !== false,
+              sku: item.sku || null,
+              taxable: item.taxable !== false,
+              title: item.variant_title || "",
+              updated_at: "",
+              image_id: null,
+              option1: null,
+              option2: null,
+              option3: null,
+              inventory_advance: null,
+            }],
+            vendor: item.vendor || "",
+            options: [],
+            only_hide_from_list: false,
+            not_allow_promotion: item.not_allow_promotion || false,
+          };
+          
+          // Thêm các field cần thiết cho OrderItem component
+          (product as any).image = item.image?.src || "";
+          (product as any).price = item.price || 0;
+          (product as any).originalPrice = item.price_original || undefined;
+          
+          return {
+            product,
+            quantity: item.quantity || 1,
+          };
+        });
+        
+        // Map shipping address
+        const shippingAddress: ShippingAddress = {
+          alias: "",
+          address: order.shipping_address?.address1 || "",
+          address1: order.shipping_address?.address1 || null,
+          address2: order.shipping_address?.address2 || null,
+          name: order.shipping_address?.name || "",
+          first_name: order.shipping_address?.first_name || null,
+          last_name: order.shipping_address?.last_name || null,
+          phone: order.shipping_address?.phone || "",
+          email: order.email || null,
+          company: order.shipping_address?.company || null,
+          city: order.shipping_address?.city || null,
+          province: order.shipping_address?.province || null,
+          province_code: order.shipping_address?.province_code || null,
+          district: order.shipping_address?.district || null,
+          district_code: order.shipping_address?.district_code || null,
+          ward: order.shipping_address?.ward || null,
+          ward_code: order.shipping_address?.ward_code || null,
+          zip: order.shipping_address?.zip || null,
+          country: order.shipping_address?.country || null,
+          country_code: order.shipping_address?.country_code || null,
+          id: order.shipping_address?.id || undefined,
+          default: order.shipping_address?.default || false,
+        };
+        
+        const delivery: Delivery = {
+          type: "shipping",
+          ...shippingAddress,
+        };
+        
+        // Tính shipping fee từ shipping_lines
+        const shippingFee = order.shipping_lines?.reduce((sum: number, line: any) => sum + (line.price || 0), 0) || 0;
+        const subtotal = order.subtotal_price || order.total_line_items_price || 0;
+        
+        return {
+          id: order.id || order.number || 0,
+          status: orderStatus,
+          paymentStatus,
+          createdAt: order.created_at ? new Date(order.created_at) : new Date(),
+          receivedAt: order.updated_at ? new Date(order.updated_at) : new Date(),
+          items,
+          delivery,
+          total: order.total_price || 0,
+          note: order.note || "",
+          transactions: order.transactions || [],
+          gateway: order.gateway || null,
+          order_number: order.order_number || order.name || order.number || undefined,
+          subtotal,
+          shippingFee,
+        } as Order;
+      });
+      
+      // Filter theo status
+      const filteredByStatus = mappedOrders.filter((order) => order.status === status);
+      
+      console.log(`🎯 [Orders] Filtered by status "${status}":`, filteredByStatus.length, "orders");
+      console.log("📊 [Orders] Final orders:", filteredByStatus);
+      
+      return filteredByStatus;
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+      // Trả về mảng rỗng nếu API lỗi, không fallback về local orders
+      return [];
+    }
   })
 );
 
