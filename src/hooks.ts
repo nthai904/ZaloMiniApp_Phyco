@@ -289,7 +289,7 @@ export function useCheckout() {
           location_id: null,
         });
       }
-      
+
       // data post lên api
       const lineItems = cart.map((item) => {
         const prod: any = item.product as any;
@@ -422,7 +422,7 @@ export function useCheckout() {
       navigate("/orders", { viewTransition: true });
 
       if (haravanOrderResponse) {
-        toast.success("Thanh toán thành công! 🎉");
+        toast.success("Đặt hành thành công");
       } else {
         toast.success("Đơn hàng đã được lưu (chưa đồng bộ với Haravan)");
       }

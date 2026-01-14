@@ -1,11 +1,12 @@
-// Polyfills
 import ResizeObserver from "resize-observer-polyfill";
 Object.assign(window, { ResizeObserver });
 
-import { ReactNode, useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { EmblaCarouselType } from "embla-carousel";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
+import banner1 from "@/static/banner1.png";
+import banner2 from "@/static/banner2.png";
 
 type UseDotButtonType = {
   selectedIndex: number;
@@ -13,9 +14,7 @@ type UseDotButtonType = {
   onDotButtonClick: (index: number) => void;
 };
 
-export const useDotButton = (
-  emblaApi: EmblaCarouselType | undefined
-): UseDotButtonType => {
+export const useDotButton = (emblaApi: EmblaCarouselType | undefined): UseDotButtonType => {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [scrollSnaps, setScrollSnaps] = useState<number[]>([]);
 
@@ -51,25 +50,22 @@ export const useDotButton = (
 };
 
 export interface CarouselProps {
-  slides: ReactNode[];
-  disabled?: boolean;
+  disabled?: boolean; 
 }
 
 export default function Carousel(props: CarouselProps) {
-  const [emblaRef, emblaApi] = useEmblaCarousel({ align: "center" }, [
-    Autoplay({ active: !props.disabled }),
-  ]);
-  const { selectedIndex, scrollSnaps, onDotButtonClick } =
-    useDotButton(emblaApi);
+  const [emblaRef, emblaApi] = useEmblaCarousel({ align: "center" }, [Autoplay({ active: !props.disabled })]);
+  const { selectedIndex, scrollSnaps, onDotButtonClick } = useDotButton(emblaApi);
 
   return (
     <div className="overflow-hidden" ref={emblaRef}>
-      <div className="flex space-x-2 mt-2 mx-4">
-        {props.slides.map((slide, i) => (
-          <div key={i} className="flex-none basis-full">
-            {slide}
-          </div>
-        ))}
+      <div className="flex space-x-2 mt-2 mx-4 h-[120px]">
+        <div className="flex-none basis-full">
+          <img src={banner1} alt="Banner 1" className="w-full h-full object-cover" />
+        </div>
+        <div className="flex-none basis-full">
+          <img src={banner2} alt="Banner 2" className="w-full h-full object-cover" />
+        </div>
       </div>
 
       <div className="py-2 flex justify-center items-center space-x-2">
@@ -77,9 +73,7 @@ export default function Carousel(props: CarouselProps) {
           <button
             key={index}
             onClick={() => onDotButtonClick(index)}
-            className={`rounded-full w-1 h-1 bg-black/10 ${
-              index === selectedIndex && !props.disabled ? "bg-primary" : ""
-            }`}
+            className={`rounded-full w-1 h-1 bg-black/10 ${index === selectedIndex && !props.disabled ? "bg-primary" : ""}`}
           />
         ))}
       </div>

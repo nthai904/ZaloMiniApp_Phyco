@@ -60,9 +60,10 @@ function OrderSummary(props: { order: Order; full?: boolean }) {
           </div>
         </div>
       }
-      className={`flex-1 overflow-y-auto rounded-lg bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow ${
+      className={`flex-1 overflow-y-auto rounded-lg bg-white border border-gray-100 shadow-sm hover:shadow-md transition-shadow ${
         !props.full ? "cursor-pointer" : ""
       }`}
+      // removed: dark:bg-slate-800 dark:border-slate-700 to force white bg
       onClick={() => {
         if (!props.full) {
           navigate(`/order/${props.order.id}`, {
@@ -113,4 +114,3 @@ function OrderSummary(props: { order: Order; full?: boolean }) {
 }
 
 export default OrderSummary;
-// ...existing code...
