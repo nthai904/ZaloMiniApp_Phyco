@@ -1,4 +1,5 @@
 import { ProductV2 } from "@/types";
+import { cachedFetch, createCacheKey } from "@/utils/cache";
 
 export interface PaginatedProductsResponse {
   products: ProductV2[];
@@ -9,15 +10,20 @@ export interface PaginatedProductsResponse {
 }
 
 export async function fetchProductsPage(page = 1, perPage = 20, collectionId?: string | number): Promise<PaginatedProductsResponse> {
-  const qs = new URLSearchParams();
-  qs.set("page", String(page));
-  qs.set("limit", String(perPage));
-  if (collectionId != null && collectionId !== "") qs.set("collection_id", String(collectionId));
+  const cacheKey = createCacheKey("haravan", "products", "page", page, perPage, collectionId);
+  
+  return cachedFetch(
+    cacheKey,
+    async () => {
+      const qs = new URLSearchParams();
+      qs.set("page", String(page));
+      qs.set("limit", String(perPage));
+      if (collectionId != null && collectionId !== "") qs.set("collection_id", String(collectionId));
 
-  const path = `/api/product?${qs.toString()}`;
+      const path = `/api/product?${qs.toString()}`;
 
-  const res = await fetch(path, {
-    method: "GET",
+      const res = await fetch(path, {
+        method: "GET",
     headers: {
       "Content-Type": "application/json",
     },
@@ -27,17 +33,20 @@ export async function fetchProductsPage(page = 1, perPage = 20, collectionId?: s
     throw new Error(`Không lấy sản phẩm ra được ${page}: ${res.status} ${res.statusText}`);
   }
 
-  const body = await res.json();
+      const body = await res.json();
 
-  const products: ProductV2[] = Array.isArray(body.products) ? body.products : Array.isArray(body) ? body : [];
+      const products: ProductV2[] = Array.isArray(body.products) ? body.products : Array.isArray(body) ? body : [];
 
-  return {
-    products,
-    page,
-    perPage,
-    total: typeof body.total === "number" ? body.total : undefined,
-    total_pages: typeof body.total_pages === "number" ? body.total_pages : undefined,
-  };
+      return {
+        products,
+        page,
+        perPage,
+        total: typeof body.total === "number" ? body.total : undefined,
+        total_pages: typeof body.total_pages === "number" ? body.total_pages : undefined,
+      };
+    },
+    5 * 60 * 1000 // Cache 5 phút cho pagination
+  );
 }
 
 export async function fetchAllProducts(perFetch = 100, concurrency = 4, collectionId?: string | number): Promise<ProductV2[]> {

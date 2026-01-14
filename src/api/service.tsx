@@ -1,41 +1,58 @@
 import { Article, Blog } from "@/types";
 import { request } from "@/utils/request";
+import { cachedFetch, createCacheKey } from "@/utils/cache";
 
-// Route lấy ra danh sách sản phẩm
+// Route lấy ra danh sách sản phẩm (với cache 10 phút)
 export async function fetchProductsList() {
-  const url = `/api/product`;
-  const res = await fetch(url, { method: "GET", headers: { Accept: "application/json" } });
-  if (!res.ok) {
-    const text = await res.text().catch(() => "");
-    throw new Error(`Kết nối thất bại ${res.status} ${res.statusText} - ${text.slice(0, 200)}`);
-  }
-  const data = await res.json().catch((err) => {
-    throw new Error(`Không kết nối được api - ${err.message}`);
-  });
+  const cacheKey = createCacheKey("products", "list");
 
-  const products = data?.products ?? data;
-  if (Array.isArray(products)) {
-    return products.filter((p: any) => (p?.published_scope ?? p?.publishedScope ?? "") === "global");
-  }
+  return cachedFetch(
+    cacheKey,
+    async () => {
+      const url = `/api/product`;
+      const res = await fetch(url, { method: "GET", headers: { Accept: "application/json" } });
+      if (!res.ok) {
+        const text = await res.text().catch(() => "");
+        throw new Error(`Kết nối thất bại ${res.status} ${res.statusText} - ${text.slice(0, 200)}`);
+      }
+      const data = await res.json().catch((err) => {
+        throw new Error(`Không kết nối được api - ${err.message}`);
+      });
 
-  return products;
+      const products = data?.products ?? data;
+      if (Array.isArray(products)) {
+        return products.filter((p: any) => (p?.published_scope ?? p?.publishedScope ?? "") === "global");
+      }
+
+      return products;
+    },
+    10 * 60 * 1000 // Cache 10 phút
+  );
 }
 
-// Route lấy ra chi tiết sản phẩm theo id
+// Route lấy ra chi tiết sản phẩm theo id (với cache 15 phút)
 export async function fetchProductDetail(id: number | string) {
-  const url = `/api/product/${id}`;
-  const res = await fetch(url, { method: "GET", headers: { Accept: "application/json" } });
+  const cacheKey = createCacheKey("product", "detail", id);
 
-  if (!res.ok) {
-    const text = await res.text().catch(() => "");
-    throw new Error(`Kết nối thất bại ${res.status} ${res.statusText} - ${text.slice(0, 200)}`);
-  }
+  return cachedFetch(
+    cacheKey,
+    async () => {
+      const url = `/api/product/${id}`;
+      const res = await fetch(url, { method: "GET", headers: { Accept: "application/json" } });
 
-  const data = await res.json().catch((err) => {
-    throw new Error(`Không kết nối được api - ${err.message}`);
-  });
+      if (!res.ok) {
+        const text = await res.text().catch(() => "");
+        throw new Error(`Kết nối thất bại ${res.status} ${res.statusText} - ${text.slice(0, 200)}`);
+      }
 
-  return data?.product ?? data;
+      const data = await res.json().catch((err) => {
+        throw new Error(`Không kết nối được api - ${err.message}`);
+      });
+
+      return data?.product ?? data;
+    },
+    15 * 60 * 1000 // Cache 15 phút
+  );
 }
 
 // Route lấy ra danh sách bài viết
@@ -53,26 +70,34 @@ export async function fetchProductDetail(id: number | string) {
 
 //   return data?.blogs ?? data;
 // }
-// Dùng tạm thời
+// Dùng tạm thời (với cache 10 phút)
 export async function fetchBLogList(): Promise<Blog[]> {
-  const url = `/api/blog`;
-  const res = await fetch(url, {
-    method: "GET",
-    headers: { Accept: "application/json" },
-  });
+  const cacheKey = createCacheKey("blogs", "list");
 
-  if (!res.ok) {
-    const text = await res.text().catch(() => "");
-    throw new Error(`Kết nối thất bại ${res.status} ${res.statusText} - ${text.slice(0, 200)}`);
-  }
+  return cachedFetch(
+    cacheKey,
+    async () => {
+      const url = `/api/blog`;
+      const res = await fetch(url, {
+        method: "GET",
+        headers: { Accept: "application/json" },
+      });
 
-  const data = await res.json().catch((err) => {
-    throw new Error(`Không kết nối được api - ${err.message}`);
-  });
+      if (!res.ok) {
+        const text = await res.text().catch(() => "");
+        throw new Error(`Kết nối thất bại ${res.status} ${res.statusText} - ${text.slice(0, 200)}`);
+      }
 
-  const blogs: Blog[] = data?.blogs ?? data ?? [];
+      const data = await res.json().catch((err) => {
+        throw new Error(`Không kết nối được api - ${err.message}`);
+      });
 
-  return blogs.filter((blog) => blog.handle !== "phycocyanin-1");
+      const blogs: Blog[] = data?.blogs ?? data ?? [];
+
+      return blogs.filter((blog) => blog.handle !== "phycocyanin-1");
+    },
+    10 * 60 * 1000 // Cache 10 phút
+  );
 }
 
 // Route lấy số lượng bài viết của blog (count)
@@ -111,72 +136,80 @@ export async function fetchBlogHasPublished(id: number | string): Promise<boolea
   });
 }
 
-// Route lấy ra chi tiết bài viết
+// Route lấy ra chi tiết bài viết (với cache 10 phút)
 export async function fetchBlogDetail(id: number | string): Promise<Article[]> {
-  const url = `/api/blog/${id}`;
-  const res = await fetch(url, { method: "GET", headers: { Accept: "application/json" } });
+  const cacheKey = createCacheKey("blog", "detail", id);
 
-  if (!res.ok) {
-    const text = await res.text().catch(() => "");
-    throw new Error(`Kết nối thất bại ${res.status} ${res.statusText} - ${text.slice(0, 200)}`);
-  }
+  return cachedFetch(
+    cacheKey,
+    async () => {
+      const url = `/api/blog/${id}`;
+      const res = await fetch(url, { method: "GET", headers: { Accept: "application/json" } });
 
-  const data = await res.json().catch((err) => {
-    throw new Error(`Không kết nối được api - ${err.message}`);
-  });
+      if (!res.ok) {
+        const text = await res.text().catch(() => "");
+        throw new Error(`Kết nối thất bại ${res.status} ${res.statusText} - ${text.slice(0, 200)}`);
+      }
 
-  const rawArticles = data?.articles ?? data;
+      const data = await res.json().catch((err) => {
+        throw new Error(`Không kết nối được api - ${err.message}`);
+      });
 
-  const mapped = Array.isArray(rawArticles)
-    ? rawArticles
-        .map((a: any) => {
-          const content = a.body_html ?? a.content ?? a.excerpt ?? "";
-          const imageSrc = a.image?.src ?? a.image ?? (a.featured_image || "") ?? "";
-          const tags = typeof a.tags === "string" ? a.tags.split(",").map((t: string) => t.trim()) : a.tags ?? [];
+      const rawArticles = data?.articles ?? data;
 
-          const authorName = ((): string => {
-            if (!a) return "";
-            if (typeof a.author === "string") return a.author;
-            if (a.author && typeof a.author === "object") {
-              return a.author.name ?? a.author_name ?? "";
-            }
-            return a.author_name ?? "";
-          })();
+      const mapped = Array.isArray(rawArticles)
+        ? rawArticles
+            .map((a: any) => {
+              const content = a.body_html ?? a.content ?? a.excerpt ?? "";
+              const imageSrc = a.image?.src ?? a.image ?? (a.featured_image || "") ?? "";
+              const tags = typeof a.tags === "string" ? a.tags.split(",").map((t: string) => t.trim()) : a.tags ?? [];
 
-          const authorAvatar = ((): string => {
-            if (!a) return "";
-            if (a.author && typeof a.author === "object") return a.author.avatar ?? a.author.image ?? "";
-            return a.author_avatar ?? a.author_image ?? "";
-          })();
+              const authorName = ((): string => {
+                if (!a) return "";
+                if (typeof a.author === "string") return a.author;
+                if (a.author && typeof a.author === "object") {
+                  return a.author.name ?? a.author_name ?? "";
+                }
+                return a.author_name ?? "";
+              })();
 
-          const isPublished = (() => {
-            if (typeof a.published === "boolean") return a.published === true;
-            if (a.published_at) return Boolean(a.published_at);
-            return false;
-          })();
+              const authorAvatar = ((): string => {
+                if (!a) return "";
+                if (a.author && typeof a.author === "object") return a.author.avatar ?? a.author.image ?? "";
+                return a.author_avatar ?? a.author_image ?? "";
+              })();
 
-          return {
-            id: Number(a.id) || 0,
-            title: a.title ?? "",
-            excerpt: a.excerpt ?? a.summary ?? "",
-            content: content,
-            image: imageSrc,
-            published: isPublished,
-            author: { name: authorName, avatar: authorAvatar },
-            category: a.blog_id ? String(a.blog_id) : a.category ?? "",
-            blog_id: a.blog_id ?? a.blogId ?? undefined,
-            blog_handle: a.blog_handle ?? a.handle ?? undefined,
-            publishedAt: a.published_at ?? a.publishedAt ?? new Date().toISOString(),
-            readTime: Math.max(1, Math.round((content || "").length / 200)),
-            views: a.views ?? 0,
-            tags: tags,
-          };
-        })
-        // true thì được hiện, còn false thì bị ẩn bài viết
-        .filter((x: any) => x && x.published === true)
-    : rawArticles;
+              const isPublished = (() => {
+                if (typeof a.published === "boolean") return a.published === true;
+                if (a.published_at) return Boolean(a.published_at);
+                return false;
+              })();
 
-  return mapped;
+              return {
+                id: Number(a.id) || 0,
+                title: a.title ?? "",
+                excerpt: a.excerpt ?? a.summary ?? "",
+                content: content,
+                image: imageSrc,
+                published: isPublished,
+                author: { name: authorName, avatar: authorAvatar },
+                category: a.blog_id ? String(a.blog_id) : a.category ?? "",
+                blog_id: a.blog_id ?? a.blogId ?? undefined,
+                blog_handle: a.blog_handle ?? a.handle ?? undefined,
+                publishedAt: a.published_at ?? a.publishedAt ?? new Date().toISOString(),
+                readTime: Math.max(1, Math.round((content || "").length / 200)),
+                views: a.views ?? 0,
+                tags: tags,
+              };
+            })
+            // true thì được hiện, còn false thì bị ẩn bài viết
+            .filter((x: any) => x && x.published === true)
+        : rawArticles;
+
+      return mapped;
+    },
+    10 * 60 * 1000 // Cache 10 phút
+  );
 }
 
 // Route lấy ra chi tiết bài viết theo blog_id và article_id
@@ -354,7 +387,6 @@ export async function fetchProductsByCollection(collectionId: number | string) {
   return products.filter(Boolean);
 }
 
-// Interface cho paginated response
 export interface PaginatedProductsResponse {
   products: any[];
   page: number;
@@ -363,58 +395,65 @@ export interface PaginatedProductsResponse {
   total_pages?: number;
 }
 
-// Route lấy ra danh sách sản phẩm với phân trang
 export async function fetchProductsPage(page = 1, perPage = 20, collectionId?: string | number): Promise<PaginatedProductsResponse> {
-  const baseUrl = import.meta.env.VITE_RENDER_API_URL || "";
-  const qs = new URLSearchParams();
-  qs.set("page", String(page));
-  qs.set("limit", String(perPage));
-  if (collectionId != null && collectionId !== "") {
-    qs.set("collection_id", String(collectionId));
-  }
+  const cacheKey = createCacheKey("products", "page", page, perPage, collectionId);
 
-  const url = `${baseUrl}/api/product?${qs.toString()}`;
-  const res = await fetch(url, { method: "GET", headers: { Accept: "application/json" } });
-  
-  if (!res.ok) {
-    const text = await res.text().catch(() => "");
-    throw new Error(`Kết nối thất bại ${res.status} ${res.statusText} - ${text.slice(0, 200)}`);
-  }
-  
-  const data = await res.json().catch((err) => {
-    throw new Error(`Không kết nối được api - ${err.message}`);
-  });
+  return cachedFetch(
+    cacheKey,
+    async () => {
+      const baseUrl = import.meta.env.VITE_RENDER_API_URL || "";
+      const qs = new URLSearchParams();
+      qs.set("page", String(page));
+      qs.set("limit", String(perPage));
+      if (collectionId != null && collectionId !== "") {
+        qs.set("collection_id", String(collectionId));
+      }
 
-  let productArray: any[] = [];
-  if (Array.isArray(data)) {
-    productArray = data;
-  } else if (data.products && Array.isArray(data.products)) {
-    productArray = data.products;
-  } else if (data) {
-    productArray = [data];
-  }
+      const url = `${baseUrl}/api/product?${qs.toString()}`;
+      const res = await fetch(url, { method: "GET", headers: { Accept: "application/json" } });
 
-  const products = productArray.filter((p: any) => (p?.published_scope ?? p?.publishedScope ?? "") === "global");
+      if (!res.ok) {
+        const text = await res.text().catch(() => "");
+        throw new Error(`Kết nối thất bại ${res.status} ${res.statusText} - ${text.slice(0, 200)}`);
+      }
 
-  return {
-    products,
-    page,
-    perPage,
-    total: typeof data.total === "number" ? data.total : undefined,
-    total_pages: typeof data.total_pages === "number" ? data.total_pages : undefined,
-  };
+      const data = await res.json().catch((err) => {
+        throw new Error(`Không kết nối được api - ${err.message}`);
+      });
+
+      let productArray: any[] = [];
+      if (Array.isArray(data)) {
+        productArray = data;
+      } else if (data.products && Array.isArray(data.products)) {
+        productArray = data.products;
+      } else if (data) {
+        productArray = [data];
+      }
+
+      const products = productArray.filter((p: any) => (p?.published_scope ?? p?.publishedScope ?? "") === "global");
+
+      return {
+        products,
+        page,
+        perPage,
+        total: typeof data.total === "number" ? data.total : undefined,
+        total_pages: typeof data.total_pages === "number" ? data.total_pages : undefined,
+      };
+    },
+    5 * 60 * 1000 // Cache 5 phút cho pagination
+  );
 }
 
 // Route lấy ra danh sách đơn hàng từ API
 export async function fetchOrders() {
   const url = "https://api-server-nuj6.onrender.com/api/order/";
   const res = await fetch(url, { method: "GET", headers: { Accept: "application/json" } });
-  
+
   if (!res.ok) {
     const text = await res.text().catch(() => "");
     throw new Error(`Kết nối thất bại ${res.status} ${res.statusText} - ${text.slice(0, 200)}`);
   }
-  
+
   const data = await res.json().catch((err) => {
     throw new Error(`Không kết nối được api - ${err.message}`);
   });
@@ -426,7 +465,7 @@ export async function fetchOrders() {
 export async function decodePhoneToken(token: string): Promise<string> {
   const baseUrl = import.meta.env.VITE_RENDER_API_URL || "https://api-server-nuj6.onrender.com";
   const url = `${baseUrl}/api/phone/decode`;
-  
+
   try {
     const res = await fetch(url, {
       method: "POST",
@@ -436,12 +475,12 @@ export async function decodePhoneToken(token: string): Promise<string> {
       },
       body: JSON.stringify({ token }),
     });
-    
+
     if (!res.ok) {
       const text = await res.text().catch(() => "");
       throw new Error(`Kết nối thất bại ${res.status} ${res.statusText} - ${text.slice(0, 200)}`);
     }
-    
+
     const data = await res.json().catch((err) => {
       throw new Error(`Không kết nối được api - ${err.message}`);
     });

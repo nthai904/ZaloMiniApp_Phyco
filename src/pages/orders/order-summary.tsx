@@ -10,7 +10,7 @@ function OrderSummary(props: { order: Order; full?: boolean }) {
   const navigate = useNavigate();
 
   const orderStatusMap: Record<string, { text: string; className: string }> = {
-    pending: { text: "Chờ xác nhận", className: "bg-yellow-50 text-yellow-800" },
+    pending: { text: "Chưa giao hàng", className: "bg-yellow-50 text-yellow-800" },
     shipping: { text: "Đang giao", className: "bg-blue-50 text-blue-800" },
     completed: { text: "Đã hoàn thành", className: "bg-green-50 text-green-800" },
     cancelled: { text: "Đã hủy", className: "bg-red-50 text-red-800" },
@@ -50,7 +50,7 @@ function OrderSummary(props: { order: Order; full?: boolean }) {
                 Đơn {typeof displayOrderNumber === "string" && displayOrderNumber.startsWith("#") ? displayOrderNumber : `#${displayOrderNumber}`}
               </div>
               <span className={`px-2 py-0.5 text-xs font-medium rounded ${orderStatus.className}`}>{orderStatus.text}</span>
-              {props.order.paymentStatus !== "paid" && <span className={`px-2 py-0.5 text-xs font-medium rounded ${paymentStatus.className}`}>{paymentStatus.text}</span>}
+              <span className={`px-2 py-0.5 text-xs font-medium rounded ${paymentStatus.className}`}>{paymentStatus.text}</span>
             </div>
           </div>
 
