@@ -24,10 +24,7 @@ export default function ProfilePage() {
 
         <Section title={<span>Tài khoản & Cài đặt</span>}>
           <div className="grid gap-2 p-2">
-            <TransitionLink
-              to="/profile/edit"
-              className="flex items-center justify-between p-3 rounded-lg bg-white border-[0.5px] border-black/10"
-            >
+            <TransitionLink to="/profile/edit" className="flex items-center justify-between p-3 rounded-lg bg-white border-[0.5px] border-black/10">
               <div className="flex items-center gap-3">
                 <Icon icon="zi-user" />
                 <div>
@@ -38,10 +35,7 @@ export default function ProfilePage() {
               <Icon icon="zi-arrow-right" />
             </TransitionLink>
 
-            <TransitionLink
-              to="/profile/points"
-              className="flex items-center justify-between p-3 rounded-lg bg-white border-[0.5px] border-black/10"
-            >
+            <TransitionLink to="/profile/points" className="flex items-center justify-between p-3 rounded-lg bg-white border-[0.5px] border-black/10">
               <div className="flex items-center gap-3">
                 <Icon icon="zi-gift" />
                 <div>
@@ -52,10 +46,7 @@ export default function ProfilePage() {
               <Icon icon="zi-arrow-right" />
             </TransitionLink>
 
-            <TransitionLink
-              to="/support"
-              className="flex items-center justify-between p-3 rounded-lg bg-white border-[0.5px] border-black/10"
-            >
+            <TransitionLink to="/support" className="flex items-center justify-between p-3 rounded-lg bg-white border-[0.5px] border-black/10">
               <div className="flex items-center gap-3">
                 <Icon icon="zi-help-circle" />
                 <div>

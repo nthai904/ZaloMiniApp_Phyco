@@ -68,7 +68,7 @@ export type Delivery =
     };
 
 export type OrderStatus = "pending" | "shipping" | "completed" | "cancelled";
-export type PaymentStatus = "pending" | "success" | "failed";
+export type PaymentStatus = "pending" | "authorized" | "partially_paid" | "paid" | "partially_refunded" | "refunded" | "voided";
 
 export interface Order {
   id: number;

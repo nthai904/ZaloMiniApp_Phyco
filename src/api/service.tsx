@@ -421,3 +421,34 @@ export async function fetchOrders() {
 
   return data?.orders ?? [];
 }
+
+// Route decode token từ Zalo SDK để lấy số điện thoại thật
+export async function decodePhoneToken(token: string): Promise<string> {
+  const baseUrl = import.meta.env.VITE_RENDER_API_URL || "https://api-server-nuj6.onrender.com";
+  const url = `${baseUrl}/api/phone/decode`;
+  
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({ token }),
+    });
+    
+    if (!res.ok) {
+      const text = await res.text().catch(() => "");
+      throw new Error(`Kết nối thất bại ${res.status} ${res.statusText} - ${text.slice(0, 200)}`);
+    }
+    
+    const data = await res.json().catch((err) => {
+      throw new Error(`Không kết nối được api - ${err.message}`);
+    });
+
+    return data?.phone || data?.phoneNumber || "";
+  } catch (error) {
+    console.warn("Failed to decode phone token:", error);
+    throw error;
+  }
+}
