@@ -47,7 +47,7 @@ export default function ProductsPage() {
             <p className="text-sm text-subtitle mt-1">Khám phá các sản phẩm của chúng tôi</p>
           </div>
           <div>
-            <button
+            {/* <button
               onClick={() => setShowCategories(true)}
               aria-label="Mở danh mục"
               title="Danh mục"
@@ -68,7 +68,7 @@ export default function ProductsPage() {
                 <rect x="3" y="14" width="7" height="7" />
                 <rect x="14" y="14" width="7" height="7" />
               </svg>
-            </button>
+            </button> */}
           </div>
         </div>
       </div>
@@ -76,6 +76,7 @@ export default function ProductsPage() {
       <div className="flex-1 overflow-y-auto">
         <div className="px-4 pb-2">
           <div className="flex items-center gap-3 pb-0">{/* <SortDropdown value={sortOrder} onChange={(v) => setSortOrder(v)} /> */}</div>
+          <CategoryFilterBar onSelect={handleCategoryChange} active={activeCollection} />
 
           <Suspense fallback={<div className="h-10" />}></Suspense>
         </div>
