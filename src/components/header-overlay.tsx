@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useNavigate } from "react-router";
 import { WalletIcon, VoucherIcon } from "@/components/vectors";
 import { Avatar } from "zmp-ui";
-import { authorize, getSetting, getUserInfo } from "zmp-sdk/apis";
+import { authorize, getSetting, getUserInfo, getPhoneNumber } from "zmp-sdk/apis";
 import toast from "react-hot-toast";
 import { useAtomValue } from "jotai";
 import { userInfoState } from "@/state";
@@ -30,7 +30,6 @@ export default function HeaderOverlay({
           const { authSetting } = await getSetting({});
           const userInfoGranted = authSetting["scope.userInfo"];
           const phoneGranted = authSetting["scope.userPhonenumber"];
-    
           if (!userInfoGranted || !phoneGranted) {
             await authorize({
               scopes: ["scope.userInfo", "scope.userPhonenumber"],
