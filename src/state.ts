@@ -84,7 +84,7 @@ export const userInfoState = atom<Promise<UserInfo>>(async (get) => {
         // Trả về userInfo mặc định nếu không thể lấy thông tin
         return {
           id: 0,
-          name: "Guest",
+          name: "Đăng nhập",
           avatar: "",
           phone: "",
           email: "",
@@ -101,7 +101,7 @@ export const userInfoState = atom<Promise<UserInfo>>(async (get) => {
     // Trả về userInfo mặc định nếu không có thông tin
     return {
       id: 0,
-      name: "Guest",
+      name: "Đăng nhập",
       avatar: "",
       phone: "",
       email: "",
@@ -118,7 +118,7 @@ export const userInfoState = atom<Promise<UserInfo>>(async (get) => {
     // Trả về userInfo mặc định nếu có lỗi
     return {
       id: 0,
-      name: "Guest",
+      name: "Đăng nhập",
       avatar: "",
       phone: "",
       email: "",
@@ -164,7 +164,7 @@ export const phoneState = atom(async () => {
             // Nếu chưa có userInfo trong localStorage, tạo mới
             const newUserInfo = {
               id: 0,
-              name: "Guest",
+              name: "Đăng nhập",
               avatar: "",
               phone: phone,
               email: "",

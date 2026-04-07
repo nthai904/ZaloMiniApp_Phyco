@@ -4,6 +4,7 @@ import { WalletIcon, VoucherIcon } from "@/components/vectors";
 import { Avatar } from "zmp-ui";
 import { authorize, getSetting, getUserInfo, getPhoneNumber } from "zmp-sdk/apis";
 import toast from "react-hot-toast";
+import NoAvatar from "@/static/avatar.jpeg";
 import { useAtomValue } from "jotai";
 import { userInfoState } from "@/state";
 
@@ -23,26 +24,24 @@ export default function HeaderOverlay({
   const navigate = useNavigate();
   const userInfo = useAtomValue(userInfoState);
 
-  useEffect(() => {
-    const requestPermissions = async () => {
-      if (typeof window.ZJSBridge !== 'undefined') {
-        try {
-          const { authSetting } = await getSetting({});
-          const userInfoGranted = authSetting["scope.userInfo"];
-          const phoneGranted = authSetting["scope.userPhonenumber"];
-          if (!userInfoGranted || !phoneGranted) {
-            await authorize({
-              scopes: ["scope.userInfo", "scope.userPhonenumber"],
-            });
-            
-          }
-        } catch (error) {
+
+
+  const handleUserAreaClick = async () => {
+    if (typeof window.ZJSBridge !== 'undefined') {
+      try {
+        const { authSetting } = await getSetting({});
+        const userInfoGranted = authSetting["scope.userInfo"];
+        const phoneGranted = authSetting["scope.userPhonenumber"];
+        if (!userInfoGranted || !phoneGranted) {
+          await authorize({
+            scopes: ["scope.userInfo", "scope.userPhonenumber"],
+          });
         }
+      } catch (error) {
+        console.error("Permission request failed:", error);
       }
-    };
-    
-    requestPermissions();
-  }, []);
+    }
+  };
 
   return (
     <div
@@ -54,14 +53,14 @@ export default function HeaderOverlay({
     >
       {/* ------- PHẦN TRÊN ------- */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 cursor-pointer" onClick={handleUserAreaClick}>
           <Avatar
             size={41}
-            src={userInfo?.avatar || ""}
+            src={userInfo?.avatar || NoAvatar}
           />
 
           <div className="flex flex-col">
-            <span className="font-semibold text-sm">{userInfo?.name || "Đang tải..."}</span>
+            <span className="font-semibold text-sm">{userInfo?.name || "Khách"}</span>
           </div>
         </div>
 
