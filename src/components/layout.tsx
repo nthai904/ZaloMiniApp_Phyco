@@ -10,7 +10,7 @@ import FloatingCartPreview from "./floating-cart-preview";
 export default function Layout() {
   const location = useLocation();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [showHeaderOverlay, setShowHeaderOverlay] = useState(true);
+  const [overlayProgress, setOverlayProgress] = useState(1);
   const [isScrolled, setIsScrolled] = useState(false);
   const lastScrollTop = useRef(0);
 
@@ -27,33 +27,15 @@ export default function Layout() {
       if (!ticking) {
         window.requestAnimationFrame(() => {
           const currentScrollTop = scrollContainer.scrollTop;
-          const scrollDifference = Math.abs(currentScrollTop - lastScrollTop.current);
-          const threshold = 5; 
-          const showDistance = 5; 
-          const hideDistance = 100;
 
           if (isHomePage) {
             setIsScrolled(currentScrollTop > 50);
+            const fadeRange = 140;
+            const nextProgress = Math.max(0, Math.min(1, 1 - currentScrollTop / fadeRange));
+            setOverlayProgress(nextProgress);
           } else {
             setIsScrolled(false);
-          }
-
-          if (isHomePage) {
-            if (currentScrollTop === 0) {
-              setShowHeaderOverlay(true);
-            } else if (scrollDifference >= threshold) {
-              if (currentScrollTop > lastScrollTop.current) {
-                if (currentScrollTop > hideDistance) {
-                  setShowHeaderOverlay(false);
-                }
-              } else {
-                if (currentScrollTop <= showDistance) {
-                  setShowHeaderOverlay(true);
-                }
-              }
-            }
-          } else {
-            setShowHeaderOverlay(true);
+            setOverlayProgress(1);
           }
 
           lastScrollTop.current = currentScrollTop;
@@ -69,7 +51,7 @@ export default function Layout() {
 
   return (
     <div className="w-screen h-screen flex flex-col bg-section text-foreground">
-      <Header showHeaderOverlay={showHeaderOverlay} isScrolled={isScrolled} />
+      <Header overlayProgress={overlayProgress} isScrolled={isScrolled} />
       <div ref={scrollContainerRef} className="flex-1 overflow-y-auto bg-background">
         <Suspense fallback={<PageSkeleton />}>
           <Outlet />

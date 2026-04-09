@@ -10,11 +10,11 @@ import { cartStateV2 } from "@/state";
 import logoImage from "@/static/logo-1.png";
 
 type HeaderProps = {
-  showHeaderOverlay?: boolean;
+  overlayProgress?: number;
   isScrolled?: boolean;
 };
 
-export default function Header({ showHeaderOverlay = true, isScrolled = false }: HeaderProps) {
+export default function Header({ overlayProgress = 1, isScrolled = false }: HeaderProps) {
   const categories = useAtomValue(categoriesStateUpwrapped);
   const navigate = useNavigate();
   const location = useLocation();
@@ -41,24 +41,24 @@ export default function Header({ showHeaderOverlay = true, isScrolled = false }:
 
   const isHomePage = location.pathname === "/";
   const shouldRoundBottomCorners = isHomePage && !isScrolled;
-  const shouldShrink = isHomePage && isScrolled;
-
-  const getHeaderPadding = () => {
-    if (isHomePage) {
-      return shouldShrink ? "pb-1" : "pb-8";
-    }
-    return "pb-1";
-  };
+  const visibleOverlayProgress = searchFocused ? 0 : overlayProgress;
 
   return (
-    <div className="w-full flex flex-col bg-transparent z-10">
+    <div className="w-full flex flex-col bg-transparent z-10 relative">
       {/* Dải header màu xanh ở phía trên */}
       <div
         className={`bg-gradient-to-r px-4 pt-st bg-no-repeat bg-right-top bg-main transition-all duration-300 ease-in-out ${
           shouldRoundBottomCorners ? "rounded-bl-lg rounded-br-lg" : ""
-        } ${getHeaderPadding()}`}
+        } pb-7`}
       >
-        <div className="pt-1">
+        <div
+          className="pt-1 transition-transform duration-300 ease-out"
+          style={{
+            transform: isHomePage && isScrolled ? "scale(0.98) translateY(-2px)" : "scale(1) translateY(0px)",
+            transformOrigin: "top center",
+            willChange: "transform",
+          }}
+        >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               {/* Logo thương hiệu  */}
@@ -97,19 +97,17 @@ export default function Header({ showHeaderOverlay = true, isScrolled = false }:
 
       {handle?.search && (
         <div
-          className={`-mt-6 px-4 overflow-hidden transition-all duration-300 ease-in-out ${
-            showHeaderOverlay && !searchFocused ? "max-h-96 opacity-100" : "max-h-0 opacity-0 pointer-events-none"
-          }`}
+          className="absolute left-0 right-0 px-4 transition-all duration-200 ease-out"
           style={{
-            willChange: "max-height, opacity",
+            top: "100%",
+            marginTop: -20,
+            opacity: visibleOverlayProgress,
+            transform: `translateY(${-8 * (1 - visibleOverlayProgress)}px)`,
+            pointerEvents: visibleOverlayProgress > 0.05 ? "auto" : "none",
+            willChange: "opacity, transform",
           }}
         >
-          <div
-            className={`transition-transform duration-300 ease-in-out ${showHeaderOverlay && !searchFocused ? "translate-y-0 opacity-100" : "-translate-y-4 opacity-0"}`}
-            style={{
-              willChange: "transform, opacity",
-            }}
-          >
+          <div className="transition-all duration-200 ease-out" style={{ willChange: "transform, opacity" }}>
             <HeaderOverlay pointsCount={0} voucherCount={0} />
           </div>
         </div>
