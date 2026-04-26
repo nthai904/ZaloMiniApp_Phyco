@@ -265,10 +265,12 @@ export function useCheckout() {
       const orderEmail = shippingAddress?.email ?? userInfo?.email ?? "";
       const orderPhone = shippingAddress?.phone ?? userInfo?.phone ?? "";
 
+      const receiverName = shippingAddress?.name?.trim() || userInfo?.name || "";
+
       const shippingAddressData = shippingAddress
         ? {
-            first_name: shippingAddress.first_name ?? userInfo?.name ?? "",
-            last_name: shippingAddress.last_name ?? userInfo?.name ?? "",
+            first_name: shippingAddress.first_name ?? receiverName,
+            last_name: shippingAddress.last_name ?? "",
             phone: orderPhone,
             address1: shippingAddress.address1 ?? "",
             province: shippingAddress.province ?? "",
@@ -276,7 +278,7 @@ export function useCheckout() {
           }
         : undefined;
 
-      // console.log(shippingAddressData);
+      console.log(shippingAddressData);
 
       const payload: CreateOrderPayload = {
         order: {

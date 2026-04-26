@@ -66,7 +66,7 @@ function ShippingAddressPage() {
                 Địa chỉ <span className="text-danger">*</span>
               </>
             }
-            placeholder="Nhập địa chỉ"
+            placeholder="Nhập đầy đủ địa chỉ (số nhà, tên đường, phường/xã, quận/huyện, tỉnh/thành phố)"
             required
             defaultValue={address?.address}
             onInvalid={(e) => {
