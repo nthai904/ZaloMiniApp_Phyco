@@ -210,3 +210,34 @@ export async function createOrder(payload: CreateOrderPayload): Promise<OrderRes
     throw error;
   }
 }
+export async function createMac(payload: any): Promise<any> {
+  const apiUrl = `${import.meta.env.VITE_RENDER_API_URL}/api/create-mac`;
+
+  try {
+    const res = await fetch(apiUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!res.ok) {
+      let errorText = "";
+      try {
+        errorText = await res.text();
+      } catch {}
+
+      throw new Error(
+        errorText || `Tạo MAC thất bại: ${res.status} ${res.statusText}`
+      );
+    }
+
+    return await res.json();
+  } catch (error: any) {
+    if (error.name === "TypeError") {
+      throw new Error("Không thể kết nối server (create-mac)");
+    }
+    throw error;
+  }
+}

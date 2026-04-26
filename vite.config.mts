@@ -36,7 +36,6 @@ export default () => {
             });
           },
         },
-
         // Cấu hình API danh sách bài viết và chi tiết bài viết
         "/api/blog": {
           target: `${process.env.API_URL}`,
@@ -88,7 +87,6 @@ export default () => {
             });
           },
         },
-
         "/api/collect": {
           target: `${process.env.API_URL}`,
           changeOrigin: true,
@@ -118,6 +116,11 @@ export default () => {
               proxyReq.setHeader("Content-Type", "application/json");
             });
           },
+        },
+        "/api/create-mac": {
+          target: `${process.env.VITE_RENDER_API_URL}`,
+          changeOrigin: true,
+          secure: true,
         },
       },
     },
