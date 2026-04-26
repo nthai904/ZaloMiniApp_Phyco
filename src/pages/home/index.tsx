@@ -9,7 +9,7 @@ import NewProductList from "./new-product-list";
 
 const HomePage: React.FunctionComponent = () => {
   return (
-    <div className="min-h-full space-y-2 py-2">
+    <div className="min-h-full space-y-2 py-32">
       <div className="bg-sction mt-1">
         <Banners />
       </div>
